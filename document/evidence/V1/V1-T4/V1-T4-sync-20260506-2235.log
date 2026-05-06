@@ -1,0 +1,14 @@
+--- ohpm install output ---
+Load native binding failed: MODULE_NOT_FOUND
+install completed in 0s 122ms
+
+
+--- build init output ---
+> C:\Program Files\Huawei\DevEco Studio\tools\node\node.exe C:\Program Files\Huawei\DevEco Studio\tools\hvigor\bin\hvigorw.js --sync -p product=default --analyze=normal --parallel --incremental --no-daemon
+
+> hvigor Finished :entry:init... after 3 ms 
+> hvigor Finished ::init... after 2 ms 
+
+
+Process finished with exit code 0
+

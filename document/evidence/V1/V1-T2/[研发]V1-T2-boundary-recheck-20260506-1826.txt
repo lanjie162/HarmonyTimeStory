@@ -1,0 +1,24 @@
+V1-T2 boundary recheck
+Timestamp: 2026-05-06 18:26 (UTC+8)
+Scope: entry/src/main/ets
+
+[Check-1] pages 未直连 infrastructure
+Pattern: infrastructure/
+Path: entry/src/main/ets/pages
+Result: No matches found
+
+[Check-2] features 未引入 @ohos.*
+Pattern: @ohos\.
+Path: entry/src/main/ets/features
+Result: No matches found
+
+[Check-3] 装配点仍仅在 bootstrap（API 装配引用特征）
+Pattern-A: features/api
+Pattern-B: infrastructure/api
+Path: entry/src/main/ets
+Result:
+- bootstrap/AppBootstrap.ets matches features/api
+- bootstrap/AppBootstrap.ets matches infrastructure/api
+
+Conclusion: T2 改动未引入新的跨层依赖违规，装配点唯一性保持成立。
+

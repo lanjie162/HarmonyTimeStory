@@ -1,0 +1,10 @@
+[2026-05-06 18:40:00] migration batch start
+[2026-05-06 18:40:00] source schemaVersion=1 targetVersion=2
+[2026-05-06 18:40:00] step=v1_to_v2_core precheck start
+[2026-05-06 18:40:00] step=v1_to_v2_core precheck pass
+[2026-05-06 18:40:00] step=v1_to_v2_core apply start
+[2026-05-06 18:40:00] create table MigrationAudit if not exists
+[2026-05-06 18:40:00] keep PhotoRef.referenceCount as existing value
+[2026-05-06 18:40:00] schemaVersion update 1 -> 2
+[2026-05-06 18:40:00] step=v1_to_v2_core apply success elapsed=3ms
+[2026-05-06 18:40:00] migration batch success final schemaVersion=2
