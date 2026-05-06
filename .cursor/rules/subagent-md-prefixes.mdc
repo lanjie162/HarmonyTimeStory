@@ -1,0 +1,36 @@
+---
+description: Enforce role-based prefix for subagent-generated markdown files
+alwaysApply: true
+---
+
+# Subagent Markdown File Prefix Rule
+
+When any subagent creates a `.md` document, the filename must start with a role prefix.
+
+## Allowed Prefixes by Role
+
+- `architect` -> `[架构]`
+- `software-engineer` -> `[研发]`
+- `qa-engineer` -> `[QA]`
+- `product-manager` -> `[产品]`
+- `interaction-designer` -> `[交互]`
+- `meeting-facilitator` -> `[主持人]`
+- `project-manager` -> `[项目经理]`
+- `todo-manager` -> `[TODO经理]`
+
+## Naming Requirement
+
+- Use exactly one of the prefixes above at the beginning of the markdown filename.
+- Keep the rest of the filename descriptive.
+- If the subagent role is not listed above, do not create the `.md` file yet; ask for a prefix decision first.
+
+## Fallback Rule for Unmapped Roles
+
+- Unknown role -> block markdown creation until the user confirms which allowed prefix to use.
+- Never invent a new prefix automatically.
+
+## Examples
+
+- `[架构]缓存分层设计.md`
+- `[研发]账单导出修复方案.md`
+- `[QA]回归测试清单.md`

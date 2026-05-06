@@ -1,0 +1,52 @@
+V1-T1 import scan evidence
+Timestamp: 2026-05-06 18:07 (UTC+8)
+Scope: entry/src/main/ets
+
+[T1-C1] pages 不直连 infrastructure
+Pattern: infrastructure/
+Path: entry/src/main/ets/pages
+Result: No matches found
+
+[T1-C2] pages 不依赖 infrastructure/api
+Pattern: infrastructure/api
+Path: entry/src/main/ets/pages
+Result: No matches found
+
+[T1-C3] pages 仅依赖 features/api + domain（违规特征扫描）
+Pattern: features/
+Path: entry/src/main/ets/pages
+Result: No matches found
+Note: 当前 pages 骨架页未引入 features 实现目录。
+
+[T1-C4] features 不 import @ohos.*
+Pattern: @ohos\.
+Path: entry/src/main/ets/features
+Result: No matches found
+
+[T1-C5] features 不直连 infrastructure 实现目录
+Pattern: infrastructure/(repository|media|vision|task|data)
+Path: entry/src/main/ets/features
+Result: No matches found
+
+[T1-C6] features/infrastructure 实现不引入 ArkUI 组件
+Pattern-A: @Component
+Path-A: entry/src/main/ets/features
+Result-A: No matches found
+Pattern-B: @Component
+Path-B: entry/src/main/ets/infrastructure
+Result-B: No matches found
+
+[T1-C8] domain 保持无 IO
+Pattern: @ohos\.|relationalStore|requestImage|http
+Path: entry/src/main/ets/domain
+Result: No matches found
+
+[T1-C7] bootstrap 为唯一实现装配点（引用特征）
+Pattern-A: features/api
+Pattern-B: infrastructure/api
+Path: entry/src/main/ets
+Result:
+- bootstrap/AppBootstrap.ets matches features/api
+- bootstrap/AppBootstrap.ets matches infrastructure/api
+Note: 当前扫描范围内仅 bootstrap 同时出现两类 API 引用。
+

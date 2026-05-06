@@ -1,0 +1,137 @@
+=== Clean Output ===
+> C:\Program Files\Huawei\DevEco Studio\tools\node\node.exe C:\Program Files\Huawei\DevEco Studio\tools\hvigor\bin\hvigorw.js clean --no-daemon
+
+> hvigor Finished :entry:clean... after 198 ms 
+> hvigor Finished ::clean... after 2 ms 
+> hvigor BUILD SUCCESSFUL in 8 s 712 ms 
+
+
+Process finished with exit code 0
+
+=== Build Output ===
+> C:\Program Files\Huawei\DevEco Studio\tools\node\node.exe C:\Program Files\Huawei\DevEco Studio\tools\hvigor\bin\hvigorw.js --mode project -p product=default assembleApp -p buildMode=debug -p debuggable=true -p debugLine=false --no-daemon
+
+> hvigor Finished ::PreBuildApp... after 3 ms 
+> hvigor Finished :entry:default@PreBuild... after 770 ms 
+> hvigor Finished ::DuplicateDependencyCheck... after 2 ms 
+> hvigor Finished :entry:default@CreateModuleInfo... after 5 ms 
+> hvigor Finished :entry:default@GenerateMetadata... after 23 ms 
+> hvigor Finished :entry:default@ConfigureCmake... after 2 ms 
+> hvigor Finished :entry:default@MergeProfile... after 26 ms 
+> hvigor Finished :entry:default@CreateBuildProfile... after 21 ms 
+> hvigor Finished :entry:default@PreCheckSyscap... after 5 ms 
+> hvigor Finished :entry:default@GeneratePkgContextInfo... after 41 ms 
+> hvigor Finished :entry:default@GeneratePkgSdkInfo... after 17 ms 
+> hvigor Finished :entry:default@ProcessIntegratedHsp... after 5 ms 
+> hvigor Finished :entry:default@BuildNativeWithCmake... after 4 ms 
+> hvigor Finished :entry:default@MakePackInfo... after 23 > hvigor WARN: WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/shell/ShellPage.ets:23:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/shell/ShellPage.ets:23:12
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/shell/ShellPage.ets:27:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/shell/ShellPage.ets:27:12
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonPage.ets:32:33
+ 'back' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestorms 
+> hvigor Finished :entry:default@SyscapTransform... after 67 ms 
+> hvigor Finished :entry:default@ProcessProfile... after 360 ms 
+> hvigor Finished :entry:default@ProcessRouterMap... after 17 ms 
+> hvigor Finished :entry:default@ProcessShareConfig... after 14 ms 
+> hvigor Finished :entry:default@ProcessStartupConfig... after 12 ms 
+> hvigor Finished :entry:default@BuildNativeWithNinja... after 9 ms 
+> hvigor Finished :entry:default@ProcessResource... after 16 ms 
+> hvigor Finished :entry:default@GenerateLoaderJson... after 43 ms 
+> hvigor Finished :entry:default@ProcessLibs... after 56 ms 
+> hvigor Finished :entry:default@CompileResource... after 550 ms 
+> hvigor Finished :entry:default@DoNativeStrip... after 32 ms 
+> hvigor Finished :entry:default@BuildJS... after 23 ms 
+> hvigor Finished :entry:default@CacheNativeLibs... after 129 ms 
+> hvigor Finished :entry:default@CompileArkTS... after 29 s 101 ms 
+e/entry/src/main/ets/pages/person/PersonPage.ets:34:33
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonPage.ets:39:33
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonPage.ets:41:33
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:32:33
+ 'back' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:34:33
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryPage.ets:32:33
+ 'back' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryPage.ets:34:33
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryPage.ets:38:31
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:32:33
+ 'back' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:34:33
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:32:33
+ 'back' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:34:33
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/suggest/SuggestPage.ets:31:31
+ 'back' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/shell/ShellPage.ets:5:1
+ It's not a recommended way to export struct with '@Entry' decorator, which may cause ACE Engine error in component preview mode.
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryPage.ets:5:1
+ It's not a recommended way to export struct with '@Entry' decorator, which may cause ACE Engine error in component preview mode.
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:5:1
+ It's not a recommended way to export struct with '@Entry' decorator, which may cause ACE Engine error in component preview mode.
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonPage.ets:5:1
+ It's not a recommended way to export struct with '@Entry' decorator, which may cause ACE Engine error in component preview mode.
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:5:1
+ It's not a recommended way to export struct with '@Entry' decorator, which may cause ACE Engine error in component preview mode.
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:5:1
+ It's not a recommended way to export struct with '@Entry' decorator, which may cause ACE Engine error in component preview mode.
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/suggest/SuggestPage.ets:5:1
+ It's not a recommended way to export struct with '@Entry' decorator, which may cause ACE Engine error in component preview mode.
+
+> hvigor Finished :entry:default@GeneratePkgModuleJson... after 16 ms 
+> hvigor Finished :entry:default@ProcessCompiledResources... after 5 ms 
+> hvigor WARN: Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+
+> hvigor Finished :entry:default@PackageHap... after 2 s 158 ms 
+> hvigor Finished :entry:default@PackingCheck... after 54 ms 
+> hvigor WARN: Will skip sign 'hos_hap'. No signingConfigs profile is configured in current project.
+             If needed, configure the signingConfigs in C:\coding\DevEcoStudioProjects\timestore\build-profile.json5.
+> hvigor Finished :entry:default@SignHap... after 16 ms 
+> hvigor Finished :entry:default@CollectDebugSymbol... after 7 ms 
+> hvigor Finished :entry:assembleHap... after 1 ms 
+> hvigor Finished ::MakeProjectPackInfo... after 31 ms 
+> hvigor Finished ::ProcessProjectPrivacyProfile... after 21 ms 
+> hvigor Finished ::GeneratePackRes... after 5 ms 
+> hvigor WARN: Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+
+> hvigor Finished ::PackageApp... after 2 s 25 ms 
+> hvigor Finished ::SignPackagesFromApp... after 8 ms 
+> hvigor WARN: Will skip sign 'app'. No signingConfigs profile is configured in current project.
+             If needed, configure the signingConfigs in C:\coding\DevEcoStudioProjects\timestore\build-profile.json5.
+> hvigor Finished ::SignApp... after 12 ms 
+> hvigor Finished ::assembleApp... after 1 ms 
+> hvigor BUILD SUCCESSFUL in 55 s 4 ms 
+
+
+Process finished with exit code 0
+
