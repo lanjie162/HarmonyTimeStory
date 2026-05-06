@@ -14,9 +14,15 @@ When any subagent creates a `.md` document, the filename must start with a role 
 - `qa` -> `[QA]`
 - `pm` -> `[产品]`
 - `ued` -> `[交互]`
-- `meeting-facilitator` -> `[主持人]`
-- `project-manager` -> `[项目经理]`
-- `todo-manager` -> `[TODO经理]`
+- `manager` -> `[主持人]` / `[项目经理]` / `[TODO经理]`（按 skill 选用，见下）
+
+### Manager Skill 前缀映射
+
+`manager` 子代理按当前 skill 选用对应前缀（保留旧前缀字面量，便于按主题识别）：
+
+- skill `review-meeting` -> `[主持人]`
+- skill `version-planning` -> `[项目经理]`
+- skill `todo-drive` -> `[TODO经理]`
 
 ## Naming Requirement
 

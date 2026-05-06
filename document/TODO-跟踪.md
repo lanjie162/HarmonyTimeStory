@@ -4,7 +4,7 @@
 
 **维护约定**：完成某项后，在本文件勾选 `[x]`，并同步勾选/更新 **源文件** 中对应段落（纪要 Action Items、定稿 §9.4 等）。**HarmonyOS 调研表**真机/矩阵类条目以 **§C** 为唯一跟踪入口（调研表内不再维护 checklist）。
 
-**子代理（Cursor）**：本文件条目的盘点、按条目 **自动推导并驱动** 各角色（先读 `.cursor/agents/<角色>.md`，默认主会话串联模拟，可选 **Task** 子代理，范式同 `meeting-facilitator`）、跟催、回收检入与 `[x]` 同步，可用 **`todo-manager`**（`.cursor/agents/todo-manager.md`）；迭代里程碑与排期用 **`project-manager`**（`.cursor/agents/project-manager.md`）。
+**子代理（Cursor）**：本文件条目的盘点、按条目 **自动推导并驱动** 各角色（先读 `.cursor/agents/<角色>.md`，默认主会话串联模拟，可选 **Task** 子代理，范式同 `manager（review-meeting）`）、跟催、回收检入与 `[x]` 同步，可用 **`manager（todo-drive）`**（`.cursor/agents/manager.md`）；迭代里程碑与排期用 **`manager（version-planning）`**（`.cursor/agents/manager.md`）。
 
 ---
 
