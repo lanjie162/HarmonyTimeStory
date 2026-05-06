@@ -10,10 +10,10 @@ When any subagent creates a `.md` document, the filename must start with a role 
 ## Allowed Prefixes by Role
 
 - `architect` -> `[架构]`
-- `software-engineer` -> `[研发]`
-- `qa-engineer` -> `[QA]`
-- `product-manager` -> `[产品]`
-- `interaction-designer` -> `[交互]`
+- `dev` -> `[研发]`
+- `qa` -> `[QA]`
+- `pm` -> `[产品]`
+- `ued` -> `[交互]`
 - `meeting-facilitator` -> `[主持人]`
 - `project-manager` -> `[项目经理]`
 - `todo-manager` -> `[TODO经理]`
