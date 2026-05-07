@@ -136,10 +136,10 @@
 
 通常 broadcast 不需要切角色子代理，由本 skill 在 manager 上下文直接执行（动作以读写文件为主）。
 
-如遇上游产物归 `pm` / `architect` 维护且需要二次确认，可按需委派：
+如遇上游产物归 `pm` / `sa` 维护且需要二次确认，可按需委派：
 
 ```text
-【委派方式】Task（任务：T-<n>，通晒回填确认）；subagent_type=<pm|architect>；要求：确认 §source_anchor 修改前后一致性。
+【委派方式】Task（任务：T-<n>，通晒回填确认）；subagent_type=<pm|sa>；要求：确认 §source_anchor 修改前后一致性。
 ```
 
 ## 阻塞单格式

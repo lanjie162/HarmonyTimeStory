@@ -5,7 +5,7 @@
 > - **属于**：[`manager`](../../manager.md)
 > - **目的**：主持评审会议，按议程逐模块、逐决策点收敛多角色意见，产出**《评审决策纪要》**（标准化产物，含 📅 改进 TODO 表与 §可选 · 打包推荐）。
 > - **入口**：`document/meeting/`、文件名含 `评审 / 评议 / PRD / 技术方案 / 原型 / UI`，或用户显式声明评审。
-> - **常见参会角色**：`pm`、`architect`、`dev`、`qa`、`ued`。
+> - **常见参会角色**：`pm`、`sa`、`dev`、`qa`、`ued`。
 > - **专属编号**：`D-MN-y`（模块内）/ `G-x`（跨模块全局）。详见 [`manager.md`](../../manager.md) §决策点编号 - 总集。
 > - **来源选型触发**：**每模块开场**（阶段二步骤 1）。规则按 [`manager.md`](../../manager.md) §来源选型 §节奏 §暂停语总集 执行，本文不重述。
 > - **主入参**：任意上游材料（需求文档 / 技术方案 / 原型 / UI 稿等）+ 评审命题。
@@ -13,7 +13,7 @@
 
 ## 评审类型与参会角色自动推导
 
-用户只需给出 **评审材料路径** 和/或 **一句话意图**；按下表推导评审类型与参会子代理列表，**不必**让用户逐个写出 `pm`、`architect` 等名称。
+用户只需给出 **评审材料路径** 和/或 **一句话意图**；按下表推导评审类型与参会子代理列表，**不必**让用户逐个写出 `pm`、`sa` 等名称。
 
 ### 推导优先级（自上而下命中即停）
 
@@ -23,8 +23,8 @@
 
    | 路径或文件特征 | 评审类型 | 参会子代理（建议发言顺序） |
    |----------------|----------|----------------------------|
-   | `document/requirement/`、`requirement/`、文件名含 `需求 / PRD / MVP 需求` | PRD/需求评审 | `pm` → `architect` → `dev` → `qa` → `ued` |
-   | `document/techdoc/`、`techdoc/`、文件名含 `技术方案 / HarmonyOS 平台能力调研` | 技术方案评审 | `architect` → `dev` → `qa` |
+   | `document/requirement/`、`requirement/`、文件名含 `需求 / PRD / MVP 需求` | PRD/需求评审 | `pm` → `sa` → `dev` → `qa` → `ued` |
+   | `document/techdoc/`、`techdoc/`、文件名含 `技术方案 / HarmonyOS 平台能力调研` | 技术方案评审 | `sa` → `dev` → `qa` |
    | `document/design/`、`design/`、文件名含 `UI / 原型 / 线框` | 交互/视觉评审 | `ued` → `pm` → `dev` |
    | `document/meeting/` | 会议纪要跟进 | 默认按主题推断；不明朗时**追问一句**「本次按需求 / 方案 / 交互哪类收口？」 |
 
@@ -52,7 +52,7 @@ document/meeting/[主持人]<YYYY-MM-DD>-<评审类型>-<标题>.md
 ---
 review_type: requirement | architecture | interaction | follow-up
 source_doc: <被评审材料相对路径>
-participants: [pm, architect, dev, qa, ued]
+participants: [pm, sa, dev, qa, ued]
 created_at: <YYYY-MM-DD>
 created_by: manager
 status: draft | confirmed
@@ -72,7 +72,7 @@ status: draft | confirmed
 
 | 编号 | 摘要 | owner_role | dod_hint | priority | task_request |
 |------|------|------------|----------|----------|--------------|
-| A-1  | …    | dev / qa / ued / architect / pm | 一句话验收提示 | P1 / P2 / P3 | 留空 / `TR-<YYYYMMDD>-<seq>#C-<n>(<status>)` |
+| A-1  | …    | dev / qa / ued / sa / pm | 一句话验收提示 | P1 / P2 / P3 | 留空 / `TR-<YYYYMMDD>-<seq>#C-<n>(<status>)` |
 
 字段约束：
 
@@ -94,8 +94,8 @@ status: draft | confirmed
 1. **接收指令**：用户给出评审材料路径和/或评审意图即可；评审类型与参会子代理按上文「自动推导」确定。  
    推导完成后输出 **【自动推导】** 一行公示；用户可说「按推断执行」或纠正类型/增减角色。
 2. **动态匹配专家**（与推导表一致，供复核）：
-   - **PRD/需求评审**：`pm`、`architect`、`dev`、`qa`、`ued`
-   - **技术方案评审**：`architect`、`dev`、`qa`（若存在 `security-reviewer.md` 加入安全审查）
+   - **PRD/需求评审**：`pm`、`sa`、`dev`、`qa`、`ued`
+   - **技术方案评审**：`sa`、`dev`、`qa`（若存在 `security-reviewer.md` 加入安全审查）
    - **交互/视觉评审**：`ued`、`pm`、`dev`
 3. **确认议程**：输出拟邀请专家列表（子代理名）、模块划分与评审重点，等待用户确认或调整。整场来源倾向 / 全流程发言方式（可选公示）按 manager.md §来源选型 §全流程默认 处理；未公示则各模块在阶段二步骤 1 单独选择。
 

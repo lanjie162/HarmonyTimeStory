@@ -1,5 +1,5 @@
 ---
-name: architect
+name: sa
 description: 软件架构师子代理（HarmonyOS）。负责系统设计、架构评审、技术选型、性能与可靠性方案制定、测试分层与质量门禁设计。涉及跨模块改造、关键技术决策或质量治理时主动使用，主动协同 manager（review-meeting skill）发起方案评审。
 ---
 

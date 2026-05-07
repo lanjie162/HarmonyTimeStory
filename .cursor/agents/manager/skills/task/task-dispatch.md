@@ -111,7 +111,7 @@ frontmatter（`request_id` / `source_type` / `source_doc` / `source_anchor` / `c
      - 实现类条目：`acceptor_role[] = [qa]`（单人验收）
      - 范围 / 验收类条目：`acceptor_role[] = [pm, qa]`（双人验收）
      - 设计 / 体验类条目：`acceptor_role[] = [ued, pm]`
-     - 架构 / 门禁类条目：`acceptor_role[] = [architect, qa]`
+     - 架构 / 门禁类条目：`acceptor_role[] = [sa, qa]`
    - **验收标准**：DoD 落到 `acceptor_role` 视角的可执行验收清单（即「验收时要检查的具体证据」）
 
 5. **写入任务请求文件**（按 §文件结构）：frontmatter + §派发概要 + §任务明细（含上述补齐字段）+ §接收记录（空表，待 B 模式回填）。
