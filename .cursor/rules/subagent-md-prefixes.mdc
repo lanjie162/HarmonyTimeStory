@@ -22,9 +22,14 @@ When any subagent creates a `.md` document, the filename must start with a role 
 
 - skill `review-meeting` -> `[主持人]`
 - skill `version-planning` -> `[项目经理]`
-- skill `task-drive` -> `[任务经理]`（主前缀；`[TODO经理]` 仅用于历史 `todo-drive` skill 时期产出，不再用于新文件）
+- skill `task-drive` -> `[任务经理]`
+- skill `task-dispatch` -> `[任务经理]`
+- skill `task-execute` -> `[任务经理]`
+- skill `task-accept` -> `[任务经理]`
+- skill `task-quality` -> `[任务经理]`
+- skill `task-broadcast` -> `[任务经理]`
 
-> 旧 skill 名 `todo-drive` 已重命名为 `task-drive`；旧前缀 `[TODO经理]` 在历史文件中可继续阅读，新建文件一律使用 `[任务经理]`。
+> 旧 skill 名 `todo-drive` 已重命名为 `task-drive`；旧前缀 `[TODO经理]` 仅保留历史兼容，新建文件一律使用 `[任务经理]`。
 
 ## Naming Requirement
 
