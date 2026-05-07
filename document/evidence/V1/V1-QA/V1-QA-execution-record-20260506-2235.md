@@ -1,7 +1,7 @@
 # V1 QA 执行记录（批次：20260506-2235）
 
 - 日期：2026-05-06
-- 执行角色：qa-engineer（主会话模拟）
+- 执行角色：qa（主会话模拟）
 - 产品参数：`product=default` `module=entry` `target=default` `ability=EntryAbility`
 - 设备参数：`hvd=待补充（启动阶段自动识别后回填）`
 
@@ -112,5 +112,5 @@
 - 结论：通过（主会话模拟联合签收完成）
 - 最终文档：`evidence/V1/V1-QA/V1-QA-final-gate-20260506-2321.md`
 - 签收结果：
-  - `qa-engineer`：通过
-  - `product-manager`：通过（主会话模拟）
+  - `qa`：通过
+  - `pm`：通过（主会话模拟）

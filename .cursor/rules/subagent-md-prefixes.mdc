@@ -10,13 +10,26 @@ When any subagent creates a `.md` document, the filename must start with a role 
 ## Allowed Prefixes by Role
 
 - `architect` -> `[架构]`
-- `software-engineer` -> `[研发]`
-- `qa-engineer` -> `[QA]`
-- `product-manager` -> `[产品]`
-- `interaction-designer` -> `[交互]`
-- `meeting-facilitator` -> `[主持人]`
-- `project-manager` -> `[项目经理]`
-- `todo-manager` -> `[TODO经理]`
+- `dev` -> `[研发]`
+- `qa` -> `[QA]`
+- `pm` -> `[产品]`
+- `ued` -> `[交互]`
+- `manager` -> `[主持人]` / `[项目经理]` / `[任务经理]`（按 skill 选用，见下；`[TODO经理]` 保留作历史兼容）
+
+### Manager Skill 前缀映射
+
+`manager` 子代理按当前 skill 选用对应前缀：
+
+- skill `review-meeting` -> `[主持人]`
+- skill `version-planning` -> `[项目经理]`
+- skill `task-drive` -> `[任务经理]`
+- skill `task-dispatch` -> `[任务经理]`
+- skill `task-execute` -> `[任务经理]`
+- skill `task-accept` -> `[任务经理]`
+- skill `task-quality` -> `[任务经理]`
+- skill `task-broadcast` -> `[任务经理]`
+
+> 旧 skill 名 `todo-drive` 已重命名为 `task-drive`；旧前缀 `[TODO经理]` 仅保留历史兼容，新建文件一律使用 `[任务经理]`。
 
 ## Naming Requirement
 
