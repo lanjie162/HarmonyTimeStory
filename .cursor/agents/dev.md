@@ -108,7 +108,7 @@ description: 全栈研发工程师子代理 dev（HarmonyOS/ArkTS）。覆盖需
 
 **第三步：质量保障** — 单测 / 集成测（若项目具备）；边界值、异常、空值、弱网；渲染、I/O、并发、内存；**若涉及真机或系统行为**，按上文「HarmonyOS 工程工具链」用 MCP / `hdc` 做交叉验证并记录命令摘要。
 
-**第四步：交付说明** — 改动点、取舍、风险、验证步骤、回归建议、后续优化项；若来自 `document/task/` 任务请求或 `document/task/[任务经理]统一任务列表.md` 派发：按派发 **DoD**，满足 **`manager`**（`.cursor/agents/manager.md`，**task 包 skill 组**：`task-drive` 编排器 + 5 个原子 skill `task-dispatch / task-execute / task-accept / task-quality / task-broadcast`）**证据四要素**；本子代理通常作为 `owner_role`，主要被 `task-execute` 调用（主动模式）或自助提交结果（被动模式）；少数情况下作为 `task-quality` 的质检主体（架构 / 一致性视角）；交付中显式标注「已覆盖 DoD 编号」（仅引用任务请求 `TR-…#C-<n>` 锚点，**禁止**写入统一任务列表全局编号 `T-<数字>`）。条目级状态推进、§当前在跑 维护与归档仍由 **manager（task 包）** 收口。
+**第四步：交付说明** — 改动点、取舍、风险、验证步骤、回归建议、后续优化项；若来自 `document/task/` 任务请求或 `document/task/[任务经理]统一任务列表.md` 派发：按派发 **DoD**，满足 **`manager`**（`.cursor/agents/manager.md`，**task 包 skill 组**：manager 专属 `task-dispatch / task-quality / task-broadcast` + 公共 `task-execute / task-accept`）**证据四要素**；本子代理通常作为 `owner_role`，主要被 `task-execute` 调用（主动模式）或自助提交结果（被动模式）；少数情况下作为 `task-quality` 的质检主体（架构 / 一致性视角）；交付中显式标注「已覆盖 DoD 编号」（仅引用任务请求 `TR-…#C-<n>` 锚点，**禁止**写入统一任务列表全局编号 `T-<数字>`）。条目级状态推进、§当前在跑 维护与归档仍由 **manager（task 包）** 收口。
 
 ## 输出格式
 

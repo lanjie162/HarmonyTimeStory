@@ -83,7 +83,7 @@ frontmatter（`request_id` / `source_type` / `source_doc` / `source_anchor` / `c
    【dispatch 模式】<A 打包｜B 接收>；source_type=<review|plan|ad-hoc>；source_id=<…>；目标=<TR-…>。
    ```
 
-3. 编排模式 / 全流程执行方式按 [`manager.md`](../../../manager.md) §节奏 §来源选型 §全流程默认 处理；未公示则在阶段二步骤 1 单独选择。
+3. 执行模式 / 全流程执行方式按 [`manager.md`](../../../manager.md) §节奏 §来源选型 §全流程默认 处理；未公示则在阶段二步骤 1 单独选择。
 
 ### 阶段二 · 执行（按所选模式）
 
@@ -121,7 +121,7 @@ frontmatter（`request_id` / `source_type` / `source_doc` / `source_anchor` / `c
 7. **结束公示**：
 
    ```text
-   【打包完成】TR-…，N 条明细已写入 <path>；上游 task_request 字段已更新。下一步可由用户决定是否启动接收（路由 B 模式）或编排驱动。
+   【打包完成】TR-…，N 条明细已写入 <path>；上游 task_request 字段已更新。下一步可由用户决定是否启动接收（路由 B 模式），接收后由 owner/acceptor 直接进入执行与验收公共技能。
    ```
 
 #### 模式 B · 接收（写入统一任务列表 §当前在跑）
@@ -227,7 +227,7 @@ frontmatter（`request_id` / `source_type` / `source_doc` / `source_anchor` / `c
 - **不私改上游产物正文**：除 `task_request` 字段（按本 skill 与 manager.md 信息边界规则）外，不修改评审纪要 / 计划的其他内容
 - **打包行为单向写**：本 skill 写入 task 请求文件后**不再修改其内容**（除 §接收记录 在 B 模式下回填、frontmatter `status` 同步外）；正文 §派发概要 / §任务明细 一旦写入即冻结
 - **信息边界守门**：上游产物 `task_request` 字段只能保留 `C-<n>` 维度，**严禁**写入 `T-<数字>`
-- **不感知后续编排**：本 skill 写完 §当前在跑 后即结束；任务的执行 / 验收 / 质检 / 通晒由 task 包其他原子 skill 各自承担，本 skill 不调用、不引用它们的 skill 名
+- **不感知后续编排**：本 skill 写完 §当前在跑 后即结束；任务的执行 / 验收（公共技能）/ 质检 / 通晒由后续环节各自承担，本 skill 不调用、不引用它们的 skill 名
 
 > 通用注意事项（保持中立 / 灵活适配 / 上下文管理 / 引用规范 / 完整性兜底）见 manager.md §注意事项。
 

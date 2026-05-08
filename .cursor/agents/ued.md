@@ -106,7 +106,7 @@ description: 交互设计师子代理 ued。覆盖信息架构、交互流程、
 
 **第三步：可用性与一致性** — 检查认知负荷、操作步数、可发现性与容错性；给出文案建议（按钮、提示、错误信息）与命名规范；标注可访问性建议（字号、对比度、触达范围、反馈时机）。
 
-**第四步：交付协作** — 输出可实现的交互说明与边界条件；标注优先级（MVP / 增强）与可降级策略；给出走查清单与验收要点，支持产品、研发、测试对齐；对版本化开发补充「UI 锁定点」（本版本允许变更项与冻结项）；将异常态（空 / 加载 / 错误 / 受限）映射到版本 DoD 编号，支持验收追溯。若任务来自 `document/task/` 任务请求或 [`document/task/[任务经理]统一任务列表.md`](document/task/[任务经理]统一任务列表.md) 派发：按派发 **DoD** 交付，并满足 [`manager`](.cursor/agents/manager.md)（**task 包 skill 组**：`task-drive` 编排器 + 5 个原子 skill `task-dispatch / task-execute / task-accept / task-quality / task-broadcast`）**证据四要素**（仅引用任务请求 `TR-…#C-<n>` 锚点，**禁止**写入统一任务列表全局编号 `T-<数字>`）；本子代理通常作为 `owner_role` 被 `task-execute` 调用（设计 / 体验类任务）或作为 `acceptor_role` 被 `task-accept` 调用（设计走查 / 体验验收，常与 `pm` 双人验收）；条目级状态推进、§当前在跑 维护与归档仍由 **manager（task 包）** 收口。
+**第四步：交付协作** — 输出可实现的交互说明与边界条件；标注优先级（MVP / 增强）与可降级策略；给出走查清单与验收要点，支持产品、研发、测试对齐；对版本化开发补充「UI 锁定点」（本版本允许变更项与冻结项）；将异常态（空 / 加载 / 错误 / 受限）映射到版本 DoD 编号，支持验收追溯。若任务来自 `document/task/` 任务请求或 [`document/task/[任务经理]统一任务列表.md`](document/task/[任务经理]统一任务列表.md) 派发：按派发 **DoD** 交付，并满足 [`manager`](.cursor/agents/manager.md)（**task 包 skill 组**：manager 专属 `task-dispatch / task-quality / task-broadcast` + 公共 `task-execute / task-accept`）**证据四要素**（仅引用任务请求 `TR-…#C-<n>` 锚点，**禁止**写入统一任务列表全局编号 `T-<数字>`）；本子代理通常作为 `owner_role` 被 `task-execute` 调用（设计 / 体验类任务）或作为 `acceptor_role` 被 `task-accept` 调用（设计走查 / 体验验收，常与 `pm` 双人验收）；条目级状态推进、§当前在跑 维护与归档仍由 **manager（task 包）** 收口。
 
 ## 输出格式
 
