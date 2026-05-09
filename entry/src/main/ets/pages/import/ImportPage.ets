@@ -45,6 +45,12 @@ export struct ImportPage {
   @State pickedUris: string[] = [];
   @State condAllowHeic: boolean = true;
   @State condSkipDuplicates: boolean = true;
+  @State condRequireCaptureTime: boolean = false;
+  @State condRequireLocationTag: boolean = false;
+  @State condRequireFaceMatch: boolean = false;
+  @State faceClauseHintVisible: boolean = false;
+  @State candidateSelected: boolean[] = [];
+  @State scanCancelling: boolean = false;
   @State scanning: boolean = false;
   @State scanProgress: number = 0;
   @State scanRequestId: number = 0;
@@ -87,14 +93,68 @@ export struct ImportPage {
     }
   }
 
+  private initCandidateSelection(): void {
+    const next: boolean[] = [];
+    for (let i = 0; i < this.pickedUris.length; i++) {
+      next.push(true);
+    }
+    this.candidateSelected = next;
+  }
+
+  private selectedCount(): number {
+    let n = 0;
+    for (let i = 0; i < this.candidateSelected.length; i++) {
+      if (this.candidateSelected[i]) {
+        n++;
+      }
+    }
+    return n;
+  }
+
+  private selectedImportUris(): string[] {
+    const out: string[] = [];
+    for (let i = 0; i < this.pickedUris.length; i++) {
+      if (i < this.candidateSelected.length && this.candidateSelected[i]) {
+        out.push(this.pickedUris[i]);
+      }
+    }
+    return out;
+  }
+
+  private selectAllCandidates(on: boolean): void {
+    const next: boolean[] = [];
+    for (let i = 0; i < this.pickedUris.length; i++) {
+      next.push(on);
+    }
+    this.candidateSelected = next;
+  }
+
+  private invertCandidates(): void {
+    const next: boolean[] = [];
+    for (let i = 0; i < this.pickedUris.length; i++) {
+      const cur = i < this.candidateSelected.length ? this.candidateSelected[i] : false;
+      next.push(!cur);
+    }
+    this.candidateSelected = next;
+  }
+
   private commitImport(): void {
-    if (this.ownerId <= 0 || this.pickedUris.length === 0) {
-      promptAction.showToast({ message: '无可写入数据' });
+    if (this.ownerId <= 0) {
+      promptAction.showToast({ message: '缺少 ownerId' });
+      return;
+    }
+    const uris = this.selectedImportUris();
+    if (uris.length === 0) {
+      promptAction.showToast({ message: '请至少勾选一项候选' });
+      return;
+    }
+    if (this.selectedCount() > 9) {
+      promptAction.showToast({ message: '勾选超过 9 张：超过单次导入上限（ST-07），请减少勾选' });
       return;
     }
     let ok = 0;
     let dup = 0;
-    for (const uri of this.pickedUris) {
+    for (const uri of uris) {
       if (this.ctx === 'person') {
         const r = getPersonService().addPhotoToPerson(this.ownerId, uri);
         if (r.duplicate) {
@@ -112,7 +172,7 @@ export struct ImportPage {
       }
     }
     promptAction.showToast({
-      message: `确认写入：成功 ${ok}，重复跳过 ${dup}（PH-01）；返回详情可看网格`
+      message: `确认导入：成功 ${ok}，重复跳过 ${dup}（PH-01）；返回详情可看网格`
     });
     this.step = 'done';
     router.back();
@@ -147,7 +207,8 @@ export struct ImportPage {
         imp.endLongTask(this.scanRequestId);
         this.scanning = false;
         this.uiLocked = false;
-        promptAction.showToast({ message: '扫描已取消（cancelRequest）' });
+        this.scanCancelling = false;
+        promptAction.showToast({ message: '扫描已取消（cancelRequest），已回条件步' });
         return;
       }
       this.scanProgress = p;
@@ -157,14 +218,32 @@ export struct ImportPage {
     this.scanning = false;
     this.uiLocked = false;
     this.scanOutcome = 'ok';
+    this.initCandidateSelection();
     this.step = 'confirm';
     promptAction.showToast({ message: '扫描完成，请确认候选' });
   }
 
-  private onCancelScan(): void {
-    const ok = getImportService().cancelRequest(this.scanRequestId);
-    if (!ok) {
-      promptAction.showToast({ message: '取消未生效（requestId 不匹配）' });
+  private async onCancelScanConfirmed(): Promise<void> {
+    try {
+      const res = await promptAction.showDialog({
+        title: '确认取消扫描（IM-09）',
+        message: '确定取消当前扫描？将显示「正在取消…」，完成后返回条件步并保留已选条件。',
+        buttons: [
+          { text: '返回', color: '#666666' },
+          { text: '确定取消', color: '#C62828' }
+        ]
+      });
+      if (res.index !== 1) {
+        return;
+      }
+      this.scanCancelling = true;
+      const ok = getImportService().cancelRequest(this.scanRequestId);
+      if (!ok) {
+        this.scanCancelling = false;
+        promptAction.showToast({ message: '取消未生效（requestId 不匹配）' });
+      }
+    } catch (_e) {
+      this.scanCancelling = false;
     }
   }
 
@@ -187,14 +266,18 @@ export struct ImportPage {
         .width('90%')
         .color('#4FC3F7')
         .backgroundColor('#37474F')
-      Text('取消将触发 cancelRequest，长任务内控件已锁定')
+      Text(
+        this.scanCancelling
+          ? '正在取消…（应用层 cancelRequest 协作中）'
+          : '取消将二次确认（IM-09），再触发 cancelRequest'
+      )
         .fontSize(12)
         .fontColor('#B0BEC5')
         .width('90%')
       Button('取消扫描')
-        .enabled(!this.uiLocked || this.scanning)
+        .enabled(!this.scanCancelling)
         .onClick((): void => {
-          this.onCancelScan();
+          this.onCancelScanConfirmed();
         })
     }
     .justifyContent(FlexAlign.Center)
@@ -247,7 +330,56 @@ export struct ImportPage {
             })
           }
         } else if (this.step === 'conditions') {
-          Text('导入条件（骨架）').fontWeight(FontWeight.Medium)
+          Text('导入条件 · §4.5 步骤 B（三块骨架 + 可测占位）').fontWeight(FontWeight.Medium)
+          Text('以下为时间 / 地点 / 人脸三块结构；与 v1.2 像素级一致留待后续迭代，本轮可测占位与显式降级说明。')
+            .fontSize(11)
+            .fontColor('#666666')
+            .width('100%')
+
+          Text('时间条件').fontSize(13).fontWeight(FontWeight.Medium).margin({ top: 8 })
+          Row() {
+            Text('仅处理带拍摄时间戳的照片（IM 占位）').layoutWeight(1).fontSize(13)
+            Toggle({ type: ToggleType.Switch, isOn: this.condRequireCaptureTime })
+              .onChange((v: boolean): void => {
+                this.condRequireCaptureTime = v;
+              })
+          }
+          .width('100%')
+
+          Text('地点条件').fontSize(13).fontWeight(FontWeight.Medium).margin({ top: 8 })
+          Row() {
+            Text('仅处理带地点标签的照片（IM 占位）').layoutWeight(1).fontSize(13)
+            Toggle({ type: ToggleType.Switch, isOn: this.condRequireLocationTag })
+              .onChange((v: boolean): void => {
+                this.condRequireLocationTag = v;
+              })
+          }
+          .width('100%')
+
+          Text('人脸条件').fontSize(13).fontWeight(FontWeight.Medium).margin({ top: 8 })
+          Row() {
+            Text('启用人脸相关筛选（IM-04～07 / IM-10 占位）').layoutWeight(1).fontSize(13)
+            Toggle({ type: ToggleType.Switch, isOn: this.condRequireFaceMatch })
+              .onChange((v: boolean): void => {
+                const wasOn = this.condRequireFaceMatch;
+                this.condRequireFaceMatch = v;
+                if (v && !wasOn) {
+                  this.faceClauseHintVisible = true;
+                }
+              })
+          }
+          .width('100%')
+          if (this.faceClauseHintVisible && this.condRequireFaceMatch) {
+            Text(
+              '说明（占位）：开启后将在后续版本按 IM-04～IM-07 / IM-10 收敛规则；当前导入链为内存骨架，不在本步阻断写入，仅作可测展示。'
+            )
+              .fontSize(11)
+              .fontColor('#1565C0')
+              .width('100%')
+          }
+
+          Divider().margin({ top: 8, bottom: 8 })
+          Text('格式与去重').fontWeight(FontWeight.Medium)
           Row() {
             Text('允许 HEIC（示意）').layoutWeight(1)
             Toggle({ type: ToggleType.Switch, isOn: this.condAllowHeic })
@@ -275,24 +407,61 @@ export struct ImportPage {
         } else if (this.step === 'scan') {
           Text('扫描进行中（见全屏遮罩与进度条）').fontSize(12)
         } else if (this.step === 'confirm') {
-          Text('候选确认：将以下 URI 写入当前上下文（人物或故事）').fontWeight(FontWeight.Medium)
+          Text('候选确认（IM-08）· §4.5 步骤 D').fontWeight(FontWeight.Medium)
+          Text('勾选要导入的项；支持全选/反选；主按钮文案对齐「确认导入」。').fontSize(11).fontColor('#666666').width('100%')
           if (this.pickedUris.length === 0) {
             Text('无候选').fontColor('#999999')
           } else {
-            Column({ space: 4 }) {
-              ForEach(this.rangeIndices(this.pickedUris.length), (idx: number) => {
-                Text(this.uriPreviewLine(idx))
-                  .fontSize(11)
-                  .fontColor('#444444')
-              }, (idx: number): string => `uri-row-${idx}`)
+            Row({ space: 8 }) {
+              Button('全选').onClick((): void => {
+                this.selectAllCandidates(true);
+              })
+              Button('全不选').onClick((): void => {
+                this.selectAllCandidates(false);
+              })
+              Button('反选').onClick((): void => {
+                this.invertCandidates();
+              })
             }
+            .margin({ top: 6, bottom: 6 })
+
+            Grid() {
+              ForEach(this.rangeIndices(this.pickedUris.length), (idx: number) => {
+                GridItem() {
+                  Column({ space: 6 }) {
+                    Row({ space: 8 }) {
+                      Toggle({ type: ToggleType.Switch, isOn: this.candidateSelected[idx] })
+                        .onChange((v: boolean): void => {
+                          const fixed: boolean[] = [];
+                          for (let j = 0; j < this.pickedUris.length; j++) {
+                            fixed.push(j === idx ? v : this.candidateSelected[j]);
+                          }
+                          this.candidateSelected = fixed;
+                        })
+                      Text(this.uriPreviewLine(idx))
+                        .fontSize(11)
+                        .fontColor('#333333')
+                        .layoutWeight(1)
+                    }
+                    .width('100%')
+                  }
+                  .padding(8)
+                  .width('100%')
+                  .backgroundColor('#FAFAFA')
+                  .borderRadius(6)
+                }
+              }, (idx: number): string => `cand-${idx}`)
+            }
+            .columnsTemplate('1fr')
+            .columnsGap(8)
+            .rowsGap(8)
             .width('100%')
           }
           Row({ space: 8 }) {
             Button('上一步（改条件）').onClick((): void => {
               this.step = 'conditions';
             })
-            Button('确认写入').onClick((): void => {
+            Button('确认导入').onClick((): void => {
               this.commitImport();
             })
           }

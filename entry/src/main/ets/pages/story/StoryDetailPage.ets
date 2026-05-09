@@ -209,9 +209,6 @@ export struct StoryDetailPage {
               params: { ctx: 'story', ownerId: `${this.storyId}` }
             });
           })
-          Button('进入建议页壳页').onClick((): void => {
-            router.pushUrl({ url: 'pages/suggest/SuggestPage' });
-          })
         }
       }
     }

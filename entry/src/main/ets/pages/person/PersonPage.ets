@@ -31,10 +31,23 @@ export struct PersonPage {
 
   build() {
     Column({ space: 12 }) {
-      Text('人物')
-        .fontSize(20)
-        .fontWeight(FontWeight.Bold)
-        .width('100%')
+      Row({ space: 10 }) {
+        Text('人物')
+          .fontSize(20)
+          .fontWeight(FontWeight.Bold)
+          .layoutWeight(1)
+        Button('建议')
+          .fontSize(13)
+          .height(32)
+          .padding({ left: 12, right: 12 })
+          .backgroundColor('#E3F2FD')
+          .fontColor('#1565C0')
+          .onClick((): void => {
+            router.pushUrl({ url: 'pages/suggest/SuggestPage' });
+          })
+      }
+      .width('100%')
+      .alignItems(VerticalAlign.Center)
 
       Row({ space: 8 }) {
         Button('返回主壳')

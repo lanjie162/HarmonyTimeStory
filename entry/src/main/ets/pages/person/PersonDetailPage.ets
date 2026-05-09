@@ -205,9 +205,6 @@ export struct PersonDetailPage {
           params: { ctx: 'person', ownerId: `${this.personId}` }
         });
       })
-      Button('进入建议页壳页').onClick((): void => {
-        router.pushUrl({ url: 'pages/suggest/SuggestPage' });
-      })
         }
       }
     }
