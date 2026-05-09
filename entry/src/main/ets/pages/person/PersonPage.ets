@@ -1,56 +1,90 @@
 import router from '@ohos.router';
-
-type ViewState = 'empty' | 'loading' | 'error';
+import promptAction from '@ohos.promptAction';
+import type { PersonModel } from '../../domain/model/Models';
+import { getPersonService } from '../../features/person/PersonFeature';
 
 @Entry
 @Component
 export struct PersonPage {
-  @State pageState: ViewState = 'empty';
+  @State private persons: PersonModel[] = [];
+  @State private newDisplayName: string = '';
 
-  private nextState(): void {
-    if (this.pageState === 'empty') {
-      this.pageState = 'loading';
+  aboutToAppear(): void {
+    this.reload();
+  }
+
+  private reload(): void {
+    this.persons = getPersonService().listPersons();
+  }
+
+  private createPerson(): void {
+    const svc = getPersonService();
+    const id = svc.createPerson(this.newDisplayName);
+    if (id < 0) {
+      promptAction.showToast({ message: '请输入非空显示名' });
       return;
     }
-    if (this.pageState === 'loading') {
-      this.pageState = 'error';
-      return;
-    }
-    this.pageState = 'empty';
+    this.newDisplayName = '';
+    promptAction.showToast({ message: `已创建人物 #${id}` });
+    this.reload();
   }
 
   build() {
     Column({ space: 12 }) {
-      Text('人物列表壳页')
+      Text('人物')
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
-
-      Text(`当前状态：${this.pageState}`)
+        .width('100%')
 
       Row({ space: 8 }) {
         Button('返回主壳')
-          .onClick(() => router.back())
-        Button('切到故事')
-          .onClick(() => router.pushUrl({ url: 'pages/story/StoryPage' }))
+          .onClick((): void => {
+            router.back();
+          })
+        Button('故事 Tab')
+          .onClick((): void => {
+            router.pushUrl({ url: 'pages/story/StoryPage' });
+          })
       }
 
-      Row({ space: 8 }) {
-        Button('进入人物详情空态')
-          .onClick(() => router.pushUrl({ url: 'pages/person/PersonDetailPage' }))
-        Button('进入建议页')
-          .onClick(() => router.pushUrl({ url: 'pages/suggest/SuggestPage' }))
-      }
-
-      if (this.pageState === 'empty') {
-        Text('空态：暂无人物，点击详情可验证空态可进入')
-      } else if (this.pageState === 'loading') {
-        Text('加载态：人物列表加载中...')
+      if (this.persons.length === 0) {
+        Text('还没有人物档案。下方输入显示名并创建。')
+          .fontColor('#666666')
+          .width('100%')
       } else {
-        Text('错误态：人物列表加载失败，可重试')
+        List({ space: 0 }) {
+          ForEach(this.persons, (p: PersonModel) => {
+            ListItem() {
+              Row() {
+                Text(p.displayName).fontSize(18).layoutWeight(1)
+                Text(`#${p.id}`).fontColor('#888888')
+              }
+              .width('100%')
+              .padding(12)
+              .onClick((): void => {
+                router.pushUrl({
+                  url: 'pages/person/PersonDetailPage',
+                  params: { personId: `${p.id}` }
+                });
+              })
+            }
+          }, (p: PersonModel): string => `person-${p.id}`)
+        }
+        .width('100%')
+        .layoutWeight(1)
       }
 
-      Button('切换状态')
-        .onClick(() => this.nextState())
+      Divider()
+
+      Text('新建人物').fontWeight(FontWeight.Medium).width('100%')
+      TextInput({ placeholder: '显示名（必填）', text: this.newDisplayName })
+        .onChange((v: string): void => {
+          this.newDisplayName = v;
+        })
+        .width('100%')
+      Button('创建人物').onClick((): void => {
+        this.createPerson();
+      })
     }
     .padding(16)
     .width('100%')

@@ -1,52 +1,90 @@
 import router from '@ohos.router';
-
-type ViewState = 'empty' | 'loading' | 'error';
+import promptAction from '@ohos.promptAction';
+import type { StoryModel } from '../../domain/model/Models';
+import { getStoryService } from '../../features/story/StoryFeature';
 
 @Entry
 @Component
 export struct StoryPage {
-  @State pageState: ViewState = 'empty';
+  @State private stories: StoryModel[] = [];
+  @State private newTitle: string = '';
 
-  private nextState(): void {
-    if (this.pageState === 'empty') {
-      this.pageState = 'loading';
+  aboutToAppear(): void {
+    this.reload();
+  }
+
+  private reload(): void {
+    this.stories = getStoryService().listStories();
+  }
+
+  private createStory(): void {
+    const svc = getStoryService();
+    const id = svc.createStory(this.newTitle);
+    if (id < 0) {
+      promptAction.showToast({ message: '请输入非空标题' });
       return;
     }
-    if (this.pageState === 'loading') {
-      this.pageState = 'error';
-      return;
-    }
-    this.pageState = 'empty';
+    this.newTitle = '';
+    promptAction.showToast({ message: `已创建故事 #${id}` });
+    this.reload();
   }
 
   build() {
     Column({ space: 12 }) {
-      Text('故事列表壳页')
+      Text('故事')
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
-
-      Text(`当前状态：${this.pageState}`)
+        .width('100%')
 
       Row({ space: 8 }) {
         Button('返回主壳')
-          .onClick(() => router.back())
-        Button('切到人物')
-          .onClick(() => router.pushUrl({ url: 'pages/person/PersonPage' }))
+          .onClick((): void => {
+            router.back();
+          })
+        Button('人物 Tab')
+          .onClick((): void => {
+            router.pushUrl({ url: 'pages/person/PersonPage' });
+          })
       }
 
-      Button('进入故事详情空态')
-        .onClick(() => router.pushUrl({ url: 'pages/story/StoryDetailPage' }))
-
-      if (this.pageState === 'empty') {
-        Text('空态：暂无故事，点击详情可验证空态可进入')
-      } else if (this.pageState === 'loading') {
-        Text('加载态：故事列表加载中...')
+      if (this.stories.length === 0) {
+        Text('还没有故事。下方输入标题并创建后进入详情。')
+          .fontColor('#666666')
+          .width('100%')
       } else {
-        Text('错误态：故事列表加载失败，可重试')
+        List({ space: 0 }) {
+          ForEach(this.stories, (s: StoryModel) => {
+            ListItem() {
+              Row() {
+                Text(s.title).fontSize(18).layoutWeight(1)
+                Text(`#${s.id}`).fontColor('#888888')
+              }
+              .width('100%')
+              .padding(12)
+              .onClick((): void => {
+                router.pushUrl({
+                  url: 'pages/story/StoryDetailPage',
+                  params: { storyId: `${s.id}` }
+                });
+              })
+            }
+          }, (s: StoryModel): string => `story-${s.id}`)
+        }
+        .width('100%')
+        .layoutWeight(1)
       }
 
-      Button('切换状态')
-        .onClick(() => this.nextState())
+      Divider()
+
+      Text('新建故事').fontWeight(FontWeight.Medium).width('100%')
+      TextInput({ placeholder: '标题（必填）', text: this.newTitle })
+        .onChange((v: string): void => {
+          this.newTitle = v;
+        })
+        .width('100%')
+      Button('创建故事').onClick((): void => {
+        this.createStory();
+      })
     }
     .padding(16)
     .width('100%')
