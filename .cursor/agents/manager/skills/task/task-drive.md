@@ -23,6 +23,28 @@
 
 ---
 
+## §角色装载（强制 · 实为读档而非版式）
+
+> **本节为硬门槛**：不满足则视为 **违背本 skill**；不得以「文风上写了视角」顶替。
+
+1. **定义**：**装载** = 在本助手回合产出 **实质性角色块 / 守门 / 改表** 之前，已对对应正文完成 **等价于工具 `Read` 的全文拉取**，并在会话中打出 **`【task-drive · 装载】`** 公示块。**禁止**只写模板字句但未读文件即发言。
+2. **公示格式（每笔子步必选，须在「即将执行」之后、视角块之前紧接输出）**
+
+   ```text
+   【task-drive · 装载】
+   - 已读取：<仓库相对路径 `.cursor/agents/<name>.md`> → 本步责任：<角色标签>：<与 task-execute | task-accept | task-quality 哪一段对齐一句话>
+   ```
+
+3. **分环节硬性要求**
+   - **execute**：**恰好一条**装载行：`owner_role` 对应 `.cursor/agents/<owner_role>.md`。
+   - **accept**：**每位** `acceptor_role` **各一轮**装载行：**仅读取** `.cursor/agents/<acceptor>.md`。（验收仍属专业角色口吻，不靠未读 md 臆造。）
+   - **quality**：**恰好一条**装载行：`已读取：.cursor/agents/manager.md` → 本步：**中立位守约 + [`task-quality.md`](task-quality.md) 全流程（含 `【task-quality · manager 装载】`、`【manager · 质检论证】`（Q1～Q6）、状态扭转）**。**禁止**再读第二份 `.cursor/agents/<其它角色>.md` 或使用 Task 充当「第二质检员」。首次进入 quality 的回合内必须完成本条 **Read + 装载公示**。
+4. **`【task-drive · 本步实况】`** 须含一项 **`装载回看：与上方【task-drive · 装载】一致`**（批量模式可简称「已装载·同计划」但必须可核对路径）。
+
+[`manager.md`](../../../manager.md) §子代理正文绑定 其余款（缺失补位等）对本节 **叠加适用**。
+
+---
+
 ## 阶段零 · 启动节奏（调度 + 计划公示）
 
 ### 步骤 1 · Skill 调度
@@ -59,7 +81,7 @@
 |-----------|---------------------|----------|
 | `待执行` | execute（对齐 `task-execute`） | — |
 | `已执行`、`验收中` | accept（对齐 `task-accept`）；多人时按 `acceptor_role[]` 顺序逐角色 | execute 跳过 · **`【task-drive · 跳过】`** |
-| `已验收` | quality（对齐 `task-quality`，含其自带来源与质检主体选择） | execute / accept 跳过 · **`【task-drive · 跳过】`** |
+| `已验收` | quality（对齐 `task-quality`，含其 **来源选型**） | execute / accept 跳过 · **`【task-drive · 跳过】`** |
 | `已完成`、`已通晒` | （无） | 整条 **`【task-drive · 跳过】`**：`T-n` 无需本流水线 |
 
 **多条 `T-n` 的顺序**：默认按你在 **计划中** 给出的列表 **纵向切段**（对每条尽量走到 quality 可走的最远点后，再根据小结粒度停顿）；你若明示 **「批量同环节」**，则先做所有条的 execute，再做所有条的 accept……（仍为每步子步守则 + 公示）。
@@ -72,28 +94,33 @@
 
 ### A · 【task-drive · 即将执行】（子步前）
 
-在装载 `.cursor/agents/<role>.md`、开展守门之前输出：
+在 **§角色装载** 的读档动作之前输出（可与装载紧接在同一回合前半段）：
 
 - `T-n`、`环节`（execute | accept | quality）、对齐原子 skill（`task-execute` / `task-accept` / `task-quality`）及阶段范围（典型 **阶段一至二**，阻塞走阶段三）
-- **责任角色**：owner / 「acceptor 第 k 位：`<role>`」/ quality 主体（未定则写「待定，进入 `task-quality` 阶段再选」）
+- **责任角色**：owner / 「acceptor 第 k 位：`<role>`」/ quality：**固定 manager**（同回合须与 **§角色装载** 中 `.cursor/agents/manager.md` 行一致）
 - **预期写表**：本轮**允许**改的列（仅该原子允许的列）；**明确不触碰**的列名
 - 若本子步 **整体跳过**：改发一行 **`【task-drive · 跳过】`**：`T-n`、当前状态、跳过理由
 
+### A′ · 【task-drive · 装载】（紧随 A，子步前 · 强制）
+
+内容及顺序 **严格按上文「§角色装载」**；**本条缺省视为本回合未完成子步**。quality 环节 **禁止**跳过 **manager.md** 装载行。
+
 ### B · 角色装载与实质推进（对齐原子）
 
-1. 按 [`manager.md`](../../../manager.md) **§子代理正文绑定**：先读 `.cursor/agents/<role>.md`（缺失则中立补位 + 标注「未配置子代理」）。
-2. 按 §来源选型：主会话 **`【某某视角】`** 或 Task 取证（须在实况中标注）。
+1. **`【task-drive · 装载】` 已输出且对应文件已完成读档**（见 §角色装载）。
+2. 按 §来源选型：主会话 **`【某某视角】`** 或 Task 取证（须在实况中标注）；视角标题中的 **某某**须与装载行路径中的 `<name>` 一致。
 3. **实质行为规范**须与下列文件 **对应阶段**一致：
    - execute → [`task-execute.md`](task-execute.md) 阶段一至三  
    - accept → [`task-accept.md`](task-accept.md) 阶段一至三（每位 acceptor 一遍）  
-   - quality → [`task-quality.md`](task-quality.md) 全流程（含 **§条目 Tn · 来源**、质检主体、`Q1～Q6`、状态扭转）
+   - quality → [`task-quality.md`](task-quality.md) 全流程（含 **§条目 Tn · 来源**、**fixed(manager)**、`Q1～Q6`、状态扭转）
 
 ### C · 【task-drive · 本步实况】（子步后）
 
+- **`装载回看`**：**与本子步「【task-drive · 装载】」所列路径一致**（quality 子步仅 `manager.md` 一行）。
 - **对齐原子 skill**、**守门**（通过 / 未通过「缺项类目」）
 - **表更**：§当前在跑 **是否写入**；**状态** `old→new`；已写入列的 **一行摘要**（勿贴全表）
 - **证据**：1～3 条短路径/锚点（无则写「本轮无外链证据」）
-- **发言来源**：主会话模拟 / Task / 自检（与质检主体一致）
+- **发言来源**：主会话模拟 / Task（quality 子步与 **manager** 装载一致，**不**派 Task 给其它角色做质检）
 
 ### D · 【task-drive · 小结】（停顿点 · 批量可压缩提示语）
 
@@ -127,9 +154,7 @@
 
 ## 质检（quality）
 
-进入 `task-quality` 环节时：**不压缩** [`task-quality.md`](task-quality.md) 自带的 **来源选型**与 **质检主体选择**停顿点（可与 `小结`交错，实况须反映用户选择）。
-
----
+进入 `task-quality` 环节时：**不压缩** [`task-quality.md`](task-quality.md) 自带的 **来源选型**停顿点（可与 `小结`交错）。**且**须 **同时遵守** 上文 **§角色装载**：quality **仅** `manager.md` 一行；[`task-quality.md`](task-quality.md) **`【task-quality · manager 装载】`** 与 **`【task-drive · 装载】`** 须在 **同一回合内**指向同一读档事实。
 
 ## 回合收束（可选）
 
@@ -154,8 +179,9 @@
 …… 待用户确认 / 或直接批量 ……
 ---
 【task-drive · 即将执行】…
-（角色装载与对齐原子的正文产出）
-【task-drive · 本步实况】…
+【task-drive · 装载】…（必选；execute 一轮一行；accept 每位一行；quality 一行：仅 `manager.md`）
+（然后再输出【xxx 视角】/ 守门正文）
+【task-drive · 本步实况】…（含装载回看）
 【task-drive · 小结】…
 ---
 （ repeat ）
