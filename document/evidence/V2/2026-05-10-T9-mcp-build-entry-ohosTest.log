@@ -1,0 +1,125 @@
+=== Build Output ===
+> C:\Program Files\Huawei\DevEco Studio\tools\node\node.exe C:\Program Files\Huawei\DevEco Studio\tools\hvigor\bin\hvigorw.js --mode module -p module=entry@ohosTest assembleHap -p buildMode=debug -p debuggable=true -p debugLine=false --no-daemon
+
+> hvigor UP-TO-DATE :entry:ohosTest@PreBuild...  
+> hvigor Finished :entry:ohosTest@CreateModuleInfo... after 7 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@GenerateMetadata...  
+> hvigor Finished :entry:ohosTest@ConfigureCmake... after 2 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@MergeProfile...  
+> hvigor UP-TO-DATE :entry:ohosTest@CreateBuildProfile...  
+> hvigor Finished :entry:ohosTest@PreCheckSyscap... after 3 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@GenerateOhosTestTemplate...  
+> hvigor Finished :entry:ohosTest@GeneratePkgContextInfo... after 45 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@GeneratePkgSdkInfo...  
+> hvigor Finished :entry:ohosTest@ProcessIntegratedHsp... after 8 ms 
+> hvigor Finished :entry:ohosTest@BuildNativeWithCmake... after 2 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@MakePackInfo...  
+> hvigor Finished :entry:ohosTest@SyscapTransform... after 16 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@ProcessProfile...  
+> hvigor UP-TO-DATE :entry:ohosTest@ProcessRouterMap...  
+> hvigor UP-TO-DATE :entry:ohosTest@ProcessShareConfig...  
+> hvigor Finished :entry:ohosTest@ProcessStartupConfig... after 13 ms 
+> hvigor Finished :entry:ohosTest@BuildNativeWithNinja... after 3 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@ProcessResource...  
+> hvigor UP-TO-DATE :entry:ohosTest@GenerateLoaderJson...  
+> hvigor UP-TO-DATE :entry:ohosTest@ProcessLibs...  
+> hvigor UP-TO-DATE :entry:ohosTest@CompileResource...  
+> hvigor UP-TO-DATE :entry:ohosTest@DoNativeStrip...  
+> hvigor Finished :entry:ohosTest@OhosTestBuildJS... after 25 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@CacheNativeLibs...  
+> hvigor WARN: WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:24:21
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:40:24
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:44:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:45:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:47:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:58:37
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:60:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:63:22
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:71:17
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:91:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:92:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:95:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:96:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:97:19
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:106:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:124:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:125:18
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:126:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:128:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:137:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:140:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:141:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:151:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:154:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2DRegression.test.ets:155:11
+ Function may throw exceptions. Special handling is required.
+
+
+> hvigor Finished :entry:ohosTest@OhosTestCompileArkTS... after 23 s 848 ms 
+> hvigor Finished :entry:ohosTest@OhosTestCopyMockConfigJson... after 10 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@GeneratePkgModuleJson...  
+> hvigor Finished :entry:ohosTest@ProcessCompiledResources... after 23 ms 
+> hvigor WARN: Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+
+> hvigor Finished :entry:ohosTest@PackageHap... after 1 s 949 ms 
+> hvigor Finished :entry:ohosTest@PackingCheck... after 23 ms 
+> hvigor WARN: Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+
+> hvigor WARN: Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+
+> hvigor Finished :entry:ohosTest@SignHap... after 11 s 539 ms 
+> hvigor Finished :entry:ohosTest@CollectDebugSymbol... after 8 ms 
+> hvigor Finished :entry:assembleHap... after 2 ms 
+> hvigor BUILD SUCCESSFUL in 1 min 908 ms 
+
+
+Process finished with exit code 0
+

@@ -2,6 +2,7 @@ import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
 import type { PersonModel } from '../../domain/model/Models';
 import { getPersonService } from '../../features/person/PersonFeature';
+import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
 
 @Entry
 @Component
@@ -18,6 +19,8 @@ export struct PersonPage {
   }
 
   private createPerson(): void {
+    // 提交前先收键盘，避免遮挡 toast / 列表底部新行（同时改善 Hypium 识别）
+    dismissSoftKeyboard();
     const svc = getPersonService();
     const id = svc.createPerson(this.newDisplayName);
     if (id < 0) {
@@ -43,6 +46,7 @@ export struct PersonPage {
           .backgroundColor('#E3F2FD')
           .fontColor('#1565C0')
           .onClick((): void => {
+            dismissSoftKeyboard();
             router.pushUrl({ url: 'pages/suggest/SuggestPage' });
           })
       }
@@ -52,16 +56,34 @@ export struct PersonPage {
       Row({ space: 8 }) {
         Button('返回主壳')
           .onClick((): void => {
+            dismissSoftKeyboard();
             router.back();
           })
         Button('故事 Tab')
           .onClick((): void => {
+            dismissSoftKeyboard();
             router.pushUrl({ url: 'pages/story/StoryPage' });
           })
       }
 
+      Text('新建人物').fontWeight(FontWeight.Medium).width('100%')
+      TextInput({ placeholder: '显示名（必填）', text: this.newDisplayName })
+        .onChange((v: string): void => {
+          this.newDisplayName = v;
+        })
+        .enterKeyType(EnterKeyType.Done)
+        .onSubmit((): void => {
+          this.createPerson();
+        })
+        .width('100%')
+      Button('创建人物').onClick((): void => {
+        this.createPerson();
+      })
+
+      Divider()
+
       if (this.persons.length === 0) {
-        Text('还没有人物档案。下方输入显示名并创建。')
+        Text('还没有人物档案。创建后将在下列显示。')
           .fontColor('#666666')
           .width('100%')
       } else {
@@ -75,6 +97,7 @@ export struct PersonPage {
               .width('100%')
               .padding(12)
               .onClick((): void => {
+                dismissSoftKeyboard();
                 router.pushUrl({
                   url: 'pages/person/PersonDetailPage',
                   params: { personId: `${p.id}` }
@@ -86,18 +109,6 @@ export struct PersonPage {
         .width('100%')
         .layoutWeight(1)
       }
-
-      Divider()
-
-      Text('新建人物').fontWeight(FontWeight.Medium).width('100%')
-      TextInput({ placeholder: '显示名（必填）', text: this.newDisplayName })
-        .onChange((v: string): void => {
-          this.newDisplayName = v;
-        })
-        .width('100%')
-      Button('创建人物').onClick((): void => {
-        this.createPerson();
-      })
     }
     .padding(16)
     .width('100%')

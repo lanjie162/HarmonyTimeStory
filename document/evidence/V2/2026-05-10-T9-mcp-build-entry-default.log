@@ -1,0 +1,299 @@
+=== Build Output ===
+> C:\Program Files\Huawei\DevEco Studio\tools\node\node.exe C:\Program Files\Huawei\DevEco Studio\tools\hvigor\bin\hvigorw.js --mode module -p module=entry@default assembleHap -p buildMode=debug -p debuggable=true -p debugLine=false --no-daemon
+
+> hvigor UP-TO-DATE :entry:default@PreBuild...  
+> hvigor Finished :entry:default@CreateModuleInfo... after 7 ms 
+> hvigor UP-TO-DATE :entry:default@GenerateMetadata...  
+> hvigor Finished :entry:default@ConfigureCmake... after 2 ms 
+> hvigor UP-TO-DATE :entry:default@MergeProfile...  
+> hvigor UP-TO-DATE :entry:default@CreateBuildProfile...  
+> hvigor Finished :entry:default@PreCheckSyscap... after 3 ms 
+> hvigor Finished :entry:default@GeneratePkgContextInfo... after 46 ms 
+> hvigor UP-TO-DATE :entry:default@GeneratePkgSdkInfo...  
+> hvigor Finished :entry:default@ProcessIntegratedHsp... after 5 ms 
+> hvigor Finished :entry:default@BuildNativeWithCmake... after 3 ms 
+> hvigor UP-TO-DATE :entry:default@MakePackInfo...  
+> hvigor Finished :entry:default@SyscapTransform... after 80 ms 
+> hvigor UP-TO-DATE :entry:default@ProcessProfile...  
+> hvigor UP-TO-DATE :entry:default@ProcessRouterMap...  
+> hvigor UP-TO-DATE :entry:default@ProcessShareConfig...  
+> hvigor Finished :entry:default@ProcessStartupConfig... after 10 ms 
+> hvigor Finished :entry:default@BuildNativeWithNinja... after 5 ms 
+> hvigor UP-TO-DATE :entry:default@ProcessResource...  
+> hvigor UP-TO-DATE :entry:default@GenerateLoaderJson...  
+> hvigor UP-TO-DATE :entry:default@ProcessLibs...  
+> hvigor UP-TO-DATE :entry:default@CompileResource...  
+> hvigor UP-TO-DATE :entry:default@DoNativeStrip...  
+> hvigor Finished :entry:default@BuildJS... after 17 ms 
+> hvigor UP-TO-DATE :entry:default@CacheNativeLibs...  
+> hvigor WARN: WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/shell/ShellPage.ets:23:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/shell/ShellPage.ets:23:12
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/shell/ShellPage.ets:27:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/shell/ShellPage.ets:27:12
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonPage.ets:24:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonPage.ets:24:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonPage.ets:28:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonPage.ets:28:18
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonPage.ets:46:20
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonPage.ets:55:20
+ 'back' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonPage.ets:59:20
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonPage.ets:90:24
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:32:27
+ 'getParams' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:55:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:55:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:58:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:58:18
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:65:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:65:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:69:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:69:18
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:88:24
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:91:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:94:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:94:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:113:20
+ 'back' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/person/PersonDetailPage.ets:203:16
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryPage.ets:24:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryPage.ets:24:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryPage.ets:28:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryPage.ets:28:18
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryPage.ets:42:20
+ 'back' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryPage.ets:46:20
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryPage.ets:77:24
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:32:27
+ 'getParams' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:55:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:55:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:58:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:58:18
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:65:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:65:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:69:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:69:18
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:88:24
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:91:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:94:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:94:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:113:20
+ 'back' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/story/StoryDetailPage.ets:207:20
+ 'pushUrl' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:62:27
+ 'getParams' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:76:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:76:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:90:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:93:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:93:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:144:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:144:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:149:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:149:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:153:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:153:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:175:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:175:18
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:179:12
+ 'back' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:212:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:212:22
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:224:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:224:18
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:229:38
+ 'showDialog' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:244:22
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:254:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:254:18
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:310:22
+ 'back' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:496:22
+ 'back' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/suggest/SuggestPage.ets:29:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/suggest/SuggestPage.ets:29:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/suggest/SuggestPage.ets:36:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/suggest/SuggestPage.ets:36:18
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/suggest/SuggestPage.ets:41:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/suggest/SuggestPage.ets:41:20
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/suggest/SuggestPage.ets:48:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/suggest/SuggestPage.ets:48:18
+ 'showToast' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/suggest/SuggestPage.ets:56:20
+ 'back' has been deprecated.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/pages/import/ImportPage.ets:40:1
+ It's not a recommended way to export struct with '@Entry' decorator, which may cause ACE Engine error in component preview mode.
+
+> hvigor Finished :entry:default@CompileArkTS... after 31 s 55 ms 
+> hvigor UP-TO-DATE :entry:default@GeneratePkgModuleJson...  
+> hvigor Finished :entry:default@ProcessCompiledResources... after 4 ms 
+> hvigor WARN: Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+
+> hvigor Finished :entry:default@PackageHap... after 2 s 327 ms 
+> hvigor Finished :entry:default@PackingCheck... after 60 ms 
+> hvigor WARN: Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+
+> hvigor WARN: Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+
+> hvigor Finished :entry:default@SignHap... after 12 s 175 ms 
+> hvigor Finished :entry:default@CollectDebugSymbol... after 8 ms 
+> hvigor Finished :entry:assembleHap... after 1 ms 
+> hvigor BUILD SUCCESSFUL in 1 min 6 s 307 ms 
+
+
+Process finished with exit code 0
+

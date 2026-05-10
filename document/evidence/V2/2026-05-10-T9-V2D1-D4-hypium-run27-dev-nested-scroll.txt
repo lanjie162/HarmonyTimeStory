@@ -1,0 +1,333 @@
+# 2026-05-11T01:38:09.5924389+08:00
+# 历史取证副本（嵌套 Scroll / Grid 手势优化轮，Pass 16/16）。当前主证据 `hypium-run26-album-b2-ph01.txt` 已与 `hypium-run28-ime-dismiss.txt`（SoftKeyboard）同步，与本副本字节不一定一致。
+hdc shell: aa test -b com.lanjie162.timestore -m entry_test -s timeout 600000 -s unittest OpenHarmonyTestRunner
+
+start ability successfully.
+
+OHOS_REPORT_SUM: 1
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+
+
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+OHOS_REPORT_STATUS: current=1
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=assertContain
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+OHOS_REPORT_STATUS: current=1
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=assertContain
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=1
+
+
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+OHOS_REPORT_STATUS: suiteconsuming=1
+
+
+OHOS_REPORT_SUM: 15
+OHOS_REPORT_STATUS: class=V2Regression
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=2
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=2
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=24939
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=3
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_detail_quick_story_link_toggle
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=3
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_detail_quick_story_link_toggle
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=31030
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=4
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=4
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=17928
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=5
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_detail_quick_person_link_toggle
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=5
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_detail_quick_person_link_toggle
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=25068
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=6
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_suggest_entry_minimal
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=6
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_suggest_entry_minimal
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=11936
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=7
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_wizard_shell_from_person
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=7
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_wizard_shell_from_person
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=30506
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=8
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_conditions_scan_cancel_im09
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=8
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_conditions_scan_cancel_im09
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=48733
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=9
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_scan_confirm_commit
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=9
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_scan_confirm_commit
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=39422
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=10
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_debug_album_equiv_inject
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=10
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_debug_album_equiv_inject
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=28615
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=11
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_debug_ph01_duplicate_second_inject
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=11
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_debug_ph01_duplicate_second_inject
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=28994
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=12
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_debug_album_equiv_and_ph01
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=12
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_debug_album_equiv_and_ph01
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=46152
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=13
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_ph01_commit_duplicate_uris
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=13
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_ph01_commit_duplicate_uris
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=42563
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=14
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D4_b2_cancel_invalid_request_debug
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=14
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D4_b2_cancel_invalid_request_debug
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=55333
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=15
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D4_b2_rescan_after_confirm_then_cancel_im09
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=15
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D4_b2_rescan_after_confirm_then_cancel_im09
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=58448
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=16
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D4_b2_cancelling_banner_after_dialog
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=16
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D4_b2_cancelling_banner_after_dialog
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=53885
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: suiteconsuming=543552
+
+
+OHOS_REPORT_RESULT: stream=Tests run: 16, Failure: 0, Error: 0, Pass: 16, Ignore: 0
+OHOS_REPORT_CODE: 0
+OHOS_REPORT_STATUS: taskconsuming=543553
+
+TestFinished-ResultCode: 0
+TestFinished-ResultMsg: your test finished!!!
+user test finished.

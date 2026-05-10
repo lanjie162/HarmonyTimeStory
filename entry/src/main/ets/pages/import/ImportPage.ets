@@ -1,6 +1,7 @@
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
 import photoAccessHelper from '@ohos.file.photoAccessHelper';
+import BuildProfile from 'BuildProfile';
 import { getImportService } from '../../features/import/ImportFeature';
 import { getPersonService } from '../../features/person/PersonFeature';
 import { getStoryService } from '../../features/story/StoryFeature';
@@ -56,6 +57,8 @@ export struct ImportPage {
   @State scanRequestId: number = 0;
   @State scanOutcome: '' | 'ok' | 'cancelled' | 'failed' = '';
   @State uiLocked: boolean = false;
+  /** DEBUG：Hypium 断言 B2 错误 requestId 分支（与 Toast 同文案场景）。 */
+  @State debugB2WrongCancelBanner: string = '';
 
   aboutToAppear(): void {
     const params = router.getParams() as Record<string, Object>;
@@ -193,6 +196,7 @@ export struct ImportPage {
   }
 
   private async runScanLoop(): Promise<void> {
+    this.debugB2WrongCancelBanner = '';
     this.scanning = true;
     this.uiLocked = true;
     this.scanProgress = 0;
@@ -279,6 +283,24 @@ export struct ImportPage {
         .onClick((): void => {
           this.onCancelScanConfirmed();
         })
+      if (BuildProfile.DEBUG) {
+        Text(this.debugB2WrongCancelBanner.length > 0 ? this.debugB2WrongCancelBanner : '【E2E】B2 wrong-id：未触发')
+          .fontSize(11)
+          .fontColor('#FFECB3')
+          .width('90%')
+        Button('【DEBUG】错误 ID 触发 cancelRequest（B2 负例）')
+          .fontSize(11)
+          .onClick((): void => {
+            const badId = this.scanRequestId + 999;
+            const ok = getImportService().cancelRequest(badId);
+            if (!ok) {
+              this.debugB2WrongCancelBanner = '【E2E】cancelRequest：未生效（requestId 不匹配）';
+              promptAction.showToast({ message: '取消未生效（requestId 不匹配）' });
+            } else {
+              this.debugB2WrongCancelBanner = '【E2E】意外：取消竟返回成功';
+            }
+          })
+      }
     }
     .justifyContent(FlexAlign.Center)
     .width('100%')
@@ -288,7 +310,9 @@ export struct ImportPage {
 
   build() {
     Stack() {
-      Column({ space: 12 }) {
+      // 候选步 Grid + 文案较长时，原 Column 无滚动，底部「确认导入」会被裁出屏外；Scroll 保证可滚到主操作。
+      Scroll() {
+        Column({ space: 12 }) {
         Text('导入向导')
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
@@ -317,6 +341,22 @@ export struct ImportPage {
             .onClick((): void => {
               this.pickPhotos();
             })
+          if (BuildProfile.DEBUG) {
+            Button('【DEBUG】跳过选图进入条件（Hypium E2E）')
+              .fontSize(11)
+              .width('100%')
+              .onClick((): void => {
+                this.pickedUris = ['file://e2e/placeholder-1'];
+                this.step = 'conditions';
+              })
+            Button('【DEBUG】跳过选图 PH-01 双占位（同 URI×2）')
+              .fontSize(11)
+              .width('100%')
+              .onClick((): void => {
+                this.pickedUris = ['file://e2e/ph01-dup', 'file://e2e/ph01-dup'];
+                this.step = 'conditions';
+              })
+          }
         } else if (this.step === 'prepare') {
           Text('导入准备：已锁定相册 URI 列表，可返回上一步重新选图。').width('100%')
           Text(`共 ${this.pickedUris.length} 条 URI（会话内引用，不写原文件）`).fontSize(12)
@@ -408,7 +448,10 @@ export struct ImportPage {
           Text('扫描进行中（见全屏遮罩与进度条）').fontSize(12)
         } else if (this.step === 'confirm') {
           Text('候选确认（IM-08）· §4.5 步骤 D').fontWeight(FontWeight.Medium)
-          Text('勾选要导入的项；支持全选/反选；主按钮文案对齐「确认导入」。').fontSize(11).fontColor('#666666').width('100%')
+          Text('勾选要导入的项；支持全选/反选；底部主按钮执行写入（避免与按钮文案完全重复以利自动化）。')
+            .fontSize(11)
+            .fontColor('#666666')
+            .width('100%')
           if (this.pickedUris.length === 0) {
             Text('无候选').fontColor('#999999')
           } else {
@@ -456,14 +499,17 @@ export struct ImportPage {
             .columnsGap(8)
             .rowsGap(8)
             .width('100%')
+            // 候选 Grid 嵌套在外层 Scroll 内：关闭自身滚动条避免抢手势
+            .scrollBar(BarState.Off)
           }
           Row({ space: 8 }) {
             Button('上一步（改条件）').onClick((): void => {
               this.step = 'conditions';
             })
-            Button('确认导入').onClick((): void => {
-              this.commitImport();
-            })
+            Button('确认导入')
+              .onClick((): void => {
+                this.commitImport();
+              })
           }
         } else {
           Text('已完成').fontColor('#2E7D32')
@@ -482,9 +528,15 @@ export struct ImportPage {
           }
         }
       }
+      .width('100%')
+      .padding({ bottom: 24 })
+      }
       .padding(16)
       .width('100%')
       .height('100%')
+      .align(Alignment.Top)
+      .scrollBar(BarState.Auto)
+      .edgeEffect(EdgeEffect.Spring)
       .opacity(this.scanning ? 0.35 : 1)
 
       if (this.scanning) {

@@ -1,0 +1,145 @@
+﻿=== 2026-05-10T02:15:32.6586751+08:00 T-9 Phase A/B hdc ===
+& list targets
+192.168.50.160:46629
+
+& shell param get const.product.model
+HOP-AL10 
+
+& shell param get const.product.software.version
+HOP-AL10 6.1.0.117(SP8C00E115R4P4) 
+
+& install
+[Info]App install path:c:\coding\DevEcoStudioProjects\timestore\entry\build\default\outputs\default\entry-default-signed.hap msg:install bundle successfully. 
+AppMod finish
+
+& shell bm dump -n com.lanjie162.timestore (head)
+com.lanjie162.timestore:
+{
+    "appId": "com.lanjie162.timestore_BLEh2dM6CQce/TJVctCuCTa5LZFWJLUQWPG0gPPzF3woGTYZ+7ub2zdZ6attTMu6y0n6vC09yM3L7riaIh89kK4=",
+    "appIdentifier": "6918730715411675611",
+    "appIndex": 0,
+    "applicationInfo": {
+        "GWPAsanEnabled": false,
+        "accessTokenId": 537703222,
+        "accessTokenIdEx": 537703222,
+        "accessible": false,
+        "allowAppRunWhenDeviceFirstLocked": false,
+        "allowArkTsLargeHeap": false,
+        "allowCommonEvent": [],
+        "allowEnableNotification": false,
+        "allowMultiProcess": false,
+        "apiCompatibleVersion": 50000012,
+        "apiReleaseType": "Beta1",
+        "apiTargetVersion": 60101024,
+        "appDetailAbilityLibraryPath": "",
+        "appDistributionType": "none",
+        "appEnvironments": [],
+        "appIndex": 0,
+        "appPreloadPhase": 0,
+        "appPrivilegeLevel": "normal",
+        "appProvisionType": "debug",
+        "appQuickFix": {
+            "bundleName": "",
+            "deployedAppqfInfo": {
+                "cpuAbi": "",
+                "hqfInfos": [],
+                "nativeLibraryPath": "",
+                "type": 0,
+                "versionCode": 0,
+                "versionName": ""
+            },
+            "deployingAppqfInfo": {
+                "cpuAbi": "",
+                "hqfInfos": [],
+                "nativeLibraryPath": "",
+                "type": 0,
+                "versionCode": 0,
+                "versionName": ""
+            },
+            "versionCode": 0,
+            "versionName": ""
+        },
+        "appSignType": "none",
+        "applicationFlags": 1,
+        "applicationReservedFlag": 0,
+        "arkNativeFileAbi": "",
+        "arkNativeFilePath": "",
+        "arkTSMode": "dynamic",
+        "asanEnabled": false,
+        "asanLogPath": "",
+        "assetAccessGroups": [],
+        "associatedWakeUp": false,
+        "bundleName": "com.lanjie162.timestore",
+        "bundleType": 0,
+        "cacheDir": "",
+        "cloudFileSyncEnabled": false,
+        "cloudStructuredDataSyncEnabled": false,
+        "codePath": "/data/app/el1/bundle/public/com.lanjie162.timestore",
+        "compileSdkType": "HarmonyOS",
+        "compileSdkVersion": "6.1.1.115",
+        "configuration": "",
+        "cpuAbi": "arm64-v8a",
+        "crowdtestDeadline": -1,
+        "dataBaseDir": "/data/app/el2/database/com.lanjie162.timestore",
+        "dataDir": "",
+        "debug": true,
+        "description": "",
+        "descriptionId": 0,
+        "descriptionResource": {
+            "bundleName": "com.lanjie162.timestore",
+            "id": 0,
+            "moduleName": "entry"
+        },
+        "deviceId": "PHONE-001",
+        "distributedNotificationEnabled": true,
+        "enabled": true,
+
+& shell aa start EntryAbility
+start ability successfully.
+
+& hilog (filtered timestore, 40 lines)
+05-10 02:15:34.036 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 298fe65 17f8c30]random:1778351213988, index:0,[AppClassifyManager]:start GET_CLASSIFY_INFO param: {"bundleNames":["com.lanjie162.timestore"]}
+05-10 02:15:34.036 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 298fe65 17f8c30]random:1778350705482, index:0,[InstalledAppInfoCacheManager]:getSingleFromCache mBundleInfoMap is not contain!com.lanjie162.timestore
+05-10 02:15:34.036 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 298fe65 17f8c30]random:1778350867233, index:0,[InstalledAppInfoUtil]:getBundleInfoForOs bundleFlags:65, bundleName:com.lanjie162.timestore
+05-10 02:15:34.040 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 15ae7bc 1388836]random:1778351464899, index:0,[AppClassifyManager]:end GET_CLASSIFY_INFO additionalInfo:[{"infoSource":0,"versionCode":-1,"pkgName":"com.lanjie162.timestore","appDistributionType":"","appoid":""}]
+05-10 02:15:34.041 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 2414146 15ae7bc]random:1778351330468, index:0,[InstalledAppInfoCacheManager]:getSingleFromCache mBundleInfoMap is not contain!com.lanjie162.timestore
+05-10 02:15:34.041 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 2414146 15ae7bc]random:1778350647888, index:0,[InstalledAppInfoUtil]:getBundleInfoForOs bundleFlags:227, bundleName:com.lanjie162.timestore
+05-10 02:15:34.045 16769 16769 E A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 3e259c4 30f9144][InstalledAppInfoManagerUtil]:isAtomicService fail, bundleName is com.lanjie162.timestore',
+05-10 02:15:34.107 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778350903297, index:0,[AppFoundationServiceExtensionStub]:END_CERT_EXPIRES param: com.lanjie162.timestore
+05-10 02:15:34.109 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351137887, index:0,[InstalledAppInfoCacheManager]:getSingleFromCache mBundleInfoMap is not contain!com.lanjie162.timestore
+05-10 02:15:34.109 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351351160, index:0,[InstalledAppInfoUtil]:getBundleInfoForOs bundleFlags:227, bundleName:com.lanjie162.timestore
+05-10 02:15:34.112 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778350558502, index:0,[Dispose_DisposedRuleManager]:[terminate_info] terminateDisposedRule start bundleName:com.lanjie162.timestore, appIndex:-1
+05-10 02:15:34.112 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351097677, index:0,[Dispose_DisposedRuleManager]:getTaskExecutorInGet task not exist:com.lanjie162.timestore
+05-10 02:15:34.113 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351406276, index:0,[Dispose_DisposedRuleManager]:terminateDisposedRuleInTask bundleName: com.lanjie162.timestore appIndex:-1 disposedCode:2 disposedSubCode:3
+05-10 02:15:34.113 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351445448, index:0,[Dispose_DisposedRuleManager]:[terminate_info] terminateDisposedRuleOptionalSubCode start bundleName:com.lanjie162.timestore, disposedCode锛?, disposedSubCode:3, appIndex:-1
+05-10 02:15:34.117 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778350954832, index:0,[Dispose_InstallInfoManager]:[stage_supply] Target info cannot be found from cache.Bundle name:com.lanjie162.timestore.
+05-10 02:15:34.123 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778350707809, index:0,[Dispose_DisposedRuleManager]:[terminate_info] start terminate dispose, allDisposeRule.length:0 restDisposeRule.length:0 com.lanjie162.timestore
+05-10 02:15:34.139 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351019669, index:0,[Dispose_InstallInfoManager]:[stage_update] from terminateDisposedRule Start update extendInfo: [] preProcessExtendInfo: true newBundleInfo.name: com.lanjie162.timestore
+05-10 02:15:34.146 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351162195, index:0,[AppClassifyManager]:END_GET_CLASSIFY_INFO result:[{"packageName":"com.lanjie162.timestore","privacyManage":{"type":0}}]
+05-10 02:15:34.147 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351318476, index:0,[InstalledAppInfoCacheManager]:getSingleFromCache mBundleInfoMap is not contain!com.lanjie162.timestore
+05-10 02:15:34.147 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778350853711, index:0,[InstalledAppInfoUtil]:getBundleInfoForOs bundleFlags:227, bundleName:com.lanjie162.timestore
+05-10 02:15:34.147 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351375003, index:0,[DynamicIconManager]:setDynamicIconInfoMap, com.lanjie162.timestore's dynamicIconInfos is undefine
+05-10 02:15:34.150 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351452888, index:0,[PrivacyManageInfoUtil]:app com.lanjie162.timestore is in debug mode, try builtin info
+05-10 02:15:34.150 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351295547, index:0,[Dispose_DisposedRuleManager]:[terminate_info] finish updating bundle info,check whether need reset disposed hasMoreRest:false com.lanjie162.timestore rules:[]
+05-10 02:15:34.150 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778350649803, index:0,[Dispose_DisposedRuleManager]:[terminate_info] clearRule,no rest disposed rule,start BMS delete dispose:com.lanjie162.timestore_BLEh2dM6CQce/TJVctCuCTa5LZFWJLUQWPG0gPPzF3woGTYZ+7ub2zdZ6attTMu6y0n6vC09yM3L7riaIh89kK4= [], appIndex:0, isDisposeByAppIdentifier:0
+05-10 02:15:34.152 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351447086, index:0,[Dispose_DisposedRuleManager]:[set_info] terminateDisposedRuleOptionalSubCode rule success:com.lanjie162.timestore appIndex:0, true
+05-10 02:15:34.152 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351019859, index:0,[Dispose_DisposedRuleManager]:[set_info] terminateDisposedRuleOptionalSubCode rule all:com.lanjie162.timestore 
+05-10 02:15:34.152 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778350572758, index:0,[Dispose_DisposedRuleManager]:[terminate_info] terminateDisposedRule data:true bundleName:com.lanjie162.timestore
+05-10 02:15:34.152 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778350770888, index:0,[Dispose_DisposedRuleManager]:[terminate_info] terminateDisposedRule end.bundleName:com.lanjie162.timestore
+05-10 02:15:34.152 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351461414, index:0,[AgcDisposedUtil]:com.lanjie162.timestore clear result:true
+05-10 02:15:34.153 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778350566810, index:0,[AppFoundationServiceExtensionStub]:com.lanjie162.timestoreEND_CERT_EXPIRES result:true code:8
+05-10 02:15:34.183 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 2de41de 142ed68]random:1778350995056, index:0,[HarServiceMarketStaticSubscriberExtAbility]:onReceiveAdd, bundleName:com.lanjie162.timestore, index: 0
+05-10 02:15:34.183 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 2de41de 142ed68]random:1778350580545, index:0,[ShaderProfileUtil]:init com.lanjie162.timestore shader workspace
+05-10 02:15:34.183 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 2de41de 142ed68]random:1778351182843, index:0,[InstalledAppInfoUtil]:getBundleInfoSyncForOs bundleFlags:undefined, bundleName:com.lanjie162.timestore
+05-10 02:15:34.185 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 14cfe03 2de41de]random:1778350793334, index:0,[HarServiceMarketStaticSubscriberExtAbility]:com.lanjie162.timestore in the /data/app directory
+05-10 02:15:34.185 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 444ea3 19b37ae]random:1778351052406, index:0,[SyncAppExtensionConfigUtil]:onInstall bundleName:com.lanjie162.timestore, appIndex:0, isUpdate:false
+05-10 02:15:34.186 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 444ea3 19b37ae]random:1778351502837, index:0,[AppPrivacyManager]:onInstall bundleName:com.lanjie162.timestore, appIndex:0, isUpdate:false
+05-10 02:15:34.186 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 444ea3 19b37ae]random:1778351407182, index:0,[InstalledAppInfoCacheManager]:getSingleFromCache mBundleInfoMap is not contain!com.lanjie162.timestore
+05-10 02:15:34.186 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 444ea3 19b37ae]random:1778350695810, index:0,[InstalledAppInfoUtil]:getBundleInfoForOs bundleFlags:227, bundleName:com.lanjie162.timestore
+05-10 02:15:34.186 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 2344c81 3999fe9]random:1778350851031, index:0,[Attr-StaticPackageEventImpl]:onReceiveAdd, bundleName: com.lanjie162.timestore appIndex: 0
+05-10 02:15:34.186 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab079c5beff1 2a14c15 2e5ee04]random:1778351015033, index:0,[InstalledAppInfoUtil]:getBundleInfoSyncForOs bundleFlags:undefined, bundleName:com.lanjie162.timestore
+
+& aa test ActsAbilityTest (entry_test)
+TestFinished-ResultCode: -1
+TestFinished-ResultMsg: The specified module name is not found.
+user test finished.

@@ -1,9 +1,11 @@
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
 import photoAccessHelper from '@ohos.file.photoAccessHelper';
+import BuildProfile from 'BuildProfile';
 import type { PersonModel, PhotoRefModel, StoryModel } from '../../domain/model/Models';
 import { getPersonService } from '../../features/person/PersonFeature';
 import { getStoryService } from '../../features/story/StoryFeature';
+import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
 
 function parseStoryId(params: Record<string, Object>): number {
   const raw = params['storyId'];
@@ -27,6 +29,7 @@ export struct StoryDetailPage {
   @State linkedPersonIds: number[] = [];
   @State photos: PhotoRefModel[] = [];
   @State newPersonName: string = '';
+  @State debugLastAlbumInject: string = '';
 
   aboutToAppear(): void {
     const params = router.getParams() as Record<string, Object>;
@@ -50,6 +53,7 @@ export struct StoryDetailPage {
   }
 
   private saveTitle(): void {
+    dismissSoftKeyboard();
     const ok = getStoryService().updateStory(this.storyId, this.draftTitle);
     if (!ok) {
       promptAction.showToast({ message: '保存失败：故事不存在或标题为空' });
@@ -60,6 +64,7 @@ export struct StoryDetailPage {
   }
 
   private createPersonQuick(): void {
+    dismissSoftKeyboard();
     const pid = getPersonService().createPerson(this.newPersonName);
     if (pid < 0) {
       promptAction.showToast({ message: '人物显示名不能为空' });
@@ -70,7 +75,24 @@ export struct StoryDetailPage {
     this.refresh();
   }
 
+  private injectDebugAlbumEquivUri(uri: string): void {
+    if (this.storyId <= 0) {
+      this.debugLastAlbumInject = '【E2E】inject skip：无 storyId';
+      return;
+    }
+    const res = getStoryService().addPhotoToStory(this.storyId, uri);
+    if (res.duplicate) {
+      this.debugLastAlbumInject = '【E2E】上次加图：重复跳过（PH-01）';
+    } else if (res.success) {
+      this.debugLastAlbumInject = '【E2E】上次加图：成功 file://e2e/album-equiv-story-1';
+    } else {
+      this.debugLastAlbumInject = '【E2E】上次加图：失败（故事不存在或 URI 为空）';
+    }
+    this.refresh();
+  }
+
   private async pickPhotosFromAlbum(): Promise<void> {
+    dismissSoftKeyboard();
     try {
       const options = new photoAccessHelper.PhotoSelectOptions();
       options.maxSelectNumber = 9;
@@ -96,6 +118,7 @@ export struct StoryDetailPage {
   }
 
   private togglePersonLink(p: PersonModel): void {
+    dismissSoftKeyboard();
     const svc = getStoryService();
     if (this.linkedPersonIds.indexOf(p.id) >= 0) {
       svc.unlinkStoryFromPerson(this.storyId, p.id);
@@ -110,6 +133,7 @@ export struct StoryDetailPage {
       Row({ space: 8 }) {
         Button('返回列表')
           .onClick((): void => {
+            dismissSoftKeyboard();
             router.back();
           })
         Text('故事详情').fontSize(20).fontWeight(FontWeight.Bold).layoutWeight(1)
@@ -120,7 +144,8 @@ export struct StoryDetailPage {
           .fontColor('#BF360C')
           .width('100%')
       } else {
-        Column({ space: 14 }) {
+        Scroll() {
+          Column({ space: 14 }) {
           Text(`${this.story.title}  ·  id=${this.story.id}`)
             .fontSize(16)
             .width('100%')
@@ -130,6 +155,10 @@ export struct StoryDetailPage {
           TextInput({ placeholder: '标题', text: this.draftTitle })
             .onChange((v: string): void => {
               this.draftTitle = v;
+            })
+            .enterKeyType(EnterKeyType.Done)
+            .onSubmit((): void => {
+              this.saveTitle();
             })
           Button('保存标题').onClick((): void => {
             this.saveTitle();
@@ -144,6 +173,10 @@ export struct StoryDetailPage {
               .layoutWeight(1)
               .onChange((v: string): void => {
                 this.newPersonName = v;
+              })
+              .enterKeyType(EnterKeyType.Done)
+              .onSubmit((): void => {
+                this.createPersonQuick();
               })
             Button('创建人物')
               .onClick((): void => {
@@ -183,6 +216,25 @@ export struct StoryDetailPage {
               this.pickPhotosFromAlbum();
             })
 
+          if (BuildProfile.DEBUG) {
+            Text(this.debugLastAlbumInject.length > 0 ? this.debugLastAlbumInject : '【E2E】尚未注入 mock URI').fontSize(11).fontColor('#6A1B9A').width('100%')
+            Row({ space: 8 }) {
+              Button('【DEBUG】注入相册等价 URI')
+                .fontSize(11)
+                .layoutWeight(1)
+                .onClick((): void => {
+                  this.injectDebugAlbumEquivUri('file://e2e/album-equiv-story-1');
+                })
+              Button('【DEBUG】再注相同 URI')
+                .fontSize(11)
+                .layoutWeight(1)
+                .onClick((): void => {
+                  this.injectDebugAlbumEquivUri('file://e2e/album-equiv-story-1');
+                })
+            }
+            .width('100%')
+          }
+
           if (this.photos.length === 0) {
             Text('暂无挂载照片').fontColor('#666666').fontSize(12)
           } else {
@@ -200,16 +252,27 @@ export struct StoryDetailPage {
             .columnsGap(8)
             .rowsGap(8)
             .width('100%')
+            // 嵌套在外层 Scroll 内：关闭 Grid 自身滚动条，避免与父容器抢手势
+            .scrollBar(BarState.Off)
           }
 
           Divider()
           Button('进入导入向导壳页').onClick((): void => {
+            dismissSoftKeyboard();
             router.pushUrl({
               url: 'pages/import/ImportPage',
               params: { ctx: 'story', ownerId: `${this.storyId}` }
             });
           })
+          }
+          .width('100%')
+          .padding({ bottom: 24 })
         }
+        .layoutWeight(1)
+        .width('100%')
+        .align(Alignment.Top)
+        .scrollBar(BarState.Auto)
+        .edgeEffect(EdgeEffect.Spring)
       }
     }
     .padding(16)
