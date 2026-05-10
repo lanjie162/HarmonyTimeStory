@@ -1,0 +1,14 @@
+---
+description: 已定稿基线交付/验收时核对权威锚点、L1/L2、高约束域并引用治理专条
+alwaysApply: false
+---
+
+# Baseline vs DoD consistency
+
+When the user or task involves **delivery or acceptance** against **frozen baseline docs** (requirement / techdoc / design / ADR under `document/`), the agent MUST:
+
+1. Check whether **DoD** or acceptance criteria include **`权威：`** anchors and **`证据：L1` or `证据：L2`** when appropriate (see `.cursor/agents/GOVERNANCE-权威基线与可验证一致性.md`).
+2. Treat **L2 claims** as requiring **L2-grade evidence**; do not close with demonstration-only (L1) artifacts unless DoD explicitly allows L1 and CR/plan scope allows it.
+3. On **high-constraint** tasks (baseline or Must demands stronger verification than a demo can show), refuse silent narrowing — escalate **`CR-x`** or explicit Out.
+
+Enable this rule when editing task requests, unified task list, version plans, or QA/release verdicts tied to baseline compliance.
