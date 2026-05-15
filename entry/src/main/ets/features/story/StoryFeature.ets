@@ -1,12 +1,12 @@
 import type { IStoryService } from '../api/Services';
 import type { PersonModel, PhotoAddResult, PhotoRefModel, StoryModel } from '../../domain/model/Models';
-import { singletonMemoryStore, type LocalMemoryStore } from '../../infrastructure/store/LocalMemoryStore';
+import type { IAppDataStore } from '../../infrastructure/api/AppDataStore';
 
 export class StoryService implements IStoryService {
-  private readonly store: LocalMemoryStore;
+  private readonly store: IAppDataStore;
 
-  constructor(store?: LocalMemoryStore) {
-    this.store = store ?? singletonMemoryStore();
+  constructor(store: IAppDataStore) {
+    this.store = store;
   }
 
   listStories(): StoryModel[] {
@@ -48,9 +48,13 @@ export class StoryService implements IStoryService {
 
 let storyCached: StoryService | undefined;
 
+export function resetStoryServiceForStore(store: IAppDataStore): void {
+  storyCached = new StoryService(store);
+}
+
 export function getStoryService(): IStoryService {
-  if (!storyCached) {
-    storyCached = new StoryService();
+  if (storyCached === undefined) {
+    throw new Error('StoryService: call installAppDataStore from EntryAbility after RDB open');
   }
   return storyCached;
 }

@@ -14,6 +14,7 @@ When any subagent creates a `.md` document, the filename must start with a role 
 - `qa` -> `[QA]`
 - `pm` -> `[产品]`
 - `ued` -> `[交互]`
+- `vd` -> `[视觉]`
 - `manager` -> `[主持人]` / `[项目经理]` / `[任务经理]`（按 skill 选用，见下；`[TODO经理]` 保留作历史兼容）
 
 ### Manager Skill 前缀映射
@@ -47,3 +48,4 @@ When any subagent creates a `.md` document, the filename must start with a role 
 - `[架构]缓存分层设计.md`
 - `[研发]账单导出修复方案.md`
 - `[QA]回归测试清单.md`
+- `[视觉]Design-Token-语义色表.md`

@@ -1,12 +1,12 @@
 import type { IPersonService } from '../api/Services';
 import type { PersonModel, PhotoAddResult, PhotoRefModel, StoryModel } from '../../domain/model/Models';
-import { singletonMemoryStore, type LocalMemoryStore } from '../../infrastructure/store/LocalMemoryStore';
+import type { IAppDataStore } from '../../infrastructure/api/AppDataStore';
 
 export class PersonService implements IPersonService {
-  private readonly store: LocalMemoryStore;
+  private readonly store: IAppDataStore;
 
-  constructor(store?: LocalMemoryStore) {
-    this.store = store ?? singletonMemoryStore();
+  constructor(store: IAppDataStore) {
+    this.store = store;
   }
 
   listPersons(): PersonModel[] {
@@ -52,10 +52,15 @@ export class PersonService implements IPersonService {
 
 let cached: PersonService | undefined;
 
-/** 应用内单例，供页面与后续 bootstrap 注入对齐。 */
+/** 由 bootstrap 在 RDB 就绪后注入；未注入前勿调用 getPersonService。 */
+export function resetPersonServiceForStore(store: IAppDataStore): void {
+  cached = new PersonService(store);
+}
+
+/** 应用内单例，供页面使用（依赖 installAppDataStore）。 */
 export function getPersonService(): IPersonService {
-  if (!cached) {
-    cached = new PersonService();
+  if (cached === undefined) {
+    throw new Error('PersonService: call installAppDataStore from EntryAbility after RDB open');
   }
   return cached;
 }

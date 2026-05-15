@@ -49,71 +49,123 @@ export struct SuggestPage {
   }
 
   build() {
-    Column({ space: 14 }) {
-      Row({ space: 8 }) {
+    Column({ space: 0 }) {
+      Row({ space: 10 }) {
         Button('返回')
+          .height(36)
+          .fontSize($r('app.float.ts_font_support'))
+          .backgroundColor($r('app.color.ts_surface_container_high'))
+          .fontColor($r('app.color.ts_text_secondary'))
           .onClick((): void => {
             router.back();
           })
         Text('建议审阅')
-          .fontSize(18)
+          .fontSize($r('app.float.ts_font_title'))
+          .fontColor($r('app.color.ts_text_primary'))
           .fontWeight(FontWeight.Bold)
           .layoutWeight(1)
       }
       .width('100%')
+      .padding({ left: 16, right: 16, top: 12, bottom: 8 })
+      .alignItems(VerticalAlign.Center)
 
-      Text('§4.6 形态三 · 顶栏说明（对齐 v1.2 可测骨架）')
-        .fontSize(12)
-        .fontColor('#37474F')
-        .fontWeight(FontWeight.Medium)
-        .width('100%')
-      Text(
-        '本页用于「建议审阅」：展示系统根据人物相册聚类等生成的候选分组。你可逐条「接受」写入后续主链，或「忽略」本轮不处理。以下为最小可测列表（单条动作）。'
-      )
-        .fontSize(12)
-        .fontColor('#555555')
-        .width('100%')
-
-      Divider()
-
-      Text('候选列表').fontWeight(FontWeight.Medium).width('100%')
-
-      List({ space: 8 }) {
-        ForEach(this.items, (item: SuggestItem) => {
-          ListItem() {
-            Column({ space: 8 }) {
-              Text(item.title).fontSize(16).width('100%')
-              Text(item.subtitle).fontSize(12).fontColor('#666666').width('100%')
-              Row({ space: 8 }) {
-                Button('接受')
-                  .enabled(!this.isIgnored(item.id) && !this.isAccepted(item.id))
-                  .onClick((): void => {
-                    this.acceptOne(item);
-                  })
-                Button('忽略')
-                  .enabled(!this.isAccepted(item.id) && !this.isIgnored(item.id))
-                  .onClick((): void => {
-                    this.ignoreOne(item);
-                  })
-              }
-              if (this.isAccepted(item.id)) {
-                Text('状态：已接受').fontColor('#2E7D32').fontSize(12)
-              } else if (this.isIgnored(item.id)) {
-                Text('状态：已忽略').fontColor('#757575').fontSize(12)
-              }
-            }
-            .padding(12)
-            .width('100%')
-            .backgroundColor('#F5F5F5')
-            .borderRadius(8)
+      Scroll() {
+        Column({ space: 14 }) {
+          Column({ space: 8 }) {
+            Text('4.6 形态三 · 顶栏说明（对齐 v1.2 可测骨架）')
+              .fontSize($r('app.float.ts_font_support'))
+              .fontColor($r('app.color.ts_text_secondary'))
+              .fontWeight(FontWeight.Medium)
+              .width('100%')
+            Text(
+              '本页用于「建议审阅」：展示系统根据人物相册聚类等生成的候选分组。你可逐条「接受」写入后续主链，或「忽略」本轮不处理。以下为最小可测列表（单条动作）。'
+            )
+              .fontSize($r('app.float.ts_font_caption'))
+              .fontColor($r('app.color.ts_text_tertiary'))
+              .lineHeight(18)
+              .width('100%')
           }
-        }, (item: SuggestItem): string => item.id)
+          .width('100%')
+          .padding(16)
+          .backgroundColor($r('app.color.ts_color_info_container'))
+          .borderRadius(12)
+          .border({ width: 1, color: $r('app.color.ts_outline') })
+
+          Text('候选列表')
+            .fontSize($r('app.float.ts_font_label'))
+            .fontColor($r('app.color.ts_text_primary'))
+            .fontWeight(FontWeight.Medium)
+            .width('100%')
+            .padding({ left: 4 })
+
+          List({ space: 10 }) {
+            ForEach(this.items, (item: SuggestItem) => {
+              ListItem() {
+                Column({ space: 10 }) {
+                  Text(item.title)
+                    .fontSize($r('app.float.ts_font_headline'))
+                    .fontColor($r('app.color.ts_text_primary'))
+                    .fontWeight(FontWeight.Medium)
+                    .width('100%')
+                  Text(item.subtitle)
+                    .fontSize($r('app.float.ts_font_caption'))
+                    .fontColor($r('app.color.ts_text_tertiary'))
+                    .width('100%')
+                  Row({ space: 10 }) {
+                    Button('接受')
+                      .layoutWeight(1)
+                      .height(40)
+                      .fontSize($r('app.float.ts_font_support'))
+                      .fontWeight(FontWeight.Medium)
+                      .enabled(!this.isIgnored(item.id) && !this.isAccepted(item.id))
+                      .backgroundColor($r('app.color.ts_brand_primary'))
+                      .fontColor($r('app.color.ts_import_bar_on_bg'))
+                      .onClick((): void => {
+                        this.acceptOne(item);
+                      })
+                    Button('忽略')
+                      .layoutWeight(1)
+                      .height(40)
+                      .fontSize($r('app.float.ts_font_support'))
+                      .enabled(!this.isAccepted(item.id) && !this.isIgnored(item.id))
+                      .backgroundColor($r('app.color.ts_surface_container_high'))
+                      .fontColor($r('app.color.ts_text_secondary'))
+                      .onClick((): void => {
+                        this.ignoreOne(item);
+                      })
+                  }
+                  .width('100%')
+                  if (this.isAccepted(item.id)) {
+                    Text('状态：已接受')
+                      .fontColor($r('app.color.ts_color_success'))
+                      .fontSize($r('app.float.ts_font_caption'))
+                  } else if (this.isIgnored(item.id)) {
+                    Text('状态：已忽略')
+                      .fontColor($r('app.color.ts_text_muted'))
+                      .fontSize($r('app.float.ts_font_caption'))
+                  }
+                }
+                .padding(16)
+                .width('100%')
+                .backgroundColor($r('app.color.ts_surface_container'))
+                .borderRadius(12)
+                .border({ width: 1, color: $r('app.color.ts_outline') })
+              }
+            }, (item: SuggestItem): string => item.id)
+          }
+          .width('100%')
+        }
+        .width('100%')
+        .padding({ left: 16, right: 16, top: 8, bottom: 24 })
       }
       .layoutWeight(1)
       .width('100%')
+      .align(Alignment.Top)
+      .scrollBar(BarState.Auto)
+      .edgeEffect(EdgeEffect.Spring)
     }
-    .padding(16)
     .width('100%')
     .height('100%')
+    .backgroundColor($r('app.color.ts_surface'))
   }
 }

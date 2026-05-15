@@ -3,6 +3,7 @@ import promptAction from '@ohos.promptAction';
 import type { PersonModel } from '../../domain/model/Models';
 import { getPersonService } from '../../features/person/PersonFeature';
 import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
+import { MainTabBar } from '../../common/ui/MainTabBar';
 
 @Entry
 @Component
@@ -19,7 +20,6 @@ export struct PersonPage {
   }
 
   private createPerson(): void {
-    // 提交前先收键盘，避免遮挡 toast / 列表底部新行（同时改善 Hypium 识别）
     dismissSoftKeyboard();
     const svc = getPersonService();
     const id = svc.createPerson(this.newDisplayName);
@@ -33,85 +33,139 @@ export struct PersonPage {
   }
 
   build() {
-    Column({ space: 12 }) {
-      Row({ space: 10 }) {
-        Text('人物')
-          .fontSize(20)
-          .fontWeight(FontWeight.Bold)
-          .layoutWeight(1)
-        Button('建议')
-          .fontSize(13)
-          .height(32)
-          .padding({ left: 12, right: 12 })
-          .backgroundColor('#E3F2FD')
-          .fontColor('#1565C0')
-          .onClick((): void => {
-            dismissSoftKeyboard();
-            router.pushUrl({ url: 'pages/suggest/SuggestPage' });
-          })
-      }
-      .width('100%')
-      .alignItems(VerticalAlign.Center)
-
-      Row({ space: 8 }) {
-        Button('返回主壳')
-          .onClick((): void => {
-            dismissSoftKeyboard();
-            router.back();
-          })
-        Button('故事 Tab')
-          .onClick((): void => {
-            dismissSoftKeyboard();
-            router.pushUrl({ url: 'pages/story/StoryPage' });
-          })
-      }
-
-      Text('新建人物').fontWeight(FontWeight.Medium).width('100%')
-      TextInput({ placeholder: '显示名（必填）', text: this.newDisplayName })
-        .onChange((v: string): void => {
-          this.newDisplayName = v;
-        })
-        .enterKeyType(EnterKeyType.Done)
-        .onSubmit((): void => {
-          this.createPerson();
-        })
-        .width('100%')
-      Button('创建人物').onClick((): void => {
-        this.createPerson();
-      })
-
-      Divider()
-
-      if (this.persons.length === 0) {
-        Text('还没有人物档案。创建后将在下列显示。')
-          .fontColor('#666666')
-          .width('100%')
-      } else {
-        List({ space: 0 }) {
-          ForEach(this.persons, (p: PersonModel) => {
-            ListItem() {
-              Row() {
-                Text(p.displayName).fontSize(18).layoutWeight(1)
-                Text(`#${p.id}`).fontColor('#888888')
-              }
-              .width('100%')
-              .padding(12)
-              .onClick((): void => {
-                dismissSoftKeyboard();
-                router.pushUrl({
-                  url: 'pages/person/PersonDetailPage',
-                  params: { personId: `${p.id}` }
-                });
-              })
-            }
-          }, (p: PersonModel): string => `person-${p.id}`)
+    Column({ space: 0 }) {
+      Column({ space: 0 }) {
+        Row({ space: 10 }) {
+          Button('返回')
+            .height(36)
+            .fontSize($r('app.float.ts_font_support'))
+            .backgroundColor($r('app.color.ts_surface_container_high'))
+            .fontColor($r('app.color.ts_text_secondary'))
+            .onClick((): void => {
+              dismissSoftKeyboard();
+              router.replaceUrl({ url: 'pages/shell/ShellPage' });
+            })
+          Text('人物')
+            .fontSize($r('app.float.ts_font_title'))
+            .fontColor($r('app.color.ts_text_primary'))
+            .fontWeight(FontWeight.Bold)
+            .layoutWeight(1)
+          Button('人脸建议')
+            .fontSize($r('app.float.ts_font_support'))
+            .height(36)
+            .padding({ left: 14, right: 14 })
+            .backgroundColor($r('app.color.ts_color_info_container'))
+            .fontColor($r('app.color.ts_color_info'))
+            .onClick((): void => {
+              dismissSoftKeyboard();
+              router.pushUrl({ url: 'pages/suggest/SuggestPage' });
+            })
         }
         .width('100%')
-        .layoutWeight(1)
+        .alignItems(VerticalAlign.Center)
+        .padding({ left: 16, right: 16, top: 12, bottom: 10 })
+
+        Column({ space: 14 }) {
+          Text('新建人物')
+            .fontSize($r('app.float.ts_font_label'))
+            .fontColor($r('app.color.ts_text_secondary'))
+            .fontWeight(FontWeight.Medium)
+            .width('100%')
+          TextInput({ placeholder: '显示名（必填）', text: this.newDisplayName })
+            .onChange((v: string): void => {
+              this.newDisplayName = v;
+            })
+            .enterKeyType(EnterKeyType.Done)
+            .onSubmit((): void => {
+              this.createPerson();
+            })
+            .width('100%')
+            .height(48)
+            .backgroundColor($r('app.color.ts_surface_container_high'))
+            .borderRadius(10)
+            .padding({ left: 12, right: 12 })
+          Button('创建人物')
+            .width('100%')
+            .height(48)
+            .fontSize($r('app.float.ts_font_body'))
+            .fontWeight(FontWeight.Medium)
+            .backgroundColor($r('app.color.ts_brand_primary'))
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
+            .onClick((): void => {
+              this.createPerson();
+            })
+        }
+        .width('100%')
+        .padding(16)
+        .margin({ left: 16, right: 16, bottom: 12 })
+        .backgroundColor($r('app.color.ts_surface_container'))
+        .borderRadius(12)
+        .border({ width: 1, color: $r('app.color.ts_outline') })
+
+        Divider().color($r('app.color.ts_outline')).margin({ left: 16, right: 16 })
+
+        if (this.persons.length === 0) {
+          Column({ space: 8 }) {
+            Text('还没有人物档案')
+              .fontSize($r('app.float.ts_font_headline'))
+              .fontColor($r('app.color.ts_text_secondary'))
+            Text('创建后会在下方列表显示；也可从详情页导入相册。')
+              .fontSize($r('app.float.ts_font_caption'))
+              .fontColor($r('app.color.ts_text_tertiary'))
+              .lineHeight(18)
+          }
+          .width('100%')
+          .padding({ top: 32, left: 24, right: 24 })
+          .alignItems(HorizontalAlign.Start)
+          .layoutWeight(1)
+        } else {
+          List({ space: 10 }) {
+            ForEach(this.persons, (p: PersonModel) => {
+              ListItem() {
+                Column({ space: 6 }) {
+                  Row() {
+                    Text(p.displayName)
+                      .fontSize($r('app.float.ts_font_headline'))
+                      .fontColor($r('app.color.ts_text_primary'))
+                      .fontWeight(FontWeight.Medium)
+                      .layoutWeight(1)
+                    Text(`#${p.id}`)
+                      .fontSize($r('app.float.ts_font_caption'))
+                      .fontColor($r('app.color.ts_text_muted'))
+                  }
+                  .width('100%')
+                  Text('档案、故事与照片')
+                    .fontSize($r('app.float.ts_font_overline'))
+                    .fontColor($r('app.color.ts_text_tertiary'))
+                }
+                .width('100%')
+                .alignItems(HorizontalAlign.Start)
+                .padding({ left: 16, right: 16, top: 14, bottom: 14 })
+                .backgroundColor($r('app.color.ts_surface_container'))
+                .borderRadius(12)
+                .border({ width: 1, color: $r('app.color.ts_outline') })
+                .onClick((): void => {
+                  dismissSoftKeyboard();
+                  router.pushUrl({
+                    url: 'pages/person/PersonDetailPage',
+                    params: { personId: `${p.id}` }
+                  });
+                })
+              }
+            }, (p: PersonModel): string => `person-${p.id}`)
+          }
+          .width('100%')
+          .layoutWeight(1)
+          .padding({ left: 16, right: 16, top: 12, bottom: 12 })
+        }
       }
+      .layoutWeight(1)
+      .width('100%')
+
+      MainTabBar({ currentTab: 'person' })
     }
-    .padding(16)
     .width('100%')
     .height('100%')
+    .backgroundColor($r('app.color.ts_surface'))
   }
 }

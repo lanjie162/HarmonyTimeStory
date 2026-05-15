@@ -13,8 +13,8 @@ interface PhotoOwnerTuple {
 }
 
 /**
- * MVP 单机内存仓储：进程内闭环人物/故事/关联/PhotoOwnerLink，关机即清空。
- * 满足 T-4 可追溯与「不落盘原文件仅引用 URI」的假数据路径。
+ * MVP 单机内存仓储（**非主路径真相**）：进程内闭环，关机即清空。
+ * 主应用自 V2.1-T17 起使用 `RepositoryImpl` + RDB；本类保留供显式注入/调试，勿再经 `singletonMemoryStore` 作为生产唯一真相。
  */
 export class LocalMemoryStore {
   private persons: PersonModel[] = [];

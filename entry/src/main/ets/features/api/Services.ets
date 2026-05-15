@@ -1,6 +1,6 @@
 import type { PersonModel, PhotoAddResult, PhotoRefModel, StoryModel } from '../../domain/model/Models';
 
-/** 人物领域服务（内存实现，见 PersonFeature）。 */
+/** 人物领域服务（RDB 真相经 IAppDataStore，见 PersonFeature + RepositoryImpl）。 */
 export interface IPersonService {
   listPersons(): PersonModel[];
   createPerson(displayName: string): number;
@@ -14,7 +14,7 @@ export interface IPersonService {
   addPhotoToPerson(personId: number, uri: string): PhotoAddResult;
 }
 
-/** 故事主链（内存实现，见 StoryFeature）；人物关联与 PhotoOwnerLink 与 LocalMemoryStore 对齐。 */
+/** 故事主链（RDB 真相经 IAppDataStore）；人物关联与 PhotoOwnerLink 与 RepositoryImpl 对齐。 */
 export interface IStoryService {
   listStories(): StoryModel[];
   createStory(title: string): number;

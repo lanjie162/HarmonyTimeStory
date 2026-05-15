@@ -1,8 +1,13 @@
 {
   "float": [
-    {
-      "name": "page_text_font_size",
-      "value": "50fp"
-    }
+    { "name": "page_text_font_size", "value": "50fp" },
+    { "name": "ts_font_display", "value": "22fp" },
+    { "name": "ts_font_title", "value": "20fp" },
+    { "name": "ts_font_headline", "value": "18fp" },
+    { "name": "ts_font_body", "value": "16fp" },
+    { "name": "ts_font_label", "value": "14fp" },
+    { "name": "ts_font_support", "value": "13fp" },
+    { "name": "ts_font_caption", "value": "12fp" },
+    { "name": "ts_font_overline", "value": "11fp" }
   ]
 }

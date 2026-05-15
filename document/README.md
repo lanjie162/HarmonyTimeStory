@@ -5,7 +5,7 @@
 | 子目录 | 用途 |
 |--------|------|
 | **requirement/** | 需求、范围、验收与产品白皮书等 |
-| **techdoc/** | 技术设计、接口说明、架构与实现备忘等（当前含 [HarmonyOS平台能力调研表-v1.md](./techdoc/HarmonyOS平台能力调研表-v1.md)） |
+| **techdoc/** | 技术设计、接口说明、架构与实现备忘等（含 [HarmonyOS平台能力调研表-v1.md](./techdoc/HarmonyOS平台能力调研表-v1.md)、[**[架构]HarmonyOS测试分层与自动化规范.md**](./techdoc/[架构]HarmonyOS测试分层与自动化规范.md)、[**[QA]Tier0-MCP与Hypium证据实操.md**](./techdoc/[QA]Tier0-MCP与Hypium证据实操.md)、[**[QA]DEBUG与真实选图-E2E缺口.md**](./techdoc/[QA]DEBUG与真实选图-E2E缺口.md)） |
 | **meeting/** | 讨论与评审记录、结论摘要、待办跟踪等 |
 | **plan/** | 项目计划、版本计划与执行基线（如 [2026-05-06-MVP研发工作计划-定稿.md](./plan/2026-05-06-MVP研发工作计划-定稿.md)） |
 
