@@ -19,6 +19,11 @@ export default function localUnitTest() {
       const b = RepositoryImpl.getInstance();
       expect(a).assertEqual(b);
     });
+    it('tier1_repository_getInstance_not_same_as_new', 0, () => {
+      const singleton = RepositoryImpl.getInstance();
+      const fresh = new RepositoryImpl();
+      expect(singleton).assertNotEqual(fresh);
+    });
   });
 
   describe('tier1_repository_text_normalize', () => {
@@ -29,6 +34,9 @@ export default function localUnitTest() {
     });
     it('tier1_trim_preserves_inner_spaces', 0, () => {
       expect((requireTrimmedNonEmpty('  a b  ') ?? '')).assertEqual('a b');
+    });
+    it('tier1_trim_rejects_whitespace_only_after_trim', 0, () => {
+      expect(requireTrimmedNonEmpty('\u3000') === null).assertTrue();
     });
   });
 }

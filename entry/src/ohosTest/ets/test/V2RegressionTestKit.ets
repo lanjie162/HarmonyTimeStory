@@ -1,6 +1,27 @@
 import { abilityDelegatorRegistry, Component, Driver, On, ON, UiDirection } from '@kit.TestKit';
 import type { Want } from '@kit.AbilityKit';
 
+/**
+ * V2_TIMEOUT: 集中分档超时常量，激进快速失败策略。
+ * 配置或脚本错误应在数秒内报错，避免长时间等待浪费测试时间。
+ */
+export interface V2TimeoutConfig {
+  FAST: number;
+  NORMAL: number;
+  SCAN: number;
+  COLD_START: number;
+}
+export const V2_TIMEOUT: V2TimeoutConfig = {
+  /** 页内 Button/Text 点击、DEBUG 入口、Tab 切换、对话框（800ms） */
+  FAST: 800,
+  /** 列表行、详情底栏、页面就绪等轻导航（1500ms） */
+  NORMAL: 1500,
+  /** 等待导入扫描完成 → 候选步（10s；扫描循环约 3s + 余量） */
+  SCAN: 10000,
+  /** 冷启动首屏（20s） */
+  COLD_START: 20000,
+};
+
 function resolveBundleName(): string {
   const args = abilityDelegatorRegistry.getArguments();
   const n = args.bundleName;
@@ -18,7 +39,7 @@ export function sleepMs(ms: number): Promise<void> {
   });
 }
 
-/** findComponents 在部分设备/版本上可能返回 null，不能直连 .length */
+/** findComponents 安全封装，防御 null/undefined。 */
 export async function safeFindComponents(driver: Driver, onLike: On): Promise<Component[]> {
   const raw = await driver.findComponents(onLike);
   if (raw === null || raw === undefined) {
@@ -27,74 +48,174 @@ export async function safeFindComponents(driver: Driver, onLike: On): Promise<Co
   return raw;
 }
 
-function mainShellMatcher() {
+// ── 快速失败点击 ──────────────────────────────────────────────
+
+/**
+ * 安全点击：先 waitForComponent 等待组件出现（默认 FAST=800ms），再点击。
+ * 超时即抛错实现快速失败。
+ */
+export async function clickComponentSafely(driver: Driver, matcher: On, timeoutMs: number = V2_TIMEOUT.FAST): Promise<void> {
+  const comp = await driver.waitForComponent(matcher, timeoutMs);
+  if (comp === null) {
+    throw new Error('clickComponentSafely: 组件未找到（超时 ' + timeoutMs + 'ms）: ' + JSON.stringify(matcher));
+  }
+  await comp.click();
+}
+
+/** 按精确文本找 Button 并点击。 */
+export async function clickButtonByText(driver: Driver, text: string, timeoutMs: number = V2_TIMEOUT.FAST): Promise<void> {
+  await clickComponentSafely(driver, ON.text(text).type('Button'), timeoutMs);
+}
+
+/** 等待指定文本出现在页面上，超时即快速失败。 */
+export async function waitForText(driver: Driver, text: string, timeoutMs: number = V2_TIMEOUT.NORMAL): Promise<Component> {
+  const comp = await driver.waitForComponent(ON.text(text), timeoutMs);
+  if (comp === null) {
+    throw new Error('waitForText: 文本未找到（超时 ' + timeoutMs + 'ms）: ' + text);
+  }
+  return comp;
+}
+
+/** 断言指定文本存在于页面上（快速失败）。 */
+export async function assertTextExist(driver: Driver, text: string, timeoutMs: number = V2_TIMEOUT.NORMAL): Promise<void> {
+  await waitForText(driver, text, timeoutMs);
+}
+
+// ── 页面导航 + 断言 ────────────────────────────────────────────
+
+/** 冷启动主应用，等待 ShellPage「时光故事」标题出现。 */
+export async function coldStartMainApp(): Promise<Driver> {
+  const delegator = abilityDelegatorRegistry.getAbilityDelegator();
+  const bn = resolveBundleName();
+  const want: Want = {
+    bundleName: bn,
+    abilityName: 'EntryAbility'
+  };
+  await delegator.startAbility(want);
+  const driver = Driver.create();
+  const shell = await driver.waitForComponent(ON.text('时光故事'), V2_TIMEOUT.COLD_START);
+  if (shell !== null) {
+    await driver.waitForIdle(300, 800);
+    return driver;
+  }
+  // fallback: 通过返回栈回到主壳页
+  await ensureOnMainShell(driver);
+  await driver.waitForComponent(ON.text('时光故事'), V2_TIMEOUT.NORMAL);
+  await driver.waitForIdle(300, 800);
+  return driver;
+}
+
+/** MainShell 标识文本。 */
+function mainShellMatcher(): On {
   return ON.text('时光故事');
 }
 
-/** startAbility 只会置前窗口，不清理 router 栈；用返回键回到主壳（同包测试禁止 aa force-stop）。 */
+/**
+ * 回到主壳页（ShellPage，含「时光故事」标题）。
+ * 策略简洁：先找「时光故事」→ 已到则返回；
+ * 否则找「返回列表」→ 点击；找「返回」→ 点击；
+ * 最后 fallback 到 driver.fling + pressBack。
+ */
 async function ensureOnMainShell(driver: Driver): Promise<void> {
   const matcher = mainShellMatcher();
-  const maxBack = 16;
-  for (let i = 0; i < maxBack; i++) {
+  const maxAttempts = 4;
+
+  for (let i = 0; i < maxAttempts; i++) {
     const main = await driver.findComponent(matcher);
     if (main !== null) {
       return;
     }
+    const backToList = await driver.findComponent(ON.text('返回列表'));
+    if (backToList !== null) {
+      await backToList.click();
+      await driver.waitForIdle(300, 1000);
+      continue;
+    }
+    const backBtn = await driver.findComponent(ON.text('返回'));
+    if (backBtn !== null) {
+      await backBtn.click();
+      await driver.waitForIdle(300, 1000);
+      continue;
+    }
     await driver.pressBack();
-    await driver.waitForIdle(400, 1400);
+    await driver.waitForIdle(300, 800);
   }
-  await driver.waitForComponent(matcher, 8000);
+  const final = await driver.waitForComponent(matcher, V2_TIMEOUT.FAST);
+  if (final === null) {
+    throw new Error('ensureOnMainShell: 无法回到主壳页（已尝试 ' + maxAttempts + ' 次）');
+  }
 }
 
+/** ShellPage → 点击「人物」卡片 → 等待 PersonPage。 */
+export async function navigateToPersonFromShell(driver: Driver): Promise<void> {
+  const personCards = await safeFindComponents(driver, ON.text('人物').type('Column'));
+  if (personCards.length > 0) {
+    await personCards[0].click();
+  } else {
+    await clickComponentSafely(driver, ON.text('人物'));
+  }
+  // 人物页有两个「人物」文本（标题 + Tab），等待「新建人物」出现确认已进入
+  await driver.waitForComponent(ON.text('新建人物'), V2_TIMEOUT.NORMAL);
+  await driver.waitForIdle(300, 800);
+}
+
+/** ShellPage → 点击「故事」卡片 → 等待 StoryPage。 */
+export async function navigateToStoryFromShell(driver: Driver): Promise<void> {
+  const storyCards = await safeFindComponents(driver, ON.text('故事').type('Column'));
+  if (storyCards.length > 0) {
+    // 第一个「故事」Column 是壳页入口卡片
+    await storyCards[0].click();
+  } else {
+    await clickComponentSafely(driver, ON.text('故事'));
+  }
+  await driver.waitForComponent(ON.text('新建故事'), V2_TIMEOUT.NORMAL);
+  await driver.waitForIdle(300, 800);
+}
+
+/** 在人物列表页创建人物（输入名称 + 点击「创建人物」）。 */
+export async function createPersonOnPage(driver: Driver, displayName: string): Promise<void> {
+  const input = await driver.findComponent(ON.type('TextInput'));
+  if (input === null) {
+    throw new Error('createPersonOnPage: 未找到 TextInput');
+  }
+  await input.inputText(displayName);
+  await clickButtonByText(driver, '创建人物');
+  await driver.waitForIdle(300, 800);
+}
+
+/** 在故事列表页创建故事（输入标题 + 点击「创建故事」）。 */
+export async function createStoryOnPage(driver: Driver, title: string): Promise<void> {
+  const input = await driver.findComponent(ON.type('TextInput'));
+  if (input === null) {
+    throw new Error('createStoryOnPage: 未找到 TextInput');
+  }
+  await input.inputText(title);
+  await clickButtonByText(driver, '创建故事');
+  await driver.waitForIdle(300, 800);
+}
+
+// ── 列表滚动与行定位 ──────────────────────────────────────────
+
 /**
- * 在人物/故事页的 List 中点开指定文案行。
- * 根因：`driver.fling` 常滚的是整窗，不保证 List 视口变化；官方建议在可滑动控件上用
- * scrollToTop / scrollToBottom / scrollSearch（见 js-apis-uitest · Component）。
- * 新建项在 ForEach 末尾，优先滚到底再 find / scrollSearch。
+ * 在 List 中通过 scrollSearch 找到指定文本的行并点击。
+ * scrollSearch 内部增量滚动，找到即停，无需 scrollToBottom 盲等。
  */
-async function scrollListToFindRow(list: Component, driver: Driver, matcher: On): Promise<Component | null> {
-  let row: Component | null = null;
+async function scrollListToFindRow(list: Component, matcher: On): Promise<Component | null> {
   try {
-    row = await list.scrollSearch(matcher);
+    const row = await list.scrollSearch(matcher, true, 30);
     if (row !== null) {
       return row;
     }
-  } catch (_e0) {
-    row = null;
-  }
-  for (let pass = 0; pass < 3; pass++) {
-    try {
-      await list.scrollToBottom(28000);
-      await driver.waitForIdle(500, 2200);
-    } catch (_e) {
-      // ignore
-    }
-    row = await driver.findComponent(matcher);
-    if (row !== null) {
-      return row;
-    }
-    try {
-      row = await list.scrollSearch(matcher);
-      if (row !== null) {
-        return row;
-      }
-    } catch (_e2) {
-      row = null;
-    }
-  }
-  try {
-    await list.scrollToTop(4000);
-    await driver.waitForIdle(500, 1800);
-    row = await list.scrollSearch(matcher);
-    if (row !== null) {
-      return row;
-    }
-  } catch (_e3) {
-    row = null;
+  } catch (_e) {
+    // ignore
   }
   return null;
 }
 
+/**
+ * 在列表中通过可见文本定位行并点击。
+ * 策略：先直接 find，失败后 scrollSearch 每个 List，最后短迭代 fling 兜底。
+ */
 async function openListRowByVisibleText(driver: Driver, label: string, errorPrefix: string): Promise<void> {
   const matcher = ON.text(label);
   let row: Component | null = await driver.findComponent(matcher);
@@ -104,37 +225,25 @@ async function openListRowByVisibleText(driver: Driver, label: string, errorPref
   }
   const lists = await safeFindComponents(driver, ON.type('List'));
   for (const list of lists) {
-    row = await scrollListToFindRow(list, driver, matcher);
+    row = await scrollListToFindRow(list, matcher);
     if (row !== null) {
       await row.click();
       return;
     }
   }
   if (row === null) {
-    for (let i = 0; i < 10; i++) {
-      await driver.fling(UiDirection.UP, 7500);
-      await driver.waitForIdle(350, 1100);
-    }
-    for (let i = 0; i < 36; i++) {
-      await driver.fling(UiDirection.DOWN, 9500);
-      await driver.waitForIdle(450, 1500);
+    // fling 短迭代兜底
+    for (let i = 0; i < 3; i++) {
+      await driver.fling(UiDirection.DOWN, 6000);
+      await driver.waitForIdle(300, 600);
       row = await driver.findComponent(matcher);
-      if (row !== null) {
-        break;
-      }
-      for (const list of lists) {
-        row = await scrollListToFindRow(list, driver, matcher);
-        if (row !== null) {
-          break;
-        }
-      }
       if (row !== null) {
         break;
       }
     }
   }
   if (row === null) {
-    throw new Error(`${errorPrefix}：${label}`);
+    throw new Error(errorPrefix + ': ' + label);
   }
   await row.click();
 }
@@ -147,44 +256,14 @@ export async function openStoryListRowByTitle(driver: Driver, title: string): Pr
   await openListRowByVisibleText(driver, title, '故事列表未找到行');
 }
 
-/** 人物/故事详情主体已包 Scroll：底部「导入」「DEBUG」需滚入视口；多 Scroll 时逐个尝试 scrollSearch */
-async function scrollDetailScrollToBottom(driver: Driver): Promise<void> {
-  const importLabel = ON.text('进入导入向导壳页');
-  if ((await driver.findComponent(importLabel)) !== null) {
-    return;
-  }
-  const scrolls = await safeFindComponents(driver, ON.type('Scroll'));
-  for (const sc of scrolls) {
-    for (let r = 0; r < 5; r++) {
-      try {
-        const hit = await sc.scrollSearch(importLabel);
-        if (hit !== null) {
-          return;
-        }
-      } catch (_e) {
-        // ignore
-      }
-      try {
-        await sc.scrollToBottom(32000);
-      } catch (_e2) {
-        // ignore
-      }
-      await driver.waitForIdle(450, 1600);
-      if ((await driver.findComponent(importLabel)) !== null) {
-        return;
-      }
-    }
-  }
-  for (let i = 0; i < 28; i++) {
-    await driver.fling(UiDirection.DOWN, 9000);
-    await driver.waitForIdle(350, 1000);
-    if ((await driver.findComponent(importLabel)) !== null) {
-      return;
-    }
-  }
-}
+// ── 详情页滚动 ──────────────────────────────────────────────────
 
-/** 在页面首层 Scroll（人物/故事详情、导入向导等）内把匹配控件滚入检索范围。 */
+/**
+ * 在详情页 Scroll 中将目标组件滚入视口。
+ * 策略：findComponent 先行 → scrollSearch(vertical, offset) → 短迭代 fling 兜底。
+ * scrollSearch 是唯一不盲等的滚动 API（增量滚动，找到即停）。
+ * offset=30 让滚动起止点距 Scroll 边框 30px，避免滑入标题栏。
+ */
 export async function scrollDetailUntilVisible(driver: Driver, matcher: On): Promise<void> {
   if ((await driver.findComponent(matcher)) !== null) {
     return;
@@ -192,146 +271,128 @@ export async function scrollDetailUntilVisible(driver: Driver, matcher: On): Pro
   const scrolls = await safeFindComponents(driver, ON.type('Scroll'));
   for (const sc of scrolls) {
     try {
-      await sc.scrollToTop(5000);
-      await driver.waitForIdle(400, 1100);
+      const hit = await sc.scrollSearch(matcher, true, 30);
+      if (hit !== null) {
+        return;
+      }
     } catch (_e) {
       // ignore
     }
+  }
+  // fling 短迭代兜底（scrollSearch 已覆盖 95%+ 场景）
+  for (let i = 0; i < 2; i++) {
+    await driver.fling(UiDirection.DOWN, 6000);
+    await driver.waitForIdle(300, 600);
     if ((await driver.findComponent(matcher)) !== null) {
       return;
-    }
-    for (let r = 0; r < 10; r++) {
-      try {
-        const hit = await sc.scrollSearch(matcher);
-        if (hit !== null) {
-          return;
-        }
-      } catch (_e2) {
-        // ignore
-      }
-      try {
-        await sc.scrollToBottom(24000);
-      } catch (_e3) {
-        // ignore
-      }
-      await driver.waitForIdle(400, 1200);
-      if ((await driver.findComponent(matcher)) !== null) {
-        return;
-      }
     }
   }
 }
 
+// ── 详情页专用操作 ────────────────────────────────────────────
+
 export async function clickDetailEnterImportWizard(driver: Driver): Promise<void> {
   await scrollDetailUntilVisible(driver, ON.text('进入导入向导壳页'));
-  await scrollDetailScrollToBottom(driver);
-  const btn = await driver.findComponent(ON.text('进入导入向导壳页'));
-  if (btn === null) {
-    throw new Error('详情页未找到「进入导入向导壳页」（需安装含 Scroll 详情的主 hap）');
-  }
-  await btn.click();
+  await clickButtonByText(driver, '进入导入向导壳页');
 }
 
 export async function clickDetailDebugInjectAlbum(driver: Driver): Promise<void> {
   const m = ON.text('【DEBUG】注入相册等价 URI');
   await scrollDetailUntilVisible(driver, m);
-  await scrollDetailScrollToBottom(driver);
-  const btn = await driver.findComponent(m);
-  if (btn === null) {
-    throw new Error('详情页未找到「【DEBUG】注入相册等价 URI」');
-  }
-  await btn.click();
+  await clickComponentSafely(driver, m);
 }
 
 export async function clickDetailDebugSameUriAgain(driver: Driver): Promise<void> {
   const m = ON.text('【DEBUG】再注相同 URI');
   await scrollDetailUntilVisible(driver, m);
-  const btn = await driver.findComponent(m);
-  if (btn === null) {
-    throw new Error('详情页未找到「【DEBUG】再注相同 URI」');
+  await clickComponentSafely(driver, m);
+}
+
+/**
+ * 在详情页 Scroll 内找第 2 个 TextInput 并输入。
+ * 使用 within() 限定搜索范围，避免匹配导航栏 TextInput。
+ * 去掉 scrollToTop，短迭代提前终止。
+ */
+async function inputDetailSecondTextInput(driver: Driver, text: string, errorPrefix: string): Promise<void> {
+  // within() 限定只在 Scroll 内搜索 TextInput，减少匹配面积
+  const withinMatcher = ON.type('TextInput').within(ON.type('Scroll'));
+  for (let t = 0; t < 3; t++) {
+    const inputs = await safeFindComponents(driver, withinMatcher);
+    if (inputs.length >= 2) {
+      await inputs[1].inputText(text);
+      return;
+    }
+    await driver.fling(UiDirection.DOWN, 6000);
+    await driver.waitForIdle(300, 600);
   }
-  await btn.click();
+  throw new Error(errorPrefix + ': 未收集到至少 2 个 TextInput');
 }
 
-export async function coldStartMainApp(): Promise<Driver> {
-  const delegator = abilityDelegatorRegistry.getAbilityDelegator();
-  const bn = resolveBundleName();
-  const want: Want = {
-    bundleName: bn,
-    abilityName: 'EntryAbility'
-  };
-  await delegator.startAbility(want);
-  const driver = Driver.create();
-  const matcher = mainShellMatcher();
-  await driver.waitForComponent(matcher, 35000);
-  await ensureOnMainShell(driver);
-  await driver.waitForComponent(matcher, 8000);
-  await driver.waitForIdle(300, 2000);
-  return driver;
-}
-
-/** PersonDetail：第 1 个 TextInput 为显示名，第 2 个为新故事标题。 */
+/** PersonDetail: 第 2 个 TextInput（新故事标题）。 */
 export async function inputPersonDetailSecondTextInput(driver: Driver, text: string): Promise<void> {
-  const pageScroll = await driver.findComponent(ON.type('Scroll'));
-  if (pageScroll !== null) {
-    try {
-      await pageScroll.scrollToTop(4000);
-      await driver.waitForIdle(400, 1400);
-    } catch (_e) {
-      // ignore
-    }
-  }
-  for (let t = 0; t < 8; t++) {
-    const inputs = await safeFindComponents(driver, ON.type('TextInput'));
-    if (inputs.length >= 2) {
-      await inputs[1].inputText(text);
-      return;
-    }
-    if (pageScroll !== null && t === 4) {
-      try {
-        await pageScroll.scrollToBottom(12000);
-        await driver.waitForIdle(400, 1400);
-      } catch (_e2) {
-        // ignore
-      }
-    }
-    await driver.fling(UiDirection.DOWN, 6000);
-    await driver.waitForIdle(400, 1200);
-  }
-  throw new Error('PersonDetail：未收集到至少 2 个 TextInput（可滚动后再试）');
+  await inputDetailSecondTextInput(driver, text, 'PersonDetail');
 }
 
-/** StoryDetail：第 1 个为标题，第 2 个为新人物名。 */
+/** StoryDetail: 第 1 个为标题，第 2 个为新人物名。 */
 export async function inputStoryDetailSecondTextInput(driver: Driver, text: string): Promise<void> {
-  const pageScroll = await driver.findComponent(ON.type('Scroll'));
-  if (pageScroll !== null) {
-    try {
-      await pageScroll.scrollToTop(4000);
-      await driver.waitForIdle(400, 1400);
-    } catch (_e) {
-      // ignore
-    }
-  }
-  for (let t = 0; t < 8; t++) {
-    const inputs = await safeFindComponents(driver, ON.type('TextInput'));
-    if (inputs.length >= 2) {
-      await inputs[1].inputText(text);
-      return;
-    }
-    if (pageScroll !== null && t === 4) {
-      try {
-        await pageScroll.scrollToBottom(12000);
-        await driver.waitForIdle(400, 1400);
-      } catch (_e2) {
-        // ignore
-      }
-    }
-    await driver.fling(UiDirection.DOWN, 6000);
-    await driver.waitForIdle(400, 1200);
-  }
-  throw new Error('StoryDetail：未收集到至少 2 个 TextInput（可滚动后再试）');
+  await inputDetailSecondTextInput(driver, text, 'StoryDetail');
 }
 
+// ── Import 域专用 helper ──────────────────────────────────────
+
+export async function clickImportDebugSkipToConditions(driver: Driver): Promise<void> {
+  const m = ON.text('【DEBUG】跳过选图进入条件（Hypium E2E）');
+  await scrollDetailUntilVisible(driver, m);
+  const comp = await driver.findComponent(m);
+  if (comp !== null) {
+    await comp.click();
+    return;
+  }
+  const pickLabel = await driver.findComponent(ON.text('选图开始（相册）'));
+  if (pickLabel !== null) {
+    throw new Error(
+      'ImportPage DEBUG 入口不可见：已滚动仍未找到 DEBUG 按钮，当前处于 pick 步。'
+      + ' 请确认 entry@default 为 debug/LogVerification 构建（BuildProfile.DEBUG）'
+    );
+  }
+  throw new Error('进入 ImportPage 后未进入 pick 步（未找到「选图开始（相册）」）');
+}
+
+export async function clickImportDebugPh01Duplicate(driver: Driver): Promise<void> {
+  const m = ON.text('【DEBUG】跳过选图 PH-01 双占位（同 URI×2）');
+  await scrollDetailUntilVisible(driver, m);
+  await clickComponentSafely(driver, m);
+}
+
+export async function clickImportStartScan(driver: Driver): Promise<void> {
+  const m = ON.text('开始扫描');
+  await scrollDetailUntilVisible(driver, m);
+  await clickComponentSafely(driver, m);
+}
+
+export async function clickImportDebugB2WrongCancel(driver: Driver): Promise<void> {
+  const m = ON.text('【DEBUG】错误 ID 触发 cancelRequest（B2 负例）');
+  const comp = await driver.waitForComponent(m, V2_TIMEOUT.NORMAL);
+  if (comp !== null) {
+    await comp.click();
+    return;
+  }
+  await scrollDetailUntilVisible(driver, m);
+  await clickComponentSafely(driver, m);
+}
+
+export async function clickImportCancelScan(driver: Driver): Promise<void> {
+  const m = ON.text('取消扫描');
+  const comp = await driver.waitForComponent(m, V2_TIMEOUT.NORMAL);
+  if (comp !== null) {
+    await comp.click();
+    return;
+  }
+  await scrollDetailUntilVisible(driver, m);
+  await clickComponentSafely(driver, m);
+}
+
+/** 在候选步点击「确认导入」。 */
 export async function clickConfirmImportButton(driver: Driver): Promise<void> {
   const matcher = ON.text('确认导入').type('Button');
   let commitBtn: Component | null = await driver.findComponent(matcher);
@@ -339,25 +400,16 @@ export async function clickConfirmImportButton(driver: Driver): Promise<void> {
     const scroll = await driver.findComponent(ON.type('Scroll'));
     if (scroll !== null) {
       try {
-        await scroll.scrollToBottom(20000);
-        await driver.waitForIdle(450, 1400);
+        commitBtn = await scroll.scrollSearch(matcher, true, 30);
       } catch (_e) {
-        // ignore
-      }
-      commitBtn = await driver.findComponent(matcher);
-      if (commitBtn === null) {
-        try {
-          commitBtn = await scroll.scrollSearch(matcher);
-        } catch (_e2) {
-          commitBtn = null;
-        }
+        commitBtn = null;
       }
     }
   }
   if (commitBtn === null) {
-    for (let i = 0; i < 18; i++) {
-      await driver.fling(UiDirection.DOWN, 8500);
-      await driver.waitForIdle(350, 900);
+    for (let i = 0; i < 2; i++) {
+      await driver.fling(UiDirection.DOWN, 6000);
+      await driver.waitForIdle(300, 600);
       commitBtn = await driver.findComponent(matcher);
       if (commitBtn !== null) {
         break;
@@ -365,10 +417,22 @@ export async function clickConfirmImportButton(driver: Driver): Promise<void> {
     }
   }
   if (commitBtn === null) {
-    commitBtn = await driver.findComponent(ON.type('Button').isAfter(ON.text('上一步（改条件）')));
-  }
-  if (commitBtn === null) {
-    throw new Error('候选步未找到「确认导入」按钮（已尝试 Scroll + fling + isAfter 兜底）');
+    throw new Error('候选步未找到「确认导入」按钮');
   }
   await commitBtn.click();
+}
+
+/** 在扫描遮罩/结果区点击「确定取消」对话框按钮。 */
+export async function clickConfirmCancelDialog(driver: Driver): Promise<void> {
+  const okBtn = await driver.findComponent(ON.text('确定取消'));
+  if (okBtn !== null) {
+    await okBtn.click();
+    return;
+  }
+  const alt = await driver.findComponent(ON.text('确定'));
+  if (alt !== null) {
+    await alt.click();
+    return;
+  }
+  throw new Error('未找到对话框按钮「确定取消」或「确定」');
 }

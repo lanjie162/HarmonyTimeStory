@@ -24,24 +24,34 @@ export default function tier1RepositoryRdb(): void {
     const dbName = `TimestoreTier1_${Date.now()}.db`;
 
     beforeAll(async () => {
-      const delegator = abilityDelegatorRegistry.getAbilityDelegator();
-      const ctx = delegator.getAppContext();
-      const cfg: relationalStore.StoreConfig = {
-        name: dbName,
-        securityLevel: relationalStore.SecurityLevel.S1
-      };
-      const s = await relationalStore.getRdbStore(ctx, cfg);
-      ensureSchemaV1(s);
-      const r = new RepositoryImpl();
-      r.attachRdb(s);
-      store = s;
-      repo = r;
-    }, 60000);
+      try {
+        const delegator = abilityDelegatorRegistry.getAbilityDelegator();
+        const ctx = delegator.getAppContext();
+        console.info('Tier1Rdb: got app context, creating RDB: ' + dbName);
+        const cfg: relationalStore.StoreConfig = {
+          name: dbName,
+          securityLevel: relationalStore.SecurityLevel.S1
+        };
+        const s = await relationalStore.getRdbStore(ctx, cfg);
+        console.info('Tier1Rdb: RDB created, applying schema');
+        ensureSchemaV1(s);
+        console.info('Tier1Rdb: schema applied, attaching repo');
+        const r = new RepositoryImpl();
+        r.attachRdb(s);
+        store = s;
+        repo = r;
+        console.info('Tier1Rdb: beforeAll complete');
+      } catch (e) {
+        console.error('Tier1Rdb: beforeAll FAILED: ' + JSON.stringify(e));
+        throw new Error(typeof e === 'string' ? e : JSON.stringify(e));
+      }
+    });
 
     afterAll(() => {
       if (store !== undefined) {
         try {
           store.close();
+          console.info('Tier1Rdb: store closed');
         } catch (_e) {
           // ignore
         }
@@ -50,26 +60,26 @@ export default function tier1RepositoryRdb(): void {
       repo = undefined;
     });
 
-    it('tier1_rdb_createPerson_rejects_blank', 0, (): void => {
+    it('rdb_createPerson_rejects_blank', 0, (): void => {
       const r = repo as RepositoryImpl;
       expect(r.createPerson('   ')).assertEqual(-1);
       expect(r.createPerson('\t\n')).assertEqual(-1);
     });
 
-    it('tier1_rdb_createPerson_trims_and_reads', 0, (): void => {
+    it('rdb_createPerson_trims_and_reads', 0, (): void => {
       const r = repo as RepositoryImpl;
       const id = r.createPerson('  Alice  ');
       expect(id > 0).assertTrue();
       expect((r.getPerson(id)?.displayName ?? '')).assertEqual('Alice');
     });
 
-    it('tier1_rdb_createStory_rejects_blank', 0, (): void => {
+    it('rdb_createStory_rejects_blank', 0, (): void => {
       const r = repo as RepositoryImpl;
       expect(r.createStory('')).assertEqual(-1);
       expect(r.createStory('  \n')).assertEqual(-1);
     });
 
-    it('tier1_rdb_updateStory_rejects_blank', 0, (): void => {
+    it('rdb_updateStory_rejects_blank', 0, (): void => {
       const r = repo as RepositoryImpl;
       const sid = r.createStory('SKeep');
       expect(sid > 0).assertTrue();
@@ -77,12 +87,12 @@ export default function tier1RepositoryRdb(): void {
       expect((r.getStory(sid)?.title ?? '')).assertEqual('SKeep');
     });
 
-    it('tier1_rdb_getStory_missing', 0, (): void => {
+    it('rdb_getStory_missing', 0, (): void => {
       const r = repo as RepositoryImpl;
       expect(r.getStory(999999999) === null).assertTrue();
     });
 
-    it('tier1_rdb_updatePerson_rejects_blank', 0, (): void => {
+    it('rdb_updatePerson_rejects_blank', 0, (): void => {
       const r = repo as RepositoryImpl;
       const id = r.createPerson('Bob');
       expect(id > 0).assertTrue();
@@ -90,7 +100,7 @@ export default function tier1RepositoryRdb(): void {
       expect((r.getPerson(id)?.displayName ?? '')).assertEqual('Bob');
     });
 
-    it('tier1_rdb_listPersons_newest_first', 0, async (): Promise<void> => {
+    it('rdb_listPersons_newest_first', 0, async (): Promise<void> => {
       const r = repo as RepositoryImpl;
       const idA = r.createPerson('ListA');
       await sleepMs(15);
@@ -101,17 +111,17 @@ export default function tier1RepositoryRdb(): void {
       expect(list[0].displayName).assertEqual('ListB');
     });
 
-    it('tier1_rdb_getPerson_missing', 0, (): void => {
+    it('rdb_getPerson_missing', 0, (): void => {
       const r = repo as RepositoryImpl;
       expect(r.getPerson(999999999) === null).assertTrue();
     });
 
-    it('tier1_rdb_updatePerson_no_row', 0, (): void => {
+    it('rdb_updatePerson_no_row', 0, (): void => {
       const r = repo as RepositoryImpl;
       expect(r.updatePerson(999999999, 'Ghost')).assertFalse();
     });
 
-    it('tier1_rdb_link_unlink_and_query', 0, (): void => {
+    it('rdb_link_unlink_and_query', 0, (): void => {
       const r = repo as RepositoryImpl;
       const pid = r.createPerson('LinkPerson');
       const sid = r.createStory('LinkStory');
@@ -128,7 +138,7 @@ export default function tier1RepositoryRdb(): void {
       expect(r.isPersonStoryLinked(pid, sid)).assertFalse();
     });
 
-    it('tier1_rdb_link_person_story_idempotent', 0, (): void => {
+    it('rdb_link_person_story_idempotent', 0, (): void => {
       const r = repo as RepositoryImpl;
       const pid = r.createPerson('IdemP');
       const sid = r.createStory('IdemS');
@@ -137,7 +147,7 @@ export default function tier1RepositoryRdb(): void {
       expect(r.linkedStoriesForPerson(pid).length).assertEqual(1);
     });
 
-    it('tier1_rdb_addPhoto_person_success_and_duplicate', 0, (): void => {
+    it('rdb_addPhoto_person_success_and_duplicate', 0, (): void => {
       const r = repo as RepositoryImpl;
       const pid = r.createPerson('PhotoP');
       const uri = 'file://tier1/photo-person-1';
@@ -152,21 +162,21 @@ export default function tier1RepositoryRdb(): void {
       expect(photos[0].uri).assertEqual(uri);
     });
 
-    it('tier1_rdb_addPhoto_person_unknown_owner_fails', 0, (): void => {
+    it('rdb_addPhoto_person_unknown_owner_fails', 0, (): void => {
       const r = repo as RepositoryImpl;
       const res = r.addPhotoForPerson(999999999, 'file://tier1/orphan');
       expect(res.success).assertFalse();
       expect(res.duplicate).assertFalse();
     });
 
-    it('tier1_rdb_addPhoto_empty_uri_fails', 0, (): void => {
+    it('rdb_addPhoto_empty_uri_fails', 0, (): void => {
       const r = repo as RepositoryImpl;
       const pid = r.createPerson('UriEmpty');
       const res = r.addPhotoForPerson(pid, '  \t');
       expect(res.success).assertFalse();
     });
 
-    it('tier1_rdb_addPhoto_story_success', 0, (): void => {
+    it('rdb_addPhoto_story_success', 0, (): void => {
       const r = repo as RepositoryImpl;
       const sid = r.createStory('PhotoSt');
       const uri = 'file://tier1/photo-story-1';
@@ -177,7 +187,7 @@ export default function tier1RepositoryRdb(): void {
       expect(photos[0].uri).assertEqual(uri);
     });
 
-    it('tier1_rdb_shared_photo_ref_across_two_persons', 0, (): void => {
+    it('rdb_shared_photo_ref_across_two_persons', 0, (): void => {
       const r = repo as RepositoryImpl;
       const p1 = r.createPerson('Share1');
       const p2 = r.createPerson('Share2');

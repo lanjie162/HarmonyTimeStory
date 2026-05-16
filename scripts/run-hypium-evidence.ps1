@@ -6,10 +6,20 @@
   默认输出目录：document/evidence/local/<UTC 时间戳>-hypium-evidence
   需已安装 hdc 并连接设备；需 debug 签名 HAP。
 
+  **Tier 参数**
+  - `-Tier Tier2`（默认）：仅执行 ohosTest 设备侧测试
+  - `-Tier Tier1`：仅建议通过 DevEco Studio 运行本地单元测试（此脚本提示跳转）
+  - `-Tier All`：先 Tier1（仅提示），再 Tier2 设备侧测试
+
   **Tier0 与构建（与 document/techdoc/[架构]HarmonyOS测试分层与自动化规范.md §2.1 对齐）**
-  - **默认 `-BuildBackend Mcp`**：PowerShell **无法直接调用 MCP**，脚本会在证据目录写入 **`tier0-mcp-handoff.json`**（及 `tier0-check-ets-git-candidates.txt`），供在 **Cursor 中对 `user-deveco-mcp` 执行 `check_ets_files` + `build_project`**；若两份 HAP 尚不存在则 **终止**并提示先 MCP 构建后加 **`-SkipBuild`** 重跑。
-  - **`-BuildBackend Hvigor`**：在 PATH/工程根存在 `hvigorw`/`hvigor` 时直接执行 `assembleHap`（Tier0 经 **CR-x** 降级场景）。
-  - **`-SkipBuild`**：跳过上述任一路径，要求 `entry-default-signed.hap` / `entry-ohosTest-signed.hap` 已存在（例如已由 MCP 在本机构建完毕）。
+  - 默认 **`-BuildBackend Mcp`**…（同下文）
+  - **`-SkipBuild`**：跳过构建步骤，直接使用已有 HAP。
+
+  **超时说明**：默认 `-TimeoutMs 120000`（2min），适合本地快速失败调试。
+  若全量 32 用例正常跑满（约 15-20min）需长时间等待，请传 `-TimeoutMs 600000`（10min）。
+
+.PARAMETER Tier
+  `Tier2`（默认）| `Tier1` | `All`。见 .DESCRIPTION。
 
 .PARAMETER SkipBuild
   跳过构建步骤，直接使用已有 HAP。
@@ -24,11 +34,13 @@
 param(
   [string] $BundleName = 'com.lanjie162.timestore',
   [string] $TestModule = 'entry_test',
-  [int] $TimeoutMs = 180000,
+  [int] $TimeoutMs = 120000,
   [switch] $SkipBuild,
   [ValidateSet('Mcp', 'Hvigor')]
   [string] $BuildBackend = 'Mcp',
-  [string] $OutDir = ''
+  [string] $OutDir = '',
+  [ValidateSet('Tier1', 'Tier2', 'All')]
+  [string] $Tier = 'Tier2'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -44,6 +56,171 @@ if ([string]::IsNullOrWhiteSpace($OutDir)) {
 }
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
+# ── Tier1：本地单元测试 ──────────────────────────────────────────────
+function Invoke-Tier1Hint {
+  Write-Host "`n===== Tier1: 本地单元测试（src/test/）====="
+  Write-Host "src/test/ 下的测试为纯逻辑/契约断言，不依赖设备。"
+  Write-Host "请在 DevEco Studio 中通过 'entry' 模块的单元测试运行器执行："
+  Write-Host "  entry/src/test/List.test.ets 聚合了以下套件："
+  Write-Host "  - tier1_dataLayer_schemaMarkers (2 tests)"
+  Write-Host "  - tier1_repository_singleton (2 tests)"
+  Write-Host "  - tier1_repository_text_normalize (3 tests)"
+  Write-Host " 共计 7 个本地用例。"
+  Write-Host "`nIDE 操作：右键 entry/src/test/ → Run 'Tests in entry.test'"
+  Write-Host "或使用 hvigorw 命令："
+  Write-Host "  hvigorw --mode module -p module=entry@default -p buildMode=debug assembleHap`n"
+}
+
+# ── Tier2：设备侧 `aa test` ──────────────────────────────────────────
+function Invoke-Tier2AaTest {
+  param([string] $EvidenceDir)
+
+  Write-Host "`n===== Tier2: 设备侧 ohosTest（aa test）====="
+
+  if (-not (Test-Path -LiteralPath $hapMain)) {
+    throw "未找到主 HAP: $hapMain"
+  }
+  if (-not (Test-Path -LiteralPath $hapTest)) {
+    throw "未找到测试 HAP: $hapTest"
+  }
+
+  $hdc = Get-Command hdc -ErrorAction SilentlyContinue
+  if (-not $hdc) {
+    throw '未在 PATH 中找到 hdc，请安装 HarmonyOS 设备连接工具。'
+  }
+
+  Write-Host "安装 HAP 到设备..."
+  $hdcInstall = & hdc install $hapMain 2>&1
+  $hdcInstall | Out-File (Join-Path $EvidenceDir 'hdc-install-main.log') -Encoding utf8
+  $hdcInstallTest = & hdc install $hapTest 2>&1
+  $hdcInstallTest | Out-File (Join-Path $EvidenceDir 'hdc-install-ohosTest.log') -Encoding utf8
+
+  & hdc list targets 2>&1 | Out-File (Join-Path $EvidenceDir 'hdc-list-targets.txt') -Encoding utf8
+  & git -C $RepoRoot rev-parse HEAD 2>&1 | Out-File (Join-Path $EvidenceDir 'git-commit.txt') -Encoding utf8
+
+  Write-Host "执行 aa test（超时 $TimeoutMs ms）..."
+  $aaArgs = @(
+    'shell', 'aa', 'test',
+    '-b', $BundleName,
+    '-m', $TestModule,
+    '-s', "timeout $TimeoutMs",
+    '-s', 'unittest', 'OpenHarmonyTestRunner'
+  )
+  $logPath = Join-Path $EvidenceDir 'aa-test.log'
+  $aaOut = & hdc @aaArgs 2>&1
+  $aaExit = $LASTEXITCODE
+  $aaOut | Out-File -FilePath $logPath -Encoding utf8
+
+  $text = $aaOut | Out-String
+
+  # ── 解析总结果行 ──────────────────────────────────────────────
+  $summaryMatch = [regex]::Match($text, 'Tests run:\s*(\d+)\s*,\s*Failure:\s*(\d+)\s*,\s*Error:\s*(\d+)\s*,\s*Pass:\s*(\d+)')
+
+  # ── 按 suite(class) 逐个解析 ─────────────────────────────────
+  $suiteResults = @()
+  $suiteIter = [regex]::Matches($text, "OHOS_REPORT_SUM:\s*(\d+)\s*`r?`nOHOS_REPORT_STATUS:\s*class=(.+?)(?:`r?`n|$)")
+  $suitePass = 0
+  $suiteFail = 0
+  $suiteTotal = 0
+  foreach ($m in $suiteIter) {
+    $className = $m.Groups[2].Value.Trim()
+    $suiteTotal++
+
+    # 查找该 class 下有没有 -1 的 test
+    $classBlock = @()
+    $blockStart = $m.Index
+    $blockEnd = if ($m.Index + $m.Length -lt $text.Length) { $m.Index + $m.Length + 2000 } else { $text.Length - 1 }
+    $classContent = $text.Substring($m.Index, [Math]::Min($blockEnd - $m.Index, $text.Length - $m.Index))
+    $hasError = $classContent -match "OHOS_REPORT_STATUS_CODE:\s*-1"
+    $hasPassTest = $classContent -match "OHOS_REPORT_STATUS_CODE:\s*0"
+
+    if ($hasError) {
+      $suiteFail++
+      $suiteResults += [ordered]@{
+        class    = $className
+        status   = 'ERROR'
+      }
+    } elseif ($hasPassTest) {
+      $suitePass++
+      $suiteResults += [ordered]@{
+        class    = $className
+        status   = 'PASS'
+      }
+    } else {
+      $suiteResults += [ordered]@{
+        class    = $className
+        status   = 'UNKNOWN'
+      }
+    }
+  }
+
+  $summary = [ordered]@{
+    tier              = 'Tier2'
+    bundleName        = $BundleName
+    testModule        = $TestModule
+    runner            = 'OpenHarmonyTestRunner'
+    timeoutMs         = $TimeoutMs
+    hapMain           = $hapMain
+    hapTest           = $hapTest
+    evidenceDir       = $EvidenceDir
+    skipBuild         = [bool]$SkipBuild
+    tier0BuildBackend = $BuildBackend
+    testsRun          = if ($summaryMatch.Success) { [int]$summaryMatch.Groups[1].Value } else { $null }
+    failure           = if ($summaryMatch.Success) { [int]$summaryMatch.Groups[2].Value } else { $null }
+    error             = if ($summaryMatch.Success) { [int]$summaryMatch.Groups[3].Value } else { $null }
+    pass              = if ($summaryMatch.Success) { [int]$summaryMatch.Groups[4].Value } else { $null }
+    parsed            = $summaryMatch.Success
+    hdcExitCode       = $aaExit
+    suites            = $suiteResults
+    suitesPassed      = $suitePass
+    suitesFailed      = $suiteFail
+    generatedAtUtc    = (Get-Date).ToUniversalTime().ToString('o')
+  }
+  $jsonPath = Join-Path $EvidenceDir 'summary.json'
+  $summary | ConvertTo-Json -Depth 6 | Out-File -FilePath $jsonPath -Encoding utf8
+
+  Write-Host "证据已写入: $EvidenceDir"
+  Write-Host "summary.json: $(Get-Content -Raw $jsonPath)"
+
+  $global:aaExitCode = $aaExit
+  $global:summaryMatchSuccess = $summaryMatch.Success
+  if ($summaryMatch.Success) {
+    $global:aaFailure = [int]$summaryMatch.Groups[2].Value
+    $global:aaError = [int]$summaryMatch.Groups[3].Value
+  } else {
+    $global:aaFailure = 0
+    $global:aaError = 0
+  }
+}
+
+# ── 判断 Tier0 构建逻辑 ──────────────────────────────────────────────
+function Invoke-Tier0Build {
+  if ($SkipBuild) {
+    return
+  }
+  if ($BuildBackend -eq 'Mcp') {
+    Write-McpTier0Handoff -EvidenceDir $OutDir
+    $mainOk = Test-Path -LiteralPath $hapMain
+    $testOk = Test-Path -LiteralPath $hapTest
+    if (-not $mainOk -or -not $testOk) {
+      throw @"
+缺少构建产物（Tier0 默认由 MCP 完成，本脚本不调用 hvigor）:
+  主包: $hapMain 存在=$mainOk
+  测试包: $hapTest 存在=$testOk
+请先在本机 Cursor 中按证据目录下的 tier0-mcp-handoff.json 调用 deveco-mcp 的 check_ets_files 与 build_project，再执行:
+  .\scripts\run-hypium-evidence.ps1 -SkipBuild -OutDir "$OutDir"
+若需在无 MCP 环境用 hvigor 一次构建，请使用:
+  .\scripts\run-hypium-evidence.ps1 -BuildBackend Hvigor
+"@
+    }
+    Write-Warning '已检测到现有 HAP；请确认本轮已由 MCP 按 tier0-mcp-handoff.json 完成 Tier0 构建后再继续 hdc/aa test。'
+  }
+  else {
+    Invoke-HvigorBuild
+  }
+}
+
+# ── 工具函数（与旧版保持兼容） ──────────────────────────────────────
 function Get-ChangedEtsPathsRelative {
   $set = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
   $gitArgsList = @(
@@ -108,7 +285,7 @@ function Write-McpTier0Handoff {
         }
       }
     )
-    afterTier0RerunScript = ".\scripts\run-hypium-evidence.ps1 -SkipBuild"
+    afterTier0RerunScript = ".\scripts\run-hypium-evidence.ps1 -SkipBuild -Tier $Tier"
     generatedAtUtc      = (Get-Date).ToUniversalTime().ToString('o')
   }
   $handoffPath = Join-Path $EvidenceDir 'tier0-mcp-handoff.json'
@@ -145,93 +322,35 @@ function Invoke-HvigorBuild {
   }
 }
 
-if (-not $SkipBuild) {
-  if ($BuildBackend -eq 'Mcp') {
-    Write-McpTier0Handoff -EvidenceDir $OutDir
-    $mainOk = Test-Path -LiteralPath $hapMain
-    $testOk = Test-Path -LiteralPath $hapTest
-    if (-not $mainOk -or -not $testOk) {
-      throw @"
-缺少构建产物（Tier0 默认由 MCP 完成，本脚本不调用 hvigor）:
-  主包: $hapMain 存在=$mainOk
-  测试包: $hapTest 存在=$testOk
-请先在本机 Cursor 中按证据目录下的 tier0-mcp-handoff.json 调用 deveco-mcp 的 check_ets_files 与 build_project，再执行:
-  .\scripts\run-hypium-evidence.ps1 -SkipBuild -OutDir `"$OutDir`"
-若需在无 MCP 环境用 hvigor 一次构建，请使用:
-  .\scripts\run-hypium-evidence.ps1 -BuildBackend Hvigor
-"@
+# ════════════════════════════════════════════════════════════════════
+# 主流程
+# ════════════════════════════════════════════════════════════════════
+
+# ── Tier1（仅提示） ────────────────────────────────────────────────
+if ($Tier -eq 'Tier1' -or $Tier -eq 'All') {
+  Invoke-Tier1Hint
+  if ($Tier -eq 'Tier1') {
+    Write-Host "`nTier1 提示已完成。退出。"
+    exit 0
+  }
+}
+
+# ── Tier2（设备侧） ────────────────────────────────────────────────
+if ($Tier -eq 'Tier2' -or $Tier -eq 'All') {
+  Invoke-Tier0Build
+
+  $global:aaExitCode = 0
+  $global:aaFailure = 0
+  $global:aaError = 0
+  $global:summaryMatchSuccess = $false
+
+  Invoke-Tier2AaTest -EvidenceDir $OutDir
+
+  $fail = 1
+  if ($global:summaryMatchSuccess) {
+    if ($global:aaFailure -eq 0 -and $global:aaError -eq 0 -and $global:aaExitCode -eq 0) {
+      $fail = 0
     }
-    Write-Warning '已检测到现有 HAP；请确认本轮已由 MCP 按 tier0-mcp-handoff.json 完成 Tier0 构建后再继续 hdc/aa test。'
   }
-  else {
-    Invoke-HvigorBuild
-  }
+  exit $fail
 }
-
-if (-not (Test-Path -LiteralPath $hapMain)) {
-  throw "未找到主 HAP: $hapMain"
-}
-if (-not (Test-Path -LiteralPath $hapTest)) {
-  throw "未找到测试 HAP: $hapTest"
-}
-
-$hdc = Get-Command hdc -ErrorAction SilentlyContinue
-if (-not $hdc) {
-  throw '未在 PATH 中找到 hdc，请安装 HarmonyOS 设备连接工具。'
-}
-
-$hdcInstall = & hdc install $hapMain 2>&1
-$hdcInstall | Out-File (Join-Path $OutDir 'hdc-install-main.log') -Encoding utf8
-$hdcInstallTest = & hdc install $hapTest 2>&1
-$hdcInstallTest | Out-File (Join-Path $OutDir 'hdc-install-ohosTest.log') -Encoding utf8
-
-& hdc list targets 2>&1 | Out-File (Join-Path $OutDir 'hdc-list-targets.txt') -Encoding utf8
-& git -C $RepoRoot rev-parse HEAD 2>&1 | Out-File (Join-Path $OutDir 'git-commit.txt') -Encoding utf8
-
-$aaArgs = @(
-  'shell', 'aa', 'test',
-  '-b', $BundleName,
-  '-m', $TestModule,
-  '-s', "timeout $TimeoutMs",
-  '-s', 'unittest', 'OpenHarmonyTestRunner'
-)
-$logPath = Join-Path $OutDir 'aa-test.log'
-$aaOut = & hdc @aaArgs 2>&1
-$aaExit = $LASTEXITCODE
-$aaOut | Out-File -FilePath $logPath -Encoding utf8
-
-$text = $aaOut | Out-String
-$match = [regex]::Match($text, 'Tests run:\s*(\d+)\s*,\s*Failure:\s*(\d+)\s*,\s*Error:\s*(\d+)\s*,\s*Pass:\s*(\d+)')
-$summary = [ordered]@{
-  bundleName         = $BundleName
-  testModule         = $TestModule
-  runner             = 'OpenHarmonyTestRunner'
-  timeoutMs          = $TimeoutMs
-  hapMain            = $hapMain
-  hapTest            = $hapTest
-  evidenceDir        = $OutDir
-  skipBuild          = [bool]$SkipBuild
-  tier0BuildBackend  = $BuildBackend
-  testsRun           = if ($match.Success) { [int]$match.Groups[1].Value } else { $null }
-  failure            = if ($match.Success) { [int]$match.Groups[2].Value } else { $null }
-  error              = if ($match.Success) { [int]$match.Groups[3].Value } else { $null }
-  pass               = if ($match.Success) { [int]$match.Groups[4].Value } else { $null }
-  parsed             = $match.Success
-  hdcExitCode        = $aaExit
-  generatedAtUtc     = (Get-Date).ToUniversalTime().ToString('o')
-}
-$jsonPath = Join-Path $OutDir 'summary.json'
-$summary | ConvertTo-Json -Depth 6 | Out-File -FilePath $jsonPath -Encoding utf8
-
-Write-Host "证据已写入: $OutDir"
-Write-Host "summary.json: $(Get-Content -Raw $jsonPath)"
-
-$fail = 1
-if ($match.Success) {
-  $f = [int]$match.Groups[2].Value
-  $e = [int]$match.Groups[3].Value
-  if ($f -eq 0 -and $e -eq 0 -and $aaExit -eq 0) {
-    $fail = 0
-  }
-}
-exit $fail
