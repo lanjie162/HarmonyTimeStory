@@ -1,0 +1,32 @@
+{
+  "tier": "Tier2",
+  "bundleName": "com.lanjie162.timestore",
+  "testModule": "entry_test",
+  "runner": "OpenHarmonyTestRunner",
+  "timeoutMs": 300000,
+  "hapMain": "entry\\build\\default\\outputs\\default\\entry-default-signed.hap",
+  "hapTest": "entry\\build\\default\\outputs\\ohosTest\\entry-ohosTest-signed.hap",
+  "evidenceDir": "document\\evidence\\local\\2026-05-16T155802Z-hypium-evidence",
+  "skipBuild": true,
+  "tier0BuildBackend": "Mcp",
+  "testsRun": 32,
+  "failure": 0,
+  "error": 22,
+  "pass": 10,
+  "parsed": true,
+  "hdcExitCode": 0,
+  "taskConsumingMs": 1201095,
+  "gitCommit": "70854af243de4a1de9d48e747eacd4864581bddf",
+  "device": "192.168.50.160:46629",
+  "suites": [
+    { "class": "EntryAbilitySmoke", "status": "PASS", "tests": 1 },
+    { "class": "tier1_repository_rdb_integration", "status": "ERROR", "tests": 16, "rootCause": "beforeAll failed: {\"code\":\"401\"}" },
+    { "class": "V2RegressionPerson", "status": "PASS", "tests": 4 },
+    { "class": "V2RegressionStory", "status": "PASS", "tests": 3 },
+    { "class": "V2RegressionSuggestImport", "status": "ERROR", "tests": 5, "failedTests": 3 },
+    { "class": "V2RegressionB2", "status": "ERROR", "tests": 3, "failedTests": 3 }
+  ],
+  "suitesPassed": 3,
+  "suitesFailed": 3,
+  "generatedAtUtc": "2026-05-16T16:20:46.502Z"
+}
