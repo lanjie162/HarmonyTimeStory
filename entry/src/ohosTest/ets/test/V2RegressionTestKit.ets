@@ -16,10 +16,10 @@ export const V2_TIMEOUT: V2TimeoutConfig = {
   FAST: 800,
   /** 列表行、详情底栏、页面就绪等轻导航（1500ms） */
   NORMAL: 1500,
-  /** 等待导入扫描完成 → 候选步（10s；扫描循环约 3s + 余量） */
-  SCAN: 10000,
-  /** 冷启动首屏（20s） */
-  COLD_START: 20000,
+  /** 等待导入扫描完成 → 候选步（5s；扫描循环约 3s + 余量） */
+  SCAN: 5000,
+  /** 冷启动首屏（5s；首次真正冷启动 + 安全余量） */
+  COLD_START: 5000,
 };
 
 function resolveBundleName(): string {
@@ -93,14 +93,16 @@ export async function coldStartMainApp(): Promise<Driver> {
   };
   await delegator.startAbility(want);
   const driver = Driver.create();
-  const shell = await driver.waitForComponent(ON.text('时光故事'), V2_TIMEOUT.COLD_START);
-  if (shell !== null) {
-    await driver.waitForIdle(300, 800);
-    return driver;
+  // 先快速检查（约 0.01s）：如果已处于 ShellPage 直接返回
+  let shell = await driver.findComponent(ON.text('时光故事'));
+  if (shell === null) {
+    // 立即进入 fallback，不浪费 20s 盲等
+    await ensureOnMainShell(driver);
+    shell = await driver.waitForComponent(ON.text('时光故事'), V2_TIMEOUT.COLD_START);
+    if (shell === null) {
+      throw new Error('coldStartMainApp: 无法回到主壳页');
+    }
   }
-  // fallback: 通过返回栈回到主壳页
-  await ensureOnMainShell(driver);
-  await driver.waitForComponent(ON.text('时光故事'), V2_TIMEOUT.NORMAL);
   await driver.waitForIdle(300, 800);
   return driver;
 }

@@ -1,0 +1,55 @@
+﻿{
+    "tier":  "Tier2",
+    "bundleName":  "com.lanjie162.timestore",
+    "testModule":  "entry_test",
+    "runner":  "OpenHarmonyTestRunner",
+    "timeoutMs":  300000,
+    "hapMain":  "entry/build/default/outputs/default/entry-default-signed.hap",
+    "hapTest":  "entry/build/default/outputs/ohosTest/entry-ohosTest-signed.hap",
+    "evidenceDir":  "document/evidence/local/2026-05-17T1544Z-cold-start-optimize",
+    "skipBuild":  true,
+    "tier0BuildBackend":  "Mcp",
+    "testsRun":  40,
+    "failure":  0,
+    "error":  17,
+    "pass":  23,
+    "parsed":  true,
+    "hdcExitCode":  0,
+    "suites":  [
+                   {
+                       "class":  "EntryAbilitySmoke",
+                       "status":  "PASS"
+                   },
+                   {
+                       "class":  "tier1_repository_rdb_integration",
+                       "status":  "ERROR"
+                   },
+                   {
+                       "class":  "V2RegressionPerson",
+                       "status":  "PASS"
+                   },
+                   {
+                       "class":  "V2RegressionStory",
+                       "status":  "PASS"
+                   },
+                   {
+                       "class":  "V2RegressionSuggestImport",
+                       "status":  "PASS"
+                   },
+                   {
+                       "class":  "V2RegressionB2",
+                       "status":  "PASS"
+                   },
+                   {
+                       "class":  "V2RegressionShell",
+                       "status":  "PASS"
+                   },
+                   {
+                       "class":  "V2RegressionImportFull",
+                       "status":  "ERROR"
+                   }
+               ],
+    "suitesPassed":  6,
+    "suitesFailed":  2,
+    "generatedAtUtc":  "2026-05-17T15:57:54.3511831Z"
+}
