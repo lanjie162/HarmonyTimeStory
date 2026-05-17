@@ -21,7 +21,7 @@ import {
 } from './V2RegressionTestKit';
 
 export default function v2RegressionStory(): void {
-  describe('V2RegressionStory', () => {
+  describe('Tier2B_V2RegressionStory', () => {
     afterEach(async () => {
       await sleepMs(200);
     });

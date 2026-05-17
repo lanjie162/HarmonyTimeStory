@@ -21,7 +21,7 @@ import {
 } from './V2RegressionTestKit';
 
 export default function v2RegressionImportFull(): void {
-  describe('V2RegressionImportFull', () => {
+  describe('Tier2D_V2RegressionImportFull', () => {
     afterEach(async () => {
       await sleepMs(200);
     });

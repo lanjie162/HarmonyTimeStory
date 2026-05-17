@@ -24,7 +24,7 @@ import {
 } from './V2RegressionTestKit';
 
 export default function v2RegressionSuggestImport(): void {
-  describe('V2RegressionSuggestImport', () => {
+  describe('Tier2C_V2RegressionSuggestImport', () => {
     afterEach(async () => {
       await sleepMs(200);
     });

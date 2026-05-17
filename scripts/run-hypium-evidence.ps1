@@ -27,6 +27,11 @@
 .PARAMETER BuildBackend
   `Mcp`（默认）| `Hvigor`。见 .DESCRIPTION。
 
+.PARAMETER Tier2Subset
+  Tier2 子分级过滤：`All`（默认，全量）| `A` | `AB` | `ABC` | `AC` | `AD`。仅 `$Tier` 为 `Tier2` 或 `All` 时生效。
+  一级匹配；非 All 时通过 `-s class` 过滤只跑对应层级。
+  对应表见文档 `§4.1`。
+
 .PARAMETER OutDir
   指定证据目录；不传则自动创建带时间戳的子目录于 document/evidence/local/。
 #>
@@ -40,7 +45,9 @@ param(
   [string] $BuildBackend = 'Mcp',
   [string] $OutDir = '',
   [ValidateSet('Tier1', 'Tier2', 'All')]
-  [string] $Tier = 'Tier2'
+  [string] $Tier = 'Tier2',
+  [ValidateSet('All', 'A', 'AB', 'ABC', 'AC', 'AD')]
+  [string] $Tier2Subset = 'All'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -99,13 +106,41 @@ function Invoke-Tier2AaTest {
   & git -C $RepoRoot rev-parse HEAD 2>&1 | Out-File (Join-Path $EvidenceDir 'git-commit.txt') -Encoding utf8
 
   Write-Host "执行 aa test（超时 $TimeoutMs ms）..."
+  Write-Host "Tier2Subset: $Tier2Subset"
+
+  # ── Tier2 子分级 class 过滤 ──────────────────────────────────
+  $subsetMap = @{
+    'A'   = @('Tier2A_EntryAbilitySmoke', 'Tier2A_V2RegressionShell')
+    'AB'  = @('Tier2A_EntryAbilitySmoke', 'Tier2A_V2RegressionShell',
+              'Tier2B_V2RegressionPerson', 'Tier2B_V2RegressionStory')
+    'ABC' = @('Tier2A_EntryAbilitySmoke', 'Tier2A_V2RegressionShell',
+              'Tier2B_V2RegressionPerson', 'Tier2B_V2RegressionStory',
+              'Tier2C_V2RegressionSuggestImport', 'Tier2C_V2RegressionB2')
+    'AC'  = @('Tier2A_EntryAbilitySmoke', 'Tier2A_V2RegressionShell',
+              'Tier2C_V2RegressionSuggestImport', 'Tier2C_V2RegressionB2')
+    'AD'  = @('Tier2A_EntryAbilitySmoke', 'Tier2A_V2RegressionShell',
+              'Tier2D_V2RegressionImportFull')
+  }
+
   $aaArgs = @(
     'shell', 'aa', 'test',
     '-b', $BundleName,
     '-m', $TestModule,
-    '-s', "timeout $TimeoutMs",
-    '-s', 'unittest', 'OpenHarmonyTestRunner'
+    '-s', "timeout $TimeoutMs"
   )
+
+  # 非 All 时追加 -s class 过滤
+  if ($Tier2Subset -ne 'All' -and $subsetMap.ContainsKey($Tier2Subset)) {
+    foreach ($cls in $subsetMap[$Tier2Subset]) {
+      $aaArgs += '-s'
+      $aaArgs += 'class'
+      $aaArgs += $cls
+    }
+  }
+
+  $aaArgs += '-s'
+  $aaArgs += 'unittest'
+  $aaArgs += 'OpenHarmonyTestRunner'
   $logPath = Join-Path $EvidenceDir 'aa-test.log'
   $aaOut = & hdc @aaArgs 2>&1
   $aaExit = $LASTEXITCODE

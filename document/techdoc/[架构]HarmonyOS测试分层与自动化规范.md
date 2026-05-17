@@ -49,23 +49,68 @@
 
 ---
 
-## 3. 变更类型 → 必跑门禁（矩阵）
+## 3. 变更类型 → 必跑门禁（六维矩阵，含 Tier2 子分级）
 
 在 PR 或任务中勾选；**跳过某一 Tier 须在 PR 描述或任务中引用 `CR-x` 或 DoD 明文降级**（见治理专条 §3.6）。
 
-| 变更类型 | Tier0 | Tier1 | Tier2 | 备注 |
-|----------|:------:|:-----:|:-----:|------|
-| 纯资源 / 文案无行为 | 必跑 | 可选 | 否 | 需 `pm` 确认无行为变更 |
-| UI 样式 / 布局 | 必跑 | 可选 | 建议 | 影响可点击区域时 **建议 Tier2** |
-| 页面路由 / Shell / Tab | 必跑 | 可选 | **必跑** | |
-| Feature 业务规则 | 必跑 | 建议 | **必跑** | 能下沉逻辑的加 Tier1 |
-| Data / RDB / Repository | 必跑 | **必跑** | **必跑** | Tier2 覆盖主链写入与展示 |
-| Ability / 启动 / 权限 | 必跑 | 可选 | **必跑** | |
-| 依赖 / SDK / API 级别 | 必跑 | 建议 | **必跑** | |
+Tier2 按改动范围划分为 A/B/C/D 四级，详见 §4.1。
+
+| 变更类型 | Tier0 | Tier1 | Tier2A | Tier2B | Tier2C | Tier2D |
+|----------|:------:|:-----:|:------:|:------:|:------:|:------:|
+| 纯资源 / 文案无行为 | 必跑 | 可选 | 可选 | 否 | 否 | 否 |
+| UI 样式 / 布局 | 必跑 | 可选 | 建议 | 可选 | 可选 | 否 |
+| 页面路由 / Shell / Tab | 必跑 | 可选 | **必跑** | 可选 | 可选 | 否 |
+| Feature 业务规则 | 必跑 | 建议 | **必跑** | **必跑** | 可选 | 否 |
+| 导入 / 扫描链路 | 必跑 | 可选 | **必跑** | 可选 | **必跑** | 可选 |
+| Data / RDB / Repository | 必跑 | **必跑** | **必跑** | **必跑** | 建议 | 可选 |
+| Ability / 启动 / 权限 | 必跑 | 可选 | **必跑** | 可选 | 可选 | 可选 |
+| 依赖 / SDK / API 级别 | 必跑 | 建议 | **必跑** | 建议 | 可选 | 可选 |
+| **发布 / 版本结项** | **必跑** | **必跑** | **必跑** | **必跑** | **必跑** | **必跑** |
 
 ---
 
-## 4. ohosTest 结构与聚合（P2）
+## 4.1 Tier2 子分级（A / B / C / D）
+
+本仓库 Tier2（设备 Hypium）按改动范围分为四级，通过 `describe` 名称前缀实现 `aa test -s class` 精确过滤。
+
+### 分级依据（基于 23 用例 552s 实测耗时）
+
+| 层级 | describe 前缀 | 套件 | 预计耗时 | 适用范围 |
+|------|---------------|------|----------|----------|
+| **Tier2A** | `Tier2A_` | `EntryAbilitySmoke` + `Shell` | ~12s | 路由/Shell/Tab 变更必跑 |
+| **Tier2B** | `Tier2B_` | `Person` + `Story`（纯 CRUD，不含扫描） | ~134s | 核心域业务规则变更必跑 |
+| **Tier2C** | `Tier2C_` | `SuggestImport` + `B2`（含 DEBUG 扫描慢流程） | ~325s | 导入/扫描链路变更必跑 |
+| **Tier2D** | `Tier2D_` | `ImportFull`（边界补充） | ~80s | 补充覆盖/发布门禁 |
+
+### 执行命令
+
+```bash
+# Tier2A 快速回归
+hdc shell aa test -b com.lanjie162.timestore -m entry_test `
+  -s timeout 300000 -s class Tier2A_EntryAbilitySmoke `
+  -s class Tier2A_V2RegressionShell -s unittest OpenHarmonyTestRunner
+
+# Tier2A+Tier2B 核心回归（~2.5min）
+hdc shell aa test ... -s class Tier2A_EntryAbilitySmoke `
+  -s class Tier2A_V2RegressionShell -s class Tier2B_V2RegressionPerson `
+  -s class Tier2B_V2RegressionStory -s unittest OpenHarmonyTestRunner
+
+# 全量（发布门禁，默认，~9min）
+hdc shell aa test ... -s unittest OpenHarmonyTestRunner
+```
+
+### 与 §3 矩阵的对应关系
+
+| 变更范围 | 必跑层级 | 期望耗时 |
+|----------|---------|----------|
+| 路由/Shell/Tab 改动 | Tier2A | ~12s |
+| 业务规则/CRUD 改动 | Tier2A + Tier2B | ~2.5min |
+| 导入/扫描链路改动 | Tier2A + Tier2C | ~6min |
+| 发布/版本结项 | Tier2A + Tier2B + Tier2C + Tier2D | ~9min |
+
+### 脚本支持
+
+`scripts/run-hypium-evidence.ps1` 新增 `-Tier2Subset` 参数（`All` / `A` / `AB` / `ABC` / `AC` / `AD`）自动拼接 `-s class` 过滤。
 
 - **域拆分**：按业务域维护多个 `*.test.ets`（人物 / 故事 / 建议与导入 / B2 等），共享逻辑集中在 [`entry/src/ohosTest/ets/test/V2RegressionTestKit.ets`](../../entry/src/ohosTest/ets/test/V2RegressionTestKit.ets)。
 - **唯一聚合入口**：[`entry/src/ohosTest/ets/test/List.test.ets`](../../entry/src/ohosTest/ets/test/List.test.ets) 必须 `import` 并调用各域套件的 `default` 函数；**禁止**存在未通过 `List.test.ets` 注册的用例文件。
@@ -130,8 +175,8 @@ hdc shell aa test … -s unittest ActsAbilityTest
 
 | 门禁 | 最低要求 | 适用 |
 |------|------------|------|
-| **合并** | Tier0 通过（§2.1：**MCP `check_ets_files` + `build_project`**）；Tier1 若有则通过 | 日常 PR |
-| **发布 / 版本结项** | Tier0 + Tier2（及任务 DoD 要求的 L2 证据） | 里程碑、派发 DoD 含 L2 时 |
+| **合并** | Tier0 通过（§2.1：**MCP `check_ets_files` + `build_project`**）；Tier1 若有则通过；**Tier2A** 按变更类型矩阵（§3）选跑 | 日常 PR |
+| **发布 / 版本结项** | Tier0 + Tier2 全层级（A/B/C/D）及任务 DoD 要求的 L2 证据 | 里程碑、派发 DoD 含 L2 时 |
 
 无设备池时，允许 PR 在 **仅 Tier0** 合并，但 **不得**宣称已满足需 L2 的结项 DoD。
 

@@ -23,7 +23,7 @@ import {
 } from './V2RegressionTestKit';
 
 export default function v2RegressionB2(): void {
-  describe('V2RegressionB2', () => {
+  describe('Tier2C_V2RegressionB2', () => {
     afterEach(async () => {
       await sleepMs(200);
     });

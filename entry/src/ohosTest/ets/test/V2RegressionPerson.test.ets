@@ -21,7 +21,7 @@ import {
 } from './V2RegressionTestKit';
 
 export default function v2RegressionPerson(): void {
-  describe('V2RegressionPerson', () => {
+  describe('Tier2B_V2RegressionPerson', () => {
     afterEach(async () => {
       // 快速等待页面稳定，避免影响后续用例
       await sleepMs(200);

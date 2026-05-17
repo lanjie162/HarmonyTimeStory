@@ -16,7 +16,7 @@ import {
 } from './V2RegressionTestKit';
 
 export default function v2RegressionShell(): void {
-  describe('V2RegressionShell', () => {
+  describe('Tier2A_V2RegressionShell', () => {
     afterEach(async () => {
       await sleepMs(200);
     });

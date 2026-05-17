@@ -2,7 +2,7 @@ import hilog from '@ohos.hilog';
 import { describe, beforeAll, beforeEach, afterEach, afterAll, it, expect } from '@ohos/hypium';
 
 export default function abilityTest() {
-  describe('EntryAbilitySmoke', () => {
+  describe('Tier2A_EntryAbilitySmoke', () => {
     beforeAll(() => {
     });
     beforeEach(() => {
