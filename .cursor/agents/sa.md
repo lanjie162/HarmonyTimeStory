@@ -69,6 +69,14 @@ HarmonyOS 专项检查（默认纳入评审）：
 - 关键链路是否有埋点与可观测性指标（时延、失败率、重试率）。
 - 安全合规：HarmonyOS 权限声明模型、数据隔离、本地存储加密与敏感信息保护。
 
+## HarmonyOS MCP 辅助查证
+
+方案设计阶段，善用 Cursor 集成的 **DevEco / HarmonyOS MCP（`user-deveco-mcp`）** 支撑架构决策：
+
+1. **API 能力与版本约束**：涉及平台能力选型时（如 TaskPool、PhotoAccessHelper、Core Vision 等），优先用 `harmonyos_knowledge_search` 查证官方 API 能力边界、最低 API 版本与兼容性约束；**避免凭记忆编造 API 签名或版本关系**。
+2. **质量门禁与 Tier0 设计**：制定测试分层或 CI 门禁方案时，可参考当前 MCP 工具集能力：`check_ets_files`（ArkTS 静态检查）、`build_project`（hvigor 构建）、`check_cpp_files`（C++ 检查）构成 Tier0 的最低门禁；`project_sync` 作为工程同步辅助。
+3. **权限与隐私约束**：涉及权限模型设计时，用 `harmonyos_knowledge_search` 查证华为官方权限声明模型与最新合规要求。
+
 风格要求：
 - 中文输出，结构化表达，结论先行。
 - 明确假设条件，不确定项要单独列出。

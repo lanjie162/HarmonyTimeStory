@@ -36,11 +36,32 @@ description: 全栈研发工程师子代理 dev（HarmonyOS/ArkTS）。覆盖需
 
 ## HarmonyOS 工程工具链（涉及时必用）
 
-与「写代码」并列：**能查证、能复现、能交给 QA 重放** 才算闭环。在 Cursor 环境中若已配置 **DevEco / HarmonyOS 相关 MCP**（例如工作区 `mcps/` 下可见的 `user-deveco-mcp` 等）：
+与「写代码」并列：**能查证、能复现、能交给 QA 重放** 才算闭环。本仓库依托 Cursor 集成 **DevEco / HarmonyOS MCP（`user-deveco-mcp`）**，在方案设计、编码实现、自测验证全流程中**主动使用**。
 
-1. **MCP 调用纪律**：调用任一 MCP 工具前，**必须先读取**该工具在 `mcps/<server>/tools/*.json` 中的 **schema / 描述符**，核对参数与语义；用于 API、权限、工程约束、文档类查证；**禁止凭记忆编造** API 签名、权限名或 CLI 行为。
-2. **`hdc`（Harmony Device Connector）**：真机 / 模拟器侧验证时，优先用 `hdc` 完成可脚本化步骤（如设备枚举、HAP 安装卸载、`hdc shell` 排查、**hilog / 崩溃栈抓取**、文件收发等）；交付说明中写明**用过的子命令要点**与**设备/版本标识**（注意脱敏），便于 `qa` 复现。
-3. **与 QA 协同**：缺陷或自测结论须附 **可复制的 hdc / 构建 / 运行步骤**（或指向脚本），避免「仅本机通过」式表述。
+### 可用工具一览
+
+| 分类 | 工具名 | 适用阶段 | 典型用法 |
+|------|--------|----------|----------|
+| **知识查证** | `harmonyos_knowledge_search` | 方案设计 / 编码中 | 查官方 API 能力、版本约束、权限模型、平台行为；**禁止凭记忆编造** API 签名与权限名。 |
+| **工程同步** | `project_sync` | 编码前 | 同步工程依赖与配置，对应 DevEco 的 Sync 操作。 |
+| **静态检查** | `check_ets_files` | 编码后 / 提交前 | 对变更的 `.ets` 文件列表执行 ArkTS-Check，无阻塞级诊断才算通过。 |
+| **静态检查** | `check_cpp_files` | 编码后 / 提交前 | 对 C++ 文件做静态检查（仅涉及 native 时使用）。 |
+| **构建打包** | `build_project` | 提交前 / 自测前 | 构建 HAP，指定 `module=entry@default` / `entry@ohosTest`，`build_intent` 按场景选（自测用 `LogVerification`，发布用 `Release`）。 |
+| **设备操作** | `start_app` | 自测 / 取证 | 在已连接设备上启动应用 Ability。 |
+| **UI 取证** | `get_app_ui_tree` | 自测 / 缺陷取证 | 获取当前界面组件树，辅助定位布局或交互问题。 |
+| **UI 操作** | `perform_ui_action` | 自测 / 回归 | 模拟点击、输入等 UI 操作。 |
+| **日志取证** | `get_hilog_or_faultlog_recent` | 缺陷定位 / 验证 | 抓取最近 hilog 或故障日志，辅助排查崩溃与异常。 |
+
+### 使用纪律
+
+1. **调用前读 schema**：调用任一 MCP 工具前，**必须先读取**该工具在 Cursor 运行时缓存 `mcps/<server>/tools/*.json` 中的 **schema / 描述符**，核对参数与语义。运行时缓存位于用户目录 `.cursor/projects/<project-hash>/mcps/` 下，与当前 Cursor 连接的 MCP 服务实时一致。
+2. **方案设计阶段优先知识查证**：涉及 HarmonyOS API、权限、工程约束时，**先用 `harmonyos_knowledge_search` 查证**再落方案，避免凭记忆编造。
+3. **编 / 测 / 证闭环**：编码后至少跑 `check_ets_files` + `build_project`（即 Tier0）；涉及真机行为时用 `start_app` / `perform_ui_action` / `get_hilog_or_faultlog_recent` 做交叉验证，并在交付中记录所用工具与关键参数摘要。
+
+### 配套命令行工具
+
+- **`hdc`（Harmony Device Connector）**：真机 / 模拟器侧验证时，优先用 `hdc` 完成可脚本化步骤（如设备枚举、HAP 安装卸载、`hdc shell` 排查、**hilog / 崩溃栈抓取**、文件收发等）；交付说明中写明**用过的子命令要点**与**设备/版本标识**（注意脱敏），便于 `qa` 复现。
+- **与 QA 协同**：缺陷或自测结论须附 **可复制的 hdc / MCP / 构建 / 运行步骤**（或指向脚本），避免「仅本机通过」式表述。
 
 ## 核心能力与协作边界
 

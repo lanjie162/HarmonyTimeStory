@@ -9,9 +9,10 @@
 
 规范认定 **Tier0 通过** = **`check_ets_files`**（本次变更相关 `.ets`）+ **`build_project`**（**`entry@default`** 与 **`entry@ohosTest`**，`build_intent` 默认 **`LogVerification`**）。
 
-1. 调用 MCP 前阅读仓库内工具描述符（与上游一致）：  
-   - [mcps/user-deveco-mcp/tools/check_ets_files.json](../../mcps/user-deveco-mcp/tools/check_ets_files.json)  
-   - [mcps/user-deveco-mcp/tools/build_project.json](../../mcps/user-deveco-mcp/tools/build_project.json)
+1. 调用 MCP 前从 Cursor 运行时缓存读取工具描述符（位于用户目录 `.cursor/projects/<project-hash>/mcps/user-deveco-mcp/tools/`，与当前 MCP 服务实时一致）：  
+   - `check_ets_files.json`（ArkTS 静态检查）  
+   - `build_project.json`（hvigor 构建）  
+   - 更多工具参见 `harmonyos_knowledge_search.json`、`start_app.json` 等。
 2. 在 Cursor 中对 **user-deveco-mcp** 依次执行：  
    - `check_ets_files`，`files` 为本次改动 `.ets`（大范围重构须扩展列表，勿只检入口文件）。  
    - `build_project`：`module` = `entry@default`，`build_intent` = `LogVerification`，`clean` 按 PR 说明。  

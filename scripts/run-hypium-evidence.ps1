@@ -289,11 +289,7 @@ function Write-McpTier0Handoff {
 
   $handoff = [ordered]@{
     tier0Authority = 'deveco-mcp (user-deveco-mcp)'
-    readme         = '在 Cursor 中通过 MCP 调用下列工具；完成后若产物已生成到 entry/build/... 下，请使用本脚本 -SkipBuild 重跑以继续 hdc + aa test。'
-    toolSchemas    = @(
-      'mcps/user-deveco-mcp/tools/check_ets_files.json',
-      'mcps/user-deveco-mcp/tools/build_project.json'
-    )
+    readme         = '在 Cursor 中通过 MCP 调用下列工具，调用前从 Cursor 运行时缓存 mcps/user-deveco-mcp/tools/*.json 读对应工具 schema；完成后若产物已生成到 entry/build/... 下，请使用本脚本 -SkipBuild 重跑以继续 hdc + aa test。'
     suggestedSteps = @(
       @{
         tool      = 'check_ets_files'

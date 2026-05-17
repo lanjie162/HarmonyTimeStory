@@ -30,10 +30,7 @@
 1. **`check_ets_files`**：对本次变更涉及的 **`.ets` 文件路径列表**执行 ArkTS-Check，**无阻塞级诊断**（按 MCP 返回语义判定）。小改动可只传改动文件；**大范围重构**须扩展为覆盖主模块与测试目录下相关 `.ets`，避免「只检了入口文件」。
 2. **`build_project`**：至少完成 **`entry@default`** 与 **`entry@ohosTest`** 两次构建（或等价的一次多 target 策略，以 MCP 实际能力为准），`build_intent` 默认 **`LogVerification`**（与调试/测试包一致）；需要干净构建时在 PR 或任务中注明 **`clean: true`**。
 
-工具参数以工作区 MCP 描述为准，调用前须阅读：
-
-- [`mcps/user-deveco-mcp/tools/check_ets_files.json`](../../mcps/user-deveco-mcp/tools/check_ets_files.json)
-- [`mcps/user-deveco-mcp/tools/build_project.json`](../../mcps/user-deveco-mcp/tools/build_project.json)
+工具参数以工作区 MCP 描述为准，调用前须从 Cursor 运行时缓存 `mcps/user-deveco-mcp/tools/*.json` 读取对应工具 schema（位于用户目录 `.cursor/projects/<project-hash>/mcps/user-deveco-mcp/tools/`，与当前 Cursor 连接的 MCP 服务实时一致）。
 
 与 **[`code-linter.json5`](../../code-linter.json5)** 的关系：**不纳入 Tier0 门禁判定**；仍推荐在 DevEco / 本地或独立流水线中执行，作为 **ESLint 性能与安全规则** 的补充信号。若当前环境 **无法使用 deveco-mcp**，须在 PR 或任务中 **明示降级路径**（例如仅本地 `hvigor` + IDE 分析）并经 **`CR-x` 或团队书面约定**，避免静默收窄 Tier0。
 
