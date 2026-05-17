@@ -1,0 +1,25 @@
+﻿{
+    "tier":  "Tier2A",
+    "subset":  "A",
+    "classes":  [
+                    "Tier2A_EntryAbilitySmoke",
+                    "Tier2A_V2RegressionShell"
+                ],
+    "shellTests":  {
+                       "taskMs":  9221,
+                       "run":  3,
+                       "pass":  3,
+                       "error":  0,
+                       "failure":  0
+                   },
+    "smokeTest":  {
+                      "run":  1,
+                      "pass":  1,
+                      "failure":  0,
+                      "note":  "run separately - multi -s class only executes last class",
+                      "error":  0,
+                      "taskMs":  1
+                  },
+    "totalTier2APass":  4,
+    "generatedAtUtc":  "2026-05-17T17:28:23.6188151Z"
+}
