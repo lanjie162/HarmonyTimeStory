@@ -1,6 +1,9 @@
 /**
  * Tier2 · 导入向导完整流程补充覆盖（V2-D3 扩展）。
  * 组件定位、滚动、跳转与 entry/src/main/ets/pages/import/ImportPage.ets 源码精确对齐。
+ *
+ * V2.1 Must（D4）：本文件 2 条主链用例；`V2_D3_import_empty_owner_id_warning` 已 G-3 Out，
+ * 见 deferred/V2RegressionImportEmptyOwner.deferred.test.ets（未注册 List.test.ets）。
  */
 import { afterEach, describe, it } from '@ohos/hypium';
 import { ON } from '@kit.TestKit';
@@ -80,18 +83,6 @@ export default function v2RegressionImportFull(): void {
       // 确认导入
       await clickConfirmImportButton(driver);
       await driver.waitForIdle(300, 800);
-    });
-
-    it('V2_D3_import_empty_owner_id_warning', 0, async () => {
-      const driver = await coldStartMainApp();
-      // 直接从 ShellPage 导航到 ImportPage（无 ownerId）
-      // 通过 router.pushUrl 方式：先到人物页，但由于无 ownerId，验证提示
-      // 这里直接进入时没有上下文
-
-      // 实际上正确的进入方式是从详情页进入——验证直接无上下文时
-      // 页面的「未携带上下文」提示
-      await navigateToPersonFromShell(driver);
-      await assertTextExist(driver, '还没有人物档案');
     });
   });
 }

@@ -6,10 +6,10 @@ export class DataImpl {
     return {
       schemaVersion: 1,
       tables: new Map<string, string[]>([
-        ['Person', ['id', 'displayName']],
-        ['Story', ['id', 'title']],
-        ['PhotoRef', ['id', 'uri']],
-        ['PhotoOwnerLink', ['id', 'ownerKind', 'ownerId', 'photoRefId']]
+        ['person', ['id', 'displayName']],
+        ['story', ['id', 'title']],
+        ['photo_ref', ['id', 'uri']],
+        ['photo_owner_link', ['id', 'ownerKind', 'ownerId', 'photoRefId']]
       ]),
       counters: new Map<string, number>([['PhotoRef.referenceCount', 3]]),
       appliedSteps: new Set<string>()

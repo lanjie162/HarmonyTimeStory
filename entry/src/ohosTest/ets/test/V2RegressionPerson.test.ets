@@ -20,6 +20,9 @@ import {
   V2_TIMEOUT
 } from './V2RegressionTestKit';
 
+/** T-19 / C-3 固定标记名：分两次 aa test，中间进程外 force-stop + 冷启主 Ability。 */
+const T19_COLDSTART_MARKER = 'T19_COLDSTART_MARKER_20260520';
+
 export default function v2RegressionPerson(): void {
   describe('Tier2B_V2RegressionPerson', () => {
     afterEach(async () => {
@@ -109,6 +112,27 @@ export default function v2RegressionPerson(): void {
       await clickDetailDebugSameUriAgain(driver);
       await driver.waitForIdle(300, 800);
       await assertTextExist(driver, '【E2E】上次加图：重复跳过（PH-01）', V2_TIMEOUT.NORMAL);
+    });
+  });
+
+  /** T-19 写阶段（独立 class，aa test -s class T19_C3_write） */
+  describe('T19_C3_write', () => {
+    it('write_person_ui', 0, async () => {
+      const driver = await coldStartMainApp();
+      await navigateToPersonFromShell(driver);
+      await createPersonOnPage(driver, T19_COLDSTART_MARKER);
+      await assertTextExist(driver, T19_COLDSTART_MARKER, V2_TIMEOUT.NORMAL);
+      console.info('T19_PERSIST_WRITE_OK marker=' + T19_COLDSTART_MARKER);
+    });
+  });
+
+  /** T-19 读阶段（独立 class；须在写阶段 + force-stop + 冷启 EntryAbility 之后） */
+  describe('T19_C3_read', () => {
+    it('read_person_after_cold_start_ui', 0, async () => {
+      const driver = await coldStartMainApp();
+      await navigateToPersonFromShell(driver);
+      await assertTextExist(driver, T19_COLDSTART_MARKER, V2_TIMEOUT.NORMAL);
+      console.info('T19_PERSIST_READ_OK marker=' + T19_COLDSTART_MARKER);
     });
   });
 }
