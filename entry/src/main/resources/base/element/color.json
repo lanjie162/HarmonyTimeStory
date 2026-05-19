@@ -1,8 +1,28 @@
 {
   "color": [
-    {
-      "name": "start_window_background",
-      "value": "#FFFFFF"
-    }
+    { "name": "start_window_background", "value": "#FFFBF7" },
+    { "name": "ts_brand_primary", "value": "#B85C38" },
+    { "name": "ts_brand_primary_container", "value": "#F4E7DF" },
+    { "name": "ts_text_primary", "value": "#1C1B1F" },
+    { "name": "ts_text_secondary", "value": "#49454F" },
+    { "name": "ts_text_tertiary", "value": "#666666" },
+    { "name": "ts_text_muted", "value": "#888888" },
+    { "name": "ts_text_caption", "value": "#999999" },
+    { "name": "ts_surface", "value": "#FFFBF7" },
+    { "name": "ts_surface_container", "value": "#F5F5F5" },
+    { "name": "ts_surface_container_high", "value": "#FAFAFA" },
+    { "name": "ts_outline", "value": "#CAC4D0" },
+    { "name": "ts_color_success", "value": "#2E7D32" },
+    { "name": "ts_color_warning", "value": "#BF360C" },
+    { "name": "ts_color_error", "value": "#C62828" },
+    { "name": "ts_color_info", "value": "#1565C0" },
+    { "name": "ts_color_info_container", "value": "#E3F2FD" },
+    { "name": "ts_import_bar_bg", "value": "#37474F" },
+    { "name": "ts_import_bar_on_bg", "value": "#FFFFFF" },
+    { "name": "ts_import_bar_on_bg_secondary", "value": "#E0E0E0" },
+    { "name": "ts_import_progress", "value": "#4FC3F7" },
+    { "name": "ts_import_hint", "value": "#FFECB3" },
+    { "name": "ts_import_overlay_scrim", "value": "#CC263238" },
+    { "name": "ts_debug_banner", "value": "#6A1B9A" }
   ]
 }

@@ -1,0 +1,409 @@
+---
+pid: 14088
+cwd: "C:\\coding\\DevEcoStudioProjects\\timestore"
+command: "hdc shell aa test -b com.lanjie162.timestore -m entry_test -s timeout 180000 -s unittest OpenHarmonyTestRunner"
+started_at: 2026-05-15T16:53:02.718Z
+running_for_ms: 830724   
+---
+start ability successfully.
+
+OHOS_REPORT_SUM: 1
+OHOS_REPORT_STATUS: class=EntryAbilitySmoke
+
+
+OHOS_REPORT_STATUS: class=EntryAbilitySmoke
+OHOS_REPORT_STATUS: current=1
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=tier2_hypium_framework_smoke
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=EntryAbilitySmoke
+OHOS_REPORT_STATUS: current=1
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=tier2_hypium_framework_smoke
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=EntryAbilitySmoke
+OHOS_REPORT_STATUS: suiteconsuming=0
+
+
+OHOS_REPORT_SUM: 4
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=2
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=2
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=25696
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=3
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_detail_quick_story_link_toggle
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=3
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/V2RegressionPerson.test.ets:47:23)
+OHOS_REPORT_STATUS: stream=Error in V2_D1_person_detail_quick_story_link_toggle, Cannot read property click of null
+OHOS_REPORT_STATUS: test=V2_D1_person_detail_quick_story_link_toggle
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=59103
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=4
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_debug_album_equiv_inject
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=4
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/V2RegressionPerson.test.ets:75:57)
+OHOS_REPORT_STATUS: stream=Error in V2_D1_person_debug_album_equiv_inject, Cannot read property click of null
+OHOS_REPORT_STATUS: test=V2_D1_person_debug_album_equiv_inject
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=57949
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=5
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_debug_ph01_duplicate_second_inject
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=5
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/V2RegressionPerson.test.ets:90:57)
+OHOS_REPORT_STATUS: stream=Error in V2_D1_person_debug_ph01_duplicate_second_inject, Cannot read property click of null
+OHOS_REPORT_STATUS: test=V2_D1_person_debug_ph01_duplicate_second_inject
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=56880
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: suiteconsuming=199628
+
+
+OHOS_REPORT_SUM: 3
+OHOS_REPORT_STATUS: class=V2RegressionStory
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: current=6
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: current=6
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stack=Cannot get SourceMap info, dump raw stack:
+=====================Backtrace========================
+#00 pc 00000000003661c4 /system/lib64/platformsdk/libark_jsruntime.so
+#01 pc 0000000000361924 /system/lib64/platformsdk/libark_jsruntime.so
+#02 pc 000000000035f488 /system/lib64/platformsdk/libark_jsruntime.so
+#03 pc 00000000005aca64 /system/lib64/platformsdk/libark_jsruntime.so
+#04 pc 0000000000210900 /system/lib64/platformsdk/libark_jsruntime.so
+#05 pc 00000000005f6010 /system/lib64/platformsdk/libark_jsruntime.so
+#06 pc 0000000000055d80 /system/lib64/platformsdk/libace_napi.z.so
+#07 pc 0000000000012788 /system/lib64/module/libuitest.z.so
+#08 pc 000000000001e140 /system/lib64/module/libuitest.z.so
+#09 pc 000000000003f9f4 /system/lib64/platformsdk/libace_napi.z.so
+#10 pc 0000000000013730 /system/lib64/platformsdk/libuv.so
+#11 pc 00000000000726c8 /system/lib64/platformsdk/libruntime.z.so
+#12 pc 000000000001efe4 /system/lib64/chipset-pub-sdk/libeventhandler.z.so
+#13 pc 000000000001b620 /system/lib64/chipset-pub-sdk/libeventhandler.z.so
+#14 pc 000000000003fe68 /system/lib64/chipset-pub-sdk/libeventhandler.z.so
+#15 pc 00000000000cb878 /system/lib64/platformsdk/libappkit_native.z.so
+#16 pc 0000000000009fd8 /system/lib64/appspawn/appspawn/libappspawn_ace.z.so
+#17 pc 000000000000ba40 /system/bin/appspawn
+#18 pc 0000000000016ce8 /system/bin/appspawn
+#19 pc 0000000000014b10 /system/bin/appspawn
+#20 pc 0000000000017784 /system/lib64/chipset-pub-sdk/libbegetutil.z.so
+#21 pc 000000000001709c /system/lib64/chipset-pub-sdk/libbegetutil.z.so
+#22 pc 000000000001431c /system/lib64/chipset-pub-sdk/libbegetutil.z.so
+#23 pc 0000000000013cd0 /system/lib64/chipset-pub-sdk/libbegetutil.z.so
+#24 pc 00000000000116e4 /system/bin/appspawn
+#25 pc 000000000000f2a8 /system/bin/appspawn
+#26 pc 00000000000b2b98 /lib/ld-musl-aarch64.so.1
+#27 pc 000000000000b730 /system/bin/appspaw
+OHOS_REPORT_STATUS: stream=Error in V2_D2_story_main_create_and_detail, Component not exist matching: {selfMatcher=[{attrName:visible; value:true; Pattern:0},{attrName:text; value:时光故事; Pattern:0},]}
+OHOS_REPORT_STATUS: test=V2_D2_story_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=56640
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: current=7
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_detail_quick_person_link_toggle
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: current=7
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/V2RegressionStory.test.ets:46:22)
+OHOS_REPORT_STATUS: stream=Error in V2_D2_story_detail_quick_person_link_toggle, Cannot read property click of null
+OHOS_REPORT_STATUS: test=V2_D2_story_detail_quick_person_link_toggle
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=56823
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: current=8
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_debug_album_equiv_and_ph01
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: current=8
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/V2RegressionStory.test.ets:71:57)
+OHOS_REPORT_STATUS: stream=Error in V2_D2_story_debug_album_equiv_and_ph01, Cannot read property click of null
+OHOS_REPORT_STATUS: test=V2_D2_story_debug_album_equiv_and_ph01
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=56877
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: suiteconsuming=170340
+
+
+OHOS_REPORT_SUM: 5
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=9
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_suggest_entry_minimal
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=9
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/V2RegressionSuggestImport.test.ets:25:23)
+OHOS_REPORT_STATUS: stream=Error in V2_D3_suggest_entry_minimal, Cannot read property click of null
+OHOS_REPORT_STATUS: test=V2_D3_suggest_entry_minimal
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=56801
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=10
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_wizard_shell_from_person
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=10
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/V2RegressionSuggestImport.test.ets:41:23)
+OHOS_REPORT_STATUS: stream=Error in V2_D3_import_wizard_shell_from_person, Cannot read property click of null
+OHOS_REPORT_STATUS: test=V2_D3_import_wizard_shell_from_person
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=56871
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=11
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_conditions_scan_cancel_im09
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=11
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/V2RegressionSuggestImport.test.ets:63:23)
+OHOS_REPORT_STATUS: stream=Error in V2_D3_import_conditions_scan_cancel_im09, Cannot read property click of null
+OHOS_REPORT_STATUS: test=V2_D3_import_conditions_scan_cancel_im09
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=56965
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=12
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_scan_confirm_commit
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=12
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/V2RegressionSuggestImport.test.ets:102:23)
+OHOS_REPORT_STATUS: stream=Error in V2_D3_import_scan_confirm_commit, Cannot read property click of null
+OHOS_REPORT_STATUS: test=V2_D3_import_scan_confirm_commit
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=57761
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=13
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_ph01_commit_duplicate_uris
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=13
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/V2RegressionSuggestImport.test.ets:126:57)
+OHOS_REPORT_STATUS: stream=Error in V2_D3_import_ph01_commit_duplicate_uris, Cannot read property click of null
+OHOS_REPORT_STATUS: test=V2_D3_import_ph01_commit_duplicate_uris
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=56896
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: suiteconsuming=285294
+
+
+OHOS_REPORT_SUM: 3
+OHOS_REPORT_STATUS: class=V2RegressionB2
+
+
+OHOS_REPORT_STATUS: class=V2RegressionB2
+OHOS_REPORT_STATUS: current=14
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D4_b2_cancel_invalid_request_debug
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionB2
+OHOS_REPORT_STATUS: current=14
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/V2RegressionB2.test.ets:24:57)
+OHOS_REPORT_STATUS: stream=Error in V2_D4_b2_cancel_invalid_request_debug, Cannot read property click of null
+OHOS_REPORT_STATUS: test=V2_D4_b2_cancel_invalid_request_debug
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=56806
+
+
+OHOS_REPORT_STATUS: class=V2RegressionB2
+OHOS_REPORT_STATUS: current=15
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D4_b2_rescan_after_confirm_then_cancel_im09
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionB2
+OHOS_REPORT_STATUS: current=15
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/V2RegressionB2.test.ets:62:57)
+OHOS_REPORT_STATUS: stream=Error in V2_D4_b2_rescan_after_confirm_then_cancel_im09, Cannot read property click of null
+OHOS_REPORT_STATUS: test=V2_D4_b2_rescan_after_confirm_then_cancel_im09
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=57106
+
+
+OHOS_REPORT_STATUS: class=V2RegressionB2
+OHOS_REPORT_STATUS: current=16
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D4_b2_cancelling_banner_after_dialog
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionB2
+OHOS_REPORT_STATUS: current=16
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=16
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/V2RegressionB2.test.ets:101:57)
+OHOS_REPORT_STATUS: stream=Error in V2_D4_b2_cancelling_banner_after_dialog, Cannot read property click of null
+OHOS_REPORT_STATUS: test=V2_D4_b2_cancelling_banner_after_dialog
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=56839
+
+
+OHOS_REPORT_STATUS: class=V2RegressionB2
+OHOS_REPORT_STATUS: suiteconsuming=170751
+
+
+OHOS_REPORT_RESULT: stream=Tests run: 16, Failure: 0, Error: 14, Pass: 2, Ignore: 0
+OHOS_REPORT_CODE: 0
+OHOS_REPORT_STATUS: taskconsuming=826013
+
+TestFinished-ResultCode: 0
+TestFinished-ResultMsg: your test finished!!!
+user test finished.
+
+---
+exit_code: 0
+elapsed_ms: 831333
+ended_at: 2026-05-15T17:06:54.051Z
+---

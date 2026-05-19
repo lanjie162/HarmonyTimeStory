@@ -1,0 +1,512 @@
+=== Build Output ===
+> C:\Program Files\Huawei\DevEco Studio\tools\node\node.exe C:\Program Files\Huawei\DevEco Studio\tools\hvigor\bin\hvigorw.js --mode module -p module=entry@ohosTest assembleHap -p buildMode=debug -p debuggable=true -p debugLine=false --no-daemon
+
+> hvigor UP-TO-DATE :entry:ohosTest@PreBuild...  
+> hvigor Finished :entry:ohosTest@CreateModuleInfo... after 6 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@GenerateMetadata...  
+> hvigor Finished :entry:ohosTest@ConfigureCmake... after 2 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@MergeProfile...  
+> hvigor UP-TO-DATE :entry:ohosTest@CreateBuildProfile...  
+> hvigor Finished :entry:ohosTest@PreCheckSyscap... after 2 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@GenerateOhosTestTemplate...  
+> hvigor Finished :entry:ohosTest@GeneratePkgContextInfo... after 46 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@GeneratePkgSdkInfo...  
+> hvigor Finished :entry:ohosTest@ProcessIntegratedHsp... after 6 ms 
+> hvigor Finished :entry:ohosTest@BuildNativeWithCmake... after 2 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@MakePackInfo...  
+> hvigor Finished :entry:ohosTest@SyscapTransform... after 14 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@ProcessProfile...  
+> hvigor UP-TO-DATE :entry:ohosTest@ProcessRouterMap...  
+> hvigor UP-TO-DATE :entry:ohosTest@ProcessShareConfig...  
+> hvigor Finished :entry:ohosTest@ProcessStartupConfig... after 12 ms 
+> hvigor Finished :entry:ohosTest@BuildNativeWithNinja... after 2 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@ProcessResource...  
+> hvigor UP-TO-DATE :entry:ohosTest@GenerateLoaderJson...  
+> hvigor UP-TO-DATE :entry:ohosTest@ProcessLibs...  
+> hvigor UP-TO-DATE :entry:ohosTest@CompileResource...  
+> hvigor UP-TO-DATE :entry:ohosTest@DoNativeStrip...  
+> hvigor Finished :entry:ohosTest@OhosTestBuildJS... after 24 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@CacheNativeLibs...  
+> hvigor WARN: WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/data/RdbSchema.ets:8:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/data/RdbSchema.ets:12:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/data/RdbSchema.ets:16:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/data/RdbSchema.ets:25:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/data/RdbSchema.ets:34:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/data/RdbSchema.ets:43:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/data/RdbSchema.ets:55:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/data/RdbSchema.ets:67:14
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/data/RdbSchema.ets:69:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/data/RdbSchema.ets:70:15
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/data/RdbSchema.ets:70:26
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/data/RdbSchema.ets:72:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/data/RdbSchema.ets:74:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:15:14
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:17:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:18:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:18:27
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:20:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:52:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:57:12
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:59:20
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:59:31
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:60:22
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:60:35
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:63:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:79:19
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:85:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:87:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:89:20
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:89:31
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:90:22
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:90:35
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:93:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:103:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:109:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:111:12
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:113:20
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:113:31
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:114:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:114:29
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:117:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:133:19
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:139:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:141:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:143:20
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:143:31
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:144:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:144:29
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:147:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:157:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:163:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:169:12
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:171:20
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:171:31
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:172:22
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:172:35
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:175:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:186:17
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:190:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:191:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:194:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:199:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:204:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:209:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:215:12
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:217:20
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:217:31
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:218:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:218:29
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:221:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:227:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:231:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:232:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:254:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:261:12
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:263:20
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:263:31
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:264:14
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:264:27
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:267:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:272:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:274:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:275:19
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:275:30
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:277:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:289:17
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:293:17
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:295:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:296:20
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:296:32
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:298:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/main/ets/infrastructure/repository/RepositoryImpl.ets:380:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:45:21
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:57:22
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:61:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:80:24
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:84:30
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:86:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:87:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:90:27
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:92:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:93:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:96:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:97:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:99:23
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:126:17
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:144:37
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:146:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:153:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:159:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:160:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:163:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:164:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:165:19
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:183:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:197:14
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:216:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:217:18
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:223:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:224:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:225:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:233:14
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:244:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:261:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:262:18
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:295:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:296:18
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:298:23
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:300:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:304:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:305:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:311:28
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:323:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:334:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:335:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:342:28
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:354:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:365:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:366:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:373:43
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:375:26
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:383:25
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:395:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:396:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:397:25
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:404:23
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:409:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:422:22
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:424:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:427:27
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:454:22
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:456:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:467:22
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: C:/coding/DevEcoStudioProjects/timestore/entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:469:11
+ Function may throw exceptions. Special handling is required.
+
+
+> hvigor Finished :entry:ohosTest@OhosTestCompileArkTS... after 42 s 697 ms 
+> hvigor Finished :entry:ohosTest@OhosTestCopyMockConfigJson... after 14 ms 
+> hvigor UP-TO-DATE :entry:ohosTest@GeneratePkgModuleJson...  
+> hvigor Finished :entry:ohosTest@ProcessCompiledResources... after 2 ms 
+> hvigor WARN: Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+
+> hvigor Finished :entry:ohosTest@PackageHap... after 1 s 641 ms 
+> hvigor Finished :entry:ohosTest@PackingCheck... after 46 ms 
+> hvigor WARN: Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+
+> hvigor WARN: Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+
+> hvigor Finished :entry:ohosTest@SignHap... after 10 s 243 ms 
+> hvigor Finished :entry:ohosTest@CollectDebugSymbol... after 7 ms 
+> hvigor Finished :entry:assembleHap... after 2 ms 
+> hvigor BUILD SUCCESSFUL in 1 min 32 s 769 ms 
+
+
+Process finished with exit code 0
+

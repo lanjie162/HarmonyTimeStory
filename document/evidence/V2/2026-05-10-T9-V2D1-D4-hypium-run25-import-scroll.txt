@@ -1,0 +1,202 @@
+=== T-9 · V2DRegression Hypium run25（ImportPage 向导 Scroll 修复后）===
+timestamp: 2026-05-10 (local)
+device: 192.168.73.160:46629 (hdc list targets)
+build: DevEco MCP build_project module=entry@default + entry@ohosTest (LogVerification, clean=false)
+install: entry-default-signed.hap + entry-ohosTest-signed.hap (hdc install)
+command: hdc shell aa test -b com.lanjie162.timestore -m entry_test -s timeout 300000 -s unittest OpenHarmonyTestRunner
+start ability successfully.
+
+OHOS_REPORT_SUM: 1
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+
+
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+OHOS_REPORT_STATUS: current=1
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=assertContain
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+OHOS_REPORT_STATUS: current=1
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=assertContain
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=1
+
+
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+OHOS_REPORT_STATUS: suiteconsuming=1
+
+
+OHOS_REPORT_SUM: 8
+OHOS_REPORT_STATUS: class=V2Regression
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=2
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=2
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=14550
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=3
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_detail_quick_story_link_toggle
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=3
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_detail_quick_story_link_toggle
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=21962
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=4
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=4
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=18059
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=5
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_detail_quick_person_link_toggle
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=5
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_detail_quick_person_link_toggle
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=21393
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=6
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_suggest_entry_minimal
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=6
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_suggest_entry_minimal
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=14806
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=7
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_wizard_shell_from_person
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=7
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_wizard_shell_from_person
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=15069
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=8
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_conditions_scan_cancel_im09
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=8
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_conditions_scan_cancel_im09
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=23316
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=9
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_scan_confirm_commit
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=9
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=9
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_scan_confirm_commit
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=27970
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: suiteconsuming=157125
+
+
+OHOS_REPORT_RESULT: stream=Tests run: 9, Failure: 0, Error: 0, Pass: 9, Ignore: 0
+OHOS_REPORT_CODE: 0
+OHOS_REPORT_STATUS: taskconsuming=157126
+
+TestFinished-ResultCode: 0
+TestFinished-ResultMsg: your test finished!!!
+user test finished.

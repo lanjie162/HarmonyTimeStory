@@ -1,0 +1,944 @@
+---
+pid: 4628
+cwd: "C:\\coding\\DevEcoStudioProjects\\timestore"
+command: "hdc shell aa test -b com.lanjie162.timestore -m entry_test -s timeout 300000 -s unittest OpenHarmonyTestRunner 2>&1"
+started_at: 2026-05-16T17:32:31.092Z
+running_for_ms: 980812   
+---
+start ability successfully.
+
+OHOS_REPORT_SUM: 1
+OHOS_REPORT_STATUS: class=EntryAbilitySmoke
+
+
+OHOS_REPORT_STATUS: class=EntryAbilitySmoke
+OHOS_REPORT_STATUS: current=1
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=tier2_hypium_framework_smoke
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=EntryAbilitySmoke
+OHOS_REPORT_STATUS: current=1
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=tier2_hypium_framework_smoke
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=1
+
+
+OHOS_REPORT_STATUS: class=EntryAbilitySmoke
+OHOS_REPORT_STATUS: suiteconsuming=1
+
+
+OHOS_REPORT_SUM: 16
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=2
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_createPerson_rejects_blank
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=2
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_createPerson_rejects_blank, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_createPerson_rejects_blank
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=3
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_createPerson_trims_and_reads
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=3
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_createPerson_trims_and_reads, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_createPerson_trims_and_reads
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=4
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_createStory_rejects_blank
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=4
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_createStory_rejects_blank, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_createStory_rejects_blank
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=5
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_updateStory_rejects_blank
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=5
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_updateStory_rejects_blank, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_updateStory_rejects_blank
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=6
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_getStory_missing
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=6
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_getStory_missing, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_getStory_missing
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=7
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_updatePerson_rejects_blank
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=7
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_updatePerson_rejects_blank, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_updatePerson_rejects_blank
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=8
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_listPersons_newest_first
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=8
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_listPersons_newest_first, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_listPersons_newest_first
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=9
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_getPerson_missing
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=9
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_getPerson_missing, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_getPerson_missing
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=10
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_updatePerson_no_row
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=10
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_updatePerson_no_row, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_updatePerson_no_row
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=11
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_link_unlink_and_query
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=11
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_link_unlink_and_query, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_link_unlink_and_query
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=12
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_link_person_story_idempotent
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=12
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_link_person_story_idempotent, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_link_person_story_idempotent
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=13
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_addPhoto_person_success_and_duplicate
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=13
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_addPhoto_person_success_and_duplicate, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_addPhoto_person_success_and_duplicate
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=14
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_addPhoto_person_unknown_owner_fails
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=14
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_addPhoto_person_unknown_owner_fails, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_addPhoto_person_unknown_owner_fails
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=15
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_addPhoto_empty_uri_fails
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=15
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_addPhoto_empty_uri_fails, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_addPhoto_empty_uri_fails
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=16
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_addPhoto_story_success
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=16
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_addPhoto_story_success, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_addPhoto_story_success
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=17
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=rdb_shared_photo_ref_across_two_persons
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: current=17
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/Tier1RdbIntegration.test.ets:46:15)
+    at anonymous @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:90:19)
+    at getFuncWithArgsZero @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:82:12)
+    at processedFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:161:24)
+    at runAsyncHookFunc @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:831:23)
+    at asyncRun @ohos/hypium (oh_modules/.ohpm/@ohos+hypium@1.0.25/oh_modules/@ohos/hypium/src/main/service.js:780:24)
+OHOS_REPORT_STATUS: stream=Error in rdb_shared_photo_ref_across_two_persons, {"code":"401"}, error in beforeAll function
+OHOS_REPORT_STATUS: test=rdb_shared_photo_ref_across_two_persons
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=0
+
+
+OHOS_REPORT_STATUS: class=tier1_repository_rdb_integration
+OHOS_REPORT_STATUS: suiteconsuming=0
+OHOS_REPORT_STATUS: {"code":"401"}, error in beforeAll function
+
+
+OHOS_REPORT_SUM: 4
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=18
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_create_and_detail
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=18
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_create_and_detail
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=20031
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=19
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_detail_edit_name
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=19
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_detail_edit_name
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=32690
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=20
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_quick_story_link
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=20
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_quick_story_link
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=37208
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=21
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_debug_album_ph01
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: current=21
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_debug_album_ph01
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=40218
+
+
+OHOS_REPORT_STATUS: class=V2RegressionPerson
+OHOS_REPORT_STATUS: suiteconsuming=130147
+
+
+OHOS_REPORT_SUM: 4
+OHOS_REPORT_STATUS: class=V2RegressionStory
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: current=22
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_create_and_detail
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: current=22
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_create_and_detail
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=28373
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: current=23
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_detail_edit_title
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: current=23
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_detail_edit_title
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=32514
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: current=24
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_quick_person_link
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: current=24
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_quick_person_link
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=37273
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: current=25
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_debug_album_ph01
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: current=25
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_debug_album_ph01
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=39866
+
+
+OHOS_REPORT_STATUS: class=V2RegressionStory
+OHOS_REPORT_STATUS: suiteconsuming=138026
+
+
+OHOS_REPORT_SUM: 6
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=26
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_suggest_entry_and_return
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=26
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_suggest_entry_and_return
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=25480
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=27
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_suggest_accept_ignore
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=27
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_suggest_accept_ignore
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=25353
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=28
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_wizard_from_person
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=28
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_wizard_from_person
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=45253
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=29
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_conditions_scan_cancel
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=29
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_conditions_scan_cancel
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=74182
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=30
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_scan_confirm_commit
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=30
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_scan_confirm_commit
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=63007
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=31
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_ph01_duplicate_commit
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: current=31
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_ph01_duplicate_commit
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=62880
+
+
+OHOS_REPORT_STATUS: class=V2RegressionSuggestImport
+OHOS_REPORT_STATUS: suiteconsuming=296155
+
+
+OHOS_REPORT_SUM: 3
+OHOS_REPORT_STATUS: class=V2RegressionB2
+
+
+OHOS_REPORT_STATUS: class=V2RegressionB2
+OHOS_REPORT_STATUS: current=32
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D4_b2_cancel_invalid_request
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionB2
+OHOS_REPORT_STATUS: current=32
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D4_b2_cancel_invalid_request
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=73269
+
+
+OHOS_REPORT_STATUS: class=V2RegressionB2
+OHOS_REPORT_STATUS: current=33
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D4_b2_rescan_after_confirm_then_cancel
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionB2
+OHOS_REPORT_STATUS: current=33
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D4_b2_rescan_after_confirm_then_cancel
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=89731
+
+
+OHOS_REPORT_STATUS: class=V2RegressionB2
+OHOS_REPORT_STATUS: current=34
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D4_b2_cancelling_banner
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionB2
+OHOS_REPORT_STATUS: current=34
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D4_b2_cancelling_banner
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=73291
+
+
+OHOS_REPORT_STATUS: class=V2RegressionB2
+OHOS_REPORT_STATUS: suiteconsuming=236291
+
+
+OHOS_REPORT_SUM: 3
+OHOS_REPORT_STATUS: class=V2RegressionShell
+
+
+OHOS_REPORT_STATUS: class=V2RegressionShell
+OHOS_REPORT_STATUS: current=35
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D0_shell_main_entries
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionShell
+OHOS_REPORT_STATUS: current=35
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D0_shell_main_entries
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=26855
+
+
+OHOS_REPORT_STATUS: class=V2RegressionShell
+OHOS_REPORT_STATUS: current=36
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D0_shell_debug_state
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionShell
+OHOS_REPORT_STATUS: current=36
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D0_shell_debug_state
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=714
+
+
+OHOS_REPORT_STATUS: class=V2RegressionShell
+OHOS_REPORT_STATUS: current=37
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D0_tab_switch
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionShell
+OHOS_REPORT_STATUS: current=37
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D0_tab_switch
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=3999
+
+
+OHOS_REPORT_STATUS: class=V2RegressionShell
+OHOS_REPORT_STATUS: suiteconsuming=31568
+
+
+OHOS_REPORT_SUM: 3
+OHOS_REPORT_STATUS: class=V2RegressionImportFull
+
+
+OHOS_REPORT_STATUS: class=V2RegressionImportFull
+OHOS_REPORT_STATUS: current=38
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_prepare_step_and_back
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionImportFull
+OHOS_REPORT_STATUS: current=38
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_prepare_step_and_back
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=56392
+
+
+OHOS_REPORT_STATUS: class=V2RegressionImportFull
+OHOS_REPORT_STATUS: current=39
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_confirm_select_all_none_invert
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionImportFull
+OHOS_REPORT_STATUS: current=39
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_confirm_select_all_none_invert
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=63884
+
+
+OHOS_REPORT_STATUS: class=V2RegressionImportFull
+OHOS_REPORT_STATUS: current=40
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_empty_owner_id_warning
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2RegressionImportFull
+OHOS_REPORT_STATUS: current=40
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=40
+OHOS_REPORT_STATUS: stack=    at waitForText entry (entry/src/ohosTest/ets/test/V2RegressionTestKit.ets:74:11)
+OHOS_REPORT_STATUS: stream=Error in V2_D3_import_empty_owner_id_warning, waitForText: 文本未找到（超时 1500ms）: 还没有人物档案
+OHOS_REPORT_STATUS: test=V2_D3_import_empty_owner_id_warning
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=24683
+
+
+OHOS_REPORT_STATUS: class=V2RegressionImportFull
+OHOS_REPORT_STATUS: suiteconsuming=144959
+
+
+OHOS_REPORT_RESULT: stream=Tests run: 40, Failure: 0, Error: 17, Pass: 23, Ignore: 0
+OHOS_REPORT_CODE: 0
+OHOS_REPORT_STATUS: taskconsuming=977147
+
+TestFinished-ResultCode: 0
+TestFinished-ResultMsg: your test finished!!!
+user test finished.
+
+---
+exit_code: 0
+elapsed_ms: 982477
+ended_at: 2026-05-16T17:48:53.569Z
+---

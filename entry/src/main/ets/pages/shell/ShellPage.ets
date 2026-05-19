@@ -20,41 +20,105 @@ export struct ShellPage {
   }
 
   private goPerson(): void {
-    router.pushUrl({ url: 'pages/person/PersonPage' });
+    router.replaceUrl({ url: 'pages/person/PersonPage' });
   }
 
   private goStory(): void {
-    router.pushUrl({ url: 'pages/story/StoryPage' });
+    router.replaceUrl({ url: 'pages/story/StoryPage' });
   }
 
   build() {
-    Column({ space: 12 }) {
-      Text('时光故事 - 主壳页')
-        .fontSize(20)
-        .fontWeight(FontWeight.Bold)
-
-      Text(`当前状态：${this.shellState}`)
-
-      Row({ space: 8 }) {
-        Button('人物')
-          .onClick(() => this.goPerson())
-        Button('故事')
-          .onClick(() => this.goStory())
+    Column({ space: 0 }) {
+      Column({ space: 8 }) {
+        Text('时光故事')
+          .fontSize($r('app.float.ts_font_display'))
+          .fontColor($r('app.color.ts_text_primary'))
+          .fontWeight(FontWeight.Bold)
+        Text('照片留在本机，故事与人物在本地串联。')
+          .fontSize($r('app.float.ts_font_caption'))
+          .fontColor($r('app.color.ts_text_tertiary'))
+          .lineHeight(20)
       }
+      .width('100%')
+      .alignItems(HorizontalAlign.Start)
+      .padding({ left: 20, right: 20, top: 28, bottom: 22 })
+      .backgroundColor($r('app.color.ts_brand_primary_container'))
+      .borderRadius({ bottomLeft: 20, bottomRight: 20 })
 
-      if (this.shellState === 'empty') {
-        Text('空态：请选择人物或故事入口')
-      } else if (this.shellState === 'loading') {
-        Text('加载态：正在初始化导航...')
-      } else {
-        Text('错误态：导航初始化失败，可重试')
+      Column({ space: 12 }) {
+        Column({ space: 6 }) {
+          Text('人物')
+            .fontSize($r('app.float.ts_font_headline'))
+            .fontColor($r('app.color.ts_text_primary'))
+            .fontWeight(FontWeight.Medium)
+          Text('档案、照片与从相册导入（形态二）')
+            .fontSize($r('app.float.ts_font_caption'))
+            .fontColor($r('app.color.ts_text_tertiary'))
+            .maxLines(2)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+        }
+        .width('100%')
+        .padding({ top: 20, bottom: 20, left: 16, right: 16 })
+        .backgroundColor($r('app.color.ts_surface_container'))
+        .borderRadius(12)
+        .border({ width: 1, color: $r('app.color.ts_outline') })
+        .onClick((): void => {
+          this.goPerson();
+        })
+
+        Column({ space: 6 }) {
+          Text('故事')
+            .fontSize($r('app.float.ts_font_headline'))
+            .fontColor($r('app.color.ts_text_primary'))
+            .fontWeight(FontWeight.Medium)
+          Text('时间线、关联人物与相册导入（形态一）')
+            .fontSize($r('app.float.ts_font_caption'))
+            .fontColor($r('app.color.ts_text_tertiary'))
+            .maxLines(2)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+        }
+        .width('100%')
+        .padding({ top: 20, bottom: 20, left: 16, right: 16 })
+        .backgroundColor($r('app.color.ts_surface_container'))
+        .borderRadius(12)
+        .border({ width: 1, color: $r('app.color.ts_outline') })
+        .onClick((): void => {
+          this.goStory();
+        })
       }
+      .width('100%')
+      .padding({ left: 20, right: 20 })
+      .layoutWeight(1)
 
-      Button('切换状态')
-        .onClick(() => this.nextState())
+      Column({ space: 6 }) {
+        if (this.shellState === 'empty') {
+          Text('从上方任选入口开始')
+            .fontSize($r('app.float.ts_font_caption'))
+            .fontColor($r('app.color.ts_text_tertiary'))
+        } else if (this.shellState === 'loading') {
+          Text('正在准备…')
+            .fontSize($r('app.float.ts_font_caption'))
+            .fontColor($r('app.color.ts_color_info'))
+        } else {
+          Text('导航未就绪，可稍后重试')
+            .fontSize($r('app.float.ts_font_caption'))
+            .fontColor($r('app.color.ts_color_warning'))
+        }
+        Button('调试：切换占位状态')
+          .fontSize($r('app.float.ts_font_overline'))
+          .height(36)
+          .backgroundColor($r('app.color.ts_surface_container_high'))
+          .fontColor($r('app.color.ts_text_muted'))
+          .onClick((): void => {
+            this.nextState();
+          })
+      }
+      .width('100%')
+      .padding({ left: 20, right: 20, top: 12, bottom: 24 })
+      .alignItems(HorizontalAlign.Start)
     }
-    .padding(16)
     .width('100%')
     .height('100%')
+    .backgroundColor($r('app.color.ts_surface'))
   }
 }

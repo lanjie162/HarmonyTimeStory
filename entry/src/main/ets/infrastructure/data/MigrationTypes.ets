@@ -1,8 +1,11 @@
+import { relationalStore } from '@kit.ArkData';
+
 export interface MigrationContext {
   schemaVersion: number;
   tables: Map<string, string[]>;
   counters: Map<string, number>;
   appliedSteps: Set<string>;
+  rdbStore?: relationalStore.RdbStore;
 }
 
 export interface MigrationStepResult {

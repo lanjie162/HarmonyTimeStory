@@ -1,0 +1,12 @@
+﻿
+=== hdc list targets ===
+
+192.168.50.160:46629
+
+=== hdc shell param get const.product.model ===
+
+HOP-AL10 
+
+=== hdc shell param get const.product.software.version ===
+
+HOP-AL10 6.1.0.120(SP16C00E120R4P4) 

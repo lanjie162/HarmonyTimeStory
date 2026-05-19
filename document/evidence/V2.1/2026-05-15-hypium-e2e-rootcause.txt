@@ -1,0 +1,25 @@
+Hypium E2E 首条超时 / UITest「并发」结论（2026-05-15）
+
+1) Hypium 执行超时来源（代码级）
+- @ohos/hypium 1.0.25 src/main/service.js processFunc：用例 Promise 包装使用 config.timeout；
+  config.timeout 来自 abilityDelegatorArguments.parameters（经 configService.translateParams），
+  KEYSET 含「timeout」「-s timeout」。
+- 未显式配置时 processFunc 默认 5000ms；设备上出现 execute timeout 15000ms，说明运行器注入了 timeout=15000。
+
+2) waitForIdle(5000,15000) 与 15000ms 同量级
+- coldStartMainApp 中长 waitForIdle 易与「界面不 idle」叠加，在 15s Hypium 用例预算内先触顶，
+  随后 uitest-api concurrent 为前序 waitForIdle 未收尾的级联现象。
+
+3) hilog（MCP get_hilog_or_faultlog_recent，bundle=com.lanjie162.timestore）
+- 本次抓取以系统/其他应用日志为主，未筛出 timestore 专属行；不作为「DB 卡死」直接证据。
+- 应用侧 EntryAbility：RDB 在 getRdbStore().then 内再 loadContent，主路径上 installAppDataStore 原在 loadContent 之前，
+  已改为首帧 Shell 成功后再 install（见 EntryAbility 变更），利于首屏「时光故事」更早出现。
+
+4) 措施摘要
+- 源码 TestAbility：若参数未带 timeout，则注入 timeout=120000 再 Hypium.hypiumTest。
+- V2DRegression：coldStart 优先 waitForComponent(主壳)，去掉长 waitForIdle；describe 级 afterEach 短延迟降低 Driver 级联。
+- 可选：ensureOnMainShell 单次 idle 上限略收紧，降低极端回退路径耗时。
+
+5) 回归（本地一次）
+- hvigor: --mode module -p module=entry@default onDeviceTest
+- 结果：BUILD SUCCESSFUL（约 45s）；日志中未再出现 execute timeout 15000ms / uitest concurrent 串。

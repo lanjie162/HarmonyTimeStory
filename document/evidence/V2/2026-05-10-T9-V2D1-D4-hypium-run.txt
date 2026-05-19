@@ -1,0 +1,158 @@
+﻿# V2-D1~D4 Hypium run 2026-05-10T02:28:04.6936937+08:00
+[Info]App install path:c:\coding\DevEcoStudioProjects\timestore\entry\build\default\outputs\default\entry-default-signed.hap msg:install bundle successfully. 
+AppMod finish
+[Info]App install path:c:\coding\DevEcoStudioProjects\timestore\entry\build\default\outputs\ohosTest\entry-ohosTest-signed.hap msg:install bundle successfully. 
+AppMod finish
+& aa test full suite (Acts+V2) timeout=180000
+start ability successfully.
+
+OHOS_REPORT_SUM: 1
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+
+
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+OHOS_REPORT_STATUS: current=1
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=5
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=assertContain
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+OHOS_REPORT_STATUS: current=1
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=5
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=assertContain
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=1
+
+
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+OHOS_REPORT_STATUS: suiteconsuming=1
+
+
+OHOS_REPORT_SUM: 4
+OHOS_REPORT_STATUS: class=V2Regression
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=2
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=5
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=2
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=5
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D1_person_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=14364
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=3
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=5
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D2_story_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=3
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=5
+OHOS_REPORT_STATUS: stack=Cannot get SourceMap info, dump raw stack:
+=====================Backtrace========================
+#00 pc 00000000003661c4 /system/lib64/platformsdk/libark_jsruntime.so
+#01 pc 0000000000361924 /system/lib64/platformsdk/libark_jsruntime.so
+#02 pc 000000000035f488 /system/lib64/platformsdk/libark_jsruntime.so
+#03 pc 00000000005aca64 /system/lib64/platformsdk/libark_jsruntime.so
+#04 pc 0000000000210900 /system/lib64/platformsdk/libark_jsruntime.so
+#05 pc 00000000005f6010 /system/lib64/platformsdk/libark_jsruntime.so
+#06 pc 0000000000055d80 /system/lib64/platformsdk/libace_napi.z.so
+#07 pc 0000000000012788 /system/lib64/module/libuitest.z.so
+#08 pc 000000000001e140 /system/lib64/module/libuitest.z.so
+#09 pc 000000000003f9f4 /system/lib64/platformsdk/libace_napi.z.so
+#10 pc 0000000000013730 /system/lib64/platformsdk/libuv.so
+#11 pc 00000000000726c8 /system/lib64/platformsdk/libruntime.z.so
+#12 pc 000000000001efe4 /system/lib64/chipset-pub-sdk/libeventhandler.z.so
+#13 pc 000000000001b620 /system/lib64/chipset-pub-sdk/libeventhandler.z.so
+#14 pc 000000000003fe68 /system/lib64/chipset-pub-sdk/libeventhandler.z.so
+#15 pc 00000000000cb878 /system/lib64/platformsdk/libappkit_native.z.so
+#16 pc 0000000000009fd8 /system/lib64/appspawn/appspawn/libappspawn_ace.z.so
+#17 pc 000000000000ba40 /system/bin/appspawn
+#18 pc 0000000000016ce8 /system/bin/appspawn
+#19 pc 0000000000014b10 /system/bin/appspawn
+#20 pc 0000000000017784 /system/lib64/chipset-pub-sdk/libbegetutil.z.so
+#21 pc 000000000001709c /system/lib64/chipset-pub-sdk/libbegetutil.z.so
+#22 pc 000000000001431c /system/lib64/chipset-pub-sdk/libbegetutil.z.so
+#23 pc 0000000000013cd0 /system/lib64/chipset-pub-sdk/libbegetutil.z.so
+#24 pc 00000000000116e4 /system/bin/appspawn
+#25 pc 000000000000f2a8 /system/bin/appspawn
+#26 pc 00000000000b2b98 /lib/ld-musl-aarch64.so.1
+#27 pc 000000000000b730 /system/bin/appspaw
+OHOS_REPORT_STATUS: stream=Error in V2_D2_story_main_create_and_detail, Component not exist matching: {selfMatcher=[{attrName:visible; value:true; Pattern:0},{attrName:text; value:鏃跺厜鏁呬簨 - 涓诲３椤? Pattern:0},]}
+OHOS_REPORT_STATUS: test=V2_D2_story_main_create_and_detail
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=1989
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=4
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=5
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_suggest_entry_minimal
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=4
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=5
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/V2DRegression.test.ets:81:23)
+OHOS_REPORT_STATUS: stream=Error in V2_D3_suggest_entry_minimal, Cannot read property click of null
+OHOS_REPORT_STATUS: test=V2_D3_suggest_entry_minimal
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=48
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=5
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=5
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=V2_D3_import_wizard_shell_from_person
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: current=5
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=5
+OHOS_REPORT_STATUS: stack=    at anonymous entry (entry/src/ohosTest/ets/test/V2DRegression.test.ets:100:23)
+OHOS_REPORT_STATUS: stream=Error in V2_D3_import_wizard_shell_from_person, Cannot read property click of null
+OHOS_REPORT_STATUS: test=V2_D3_import_wizard_shell_from_person
+OHOS_REPORT_STATUS_CODE: -1
+OHOS_REPORT_STATUS: consuming=39
+
+
+OHOS_REPORT_STATUS: class=V2Regression
+OHOS_REPORT_STATUS: suiteconsuming=16440
+
+
+OHOS_REPORT_RESULT: stream=Tests run: 5, Failure: 0, Error: 3, Pass: 2, Ignore: 0
+OHOS_REPORT_CODE: 0
+OHOS_REPORT_STATUS: taskconsuming=16441
+
+TestFinished-ResultCode: 0
+TestFinished-ResultMsg: your test finished!!!
+user test finished.

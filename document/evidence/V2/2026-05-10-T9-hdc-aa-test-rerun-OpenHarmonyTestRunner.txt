@@ -1,0 +1,106 @@
+﻿# T-9 aa test rerun 2026-05-10T02:20:39.9792923+08:00
+& install main
+[Info]App install path:c:\coding\DevEcoStudioProjects\timestore\entry\build\default\outputs\default\entry-default-signed.hap msg:install bundle successfully. 
+AppMod finish
+& install ohosTest
+[Info]App install path:c:\coding\DevEcoStudioProjects\timestore\entry\build\default\outputs\ohosTest\entry-ohosTest-signed.hap msg:install bundle successfully. 
+AppMod finish
+& aa test OpenHarmonyTestRunner -m entry_test -s timeout 30000
+start ability successfully.
+
+OHOS_REPORT_SUM: 1
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+
+
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+OHOS_REPORT_STATUS: current=1
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=1
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=assertContain
+OHOS_REPORT_STATUS_CODE: 1
+
+
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+OHOS_REPORT_STATUS: current=1
+OHOS_REPORT_STATUS: id=JS
+OHOS_REPORT_STATUS: numtests=1
+OHOS_REPORT_STATUS: stream=
+OHOS_REPORT_STATUS: test=assertContain
+OHOS_REPORT_STATUS_CODE: 0
+OHOS_REPORT_STATUS: consuming=1
+
+
+OHOS_REPORT_STATUS: class=ActsAbilityTest
+OHOS_REPORT_STATUS: suiteconsuming=1
+
+
+OHOS_REPORT_RESULT: stream=Tests run: 1, Failure: 0, Error: 0, Pass: 1, Ignore: 0
+OHOS_REPORT_CODE: 0
+OHOS_REPORT_STATUS: taskconsuming=1
+
+TestFinished-ResultCode: 0
+TestFinished-ResultMsg: your test finished!!!
+user test finished.
+
+hilog timestore+testTag+Hypium (60 lines)
+05-10 02:20:40.489  3266  3266 W A01B01/com.ohos.sceneboard/HOME: SCBSPVM: [SCBMain]onTerminateScene EntryAbility/com.lanjie162.timestore/entry/0(persistentId: 8519)(containerId: 693) isActive=true isFloat=false isSplit=false isMidScene=false needRemoveSession=false isForceClean=false
+05-10 02:20:40.491  3266  3266 W A01B01/com.ohos.sceneboard/HOME: PageDesktopModel: getExitAppData bundleName: com.lanjie162.timestore, abilityName: EntryAbility, startType: 0, formCardId: undefined, cardId: undefined, extraId: undefined, appIndex: 0, shortcutId: undefined
+05-10 02:20:40.491  3266  3266 W A01B01/com.ohos.sceneboard/HOME: SCBTM: Find controller success ? true, findData: {"bundleName":"com.lanjie162.timestore","abilityName":"EntryAbility","appIndex":0,"appIconId":"","iconRadius":0,"appIconNumber":0,"startAppType":0}
+05-10 02:20:40.491  3266  3266 W A01B01/com.ohos.sceneboard/HOME: SCBSPVM: setTransitionAnimCancel reason: requestSceneContainerDestructionWithTransition, appIconId: AppIcon_Image_com.lanjie162.timestoreEntryAbilityentry0_undefined_0
+05-10 02:20:40.493  3266  3266 W A01B01/com.ohos.sceneboard/HOME: SCBSCS: [SCBSCS] border radius from topLeft: 0, topRight: 0, bottomLeft: 0, bottomRight: 0 to 34. reason: requestSceneContainerDestructionWithTransition, extra: EntryAbility/com.lanjie162.timestore/entry/0(persistentId: 8519)(containerId: 693)
+05-10 02:20:40.493  3266  3266 W A01B01/com.ohos.sceneboard/HOME: SCBSCS: initCompanionIconInfo companionIconInfo: com.lanjie162.timestore, EntryAbility, entry, iconId: AppIcon_Image_com.lanjie162.timestoreEntryAbilityentry0_undefined_0; persistentId: 8519
+05-10 02:20:40.493  3266  3266 W A01B01/com.ohos.sceneboard/HOME: QuitAppRectViewModel --> buildAppExitInfoInExit iconId AppIcon_Image_com.lanjie162.timestoreEntryAbilityentry0_undefined_0
+05-10 02:20:40.493  3266  3266 W A01B01/com.ohos.sceneboard/HOME: QuitAppRectViewModel --> startAppType 0, iconId AppIcon_Image_com.lanjie162.timestoreEntryAbilityentry0_undefined_0
+05-10 02:20:40.493  3266  3266 W A01B01/com.ohos.sceneboard/HOME: PageDesktopModel: findAppInCurrentShowingPage bundleName: com.lanjie162.timestoreabilityName: EntryAbility, moduleName: entry;startAppType: 0; cardId: undefined appIndex: 0, shortcutId: 
+05-10 02:20:40.493  3266  3266 W A01B01/com.ohos.sceneboard/HOME: PageDesktopModel: isFoundApp bundleName: com.lanjie162.timestore abilityName: EntryAbility, moduleName: entry; appIconId: 16777223; cardId: undefined appIndex: 0, shortcutId: 
+05-10 02:20:40.493  3266  3266 W A01B01/com.ohos.sceneboard/HOME: PageDesktopModel: findAppInCurrentPage icon 16777223, 16777223,undefined, com.lanjie162.timestore
+05-10 02:20:40.493  3266  3266 W A01B01/com.ohos.sceneboard/HOME: PageDesktopModel: buildAppExitInfo iconId: AppIcon_Image_com.lanjie162.timestoreEntryAbilityentry0_undefined_0, isInScreen: true
+05-10 02:20:40.499  3423  3423 I A06666/com.huawei.hmos.aidataservice/160002366: AppUsageAbility: publishAppProcessData: {"timestamp":1778350840499,"dataName":"AppProcess","bundleName":"com.lanjie162.timestore","appUid":20020335,"state":"OUT","installationFree":false,"hasIcon":true,"isContinuousTask":false,"isKeepAlive":false}
+05-10 02:20:40.505  3266  3266 W A01B01/com.ohos.sceneboard/HOME: SCBSCS: onTransitionActiveToRect, bundleName:com.lanjie162.timestore, isAdaptive:false
+05-10 02:20:40.505  3266  3266 W A01B01/com.ohos.sceneboard/HOME: SCBSCS: [SCBSCS] translateX from 0 to 143.99999445134944. reason: startCard, extra: EntryAbility/com.lanjie162.timestore/entry/0(persistentId: 8519)(containerId: 693)
+05-10 02:20:40.505  3266  3266 W A01B01/com.ohos.sceneboard/HOME: SCBSCS: [SCBSCS] translateY from 0 to 246.77273004705256. reason: startCard, extra: EntryAbility/com.lanjie162.timestore/entry/0(persistentId: 8519)(containerId: 693)
+05-10 02:20:40.505  3266  3266 W A01B01/com.ohos.sceneboard/HOME: SCBSCS: [SCBSCS] border radius from topLeft: 34, topRight: 34, bottomLeft: 34, bottomRight: 34 to 119.16498316498317. reason: startCard, extra: EntryAbility/com.lanjie162.timestore/entry/0(persistentId: 8519)(containerId: 693)
+05-10 02:20:40.509  3266  3266 I A0420A/com.ohos.sceneboard/WMSLife: Request scene container session destruction with transition out, id: EntryAbility/com.lanjie162.timestore/entry/0(persistentId: 8519)(containerId: 693) isActive true delete false isBackToIcon true needClearData false
+05-10 02:20:40.509  3266  3266 W A0420A/com.ohos.sceneboard/WMSLife: Request scene container session destruction, name: EntryAbility/com.lanjie162.timestore/entry/0(persistentId: 8519)(containerId: 693) delete: false needClearData: false isSaveSnapshot: true isForceClean: false
+05-10 02:20:40.509  3266  3266 I A04223/com.ohos.sceneboard/SCBMain: requestSceneSessionDestruction name: EntryAbility/com.lanjie162.timestore/entry/0(persistentId: 8519) isDeletePersistentMap: false isSaveSnapshot: true isForceClean: false terminateReason: 2
+05-10 02:20:40.513  3266  3266 W A01C06/com.ohos.sceneboard/ICON: AppIconCommonEvent --> onActive bundleName:com.lanjie162.timestore, [SCBTM] set icon from show to [hidden], caller: notifySceneTransitionOut, extra info: undefined.
+05-10 02:20:40.514  3266  3266 W A01C06/com.ohos.sceneboard/ICON: AppIconData --> [SCBTM] set icon opacity from [1] to [0], caller: notifySceneTransitionOut, extra: undefined, iconId: AppIcon_Image_com.lanjie162.timestoreEntryAbilityentry0_undefined_0
+05-10 02:20:40.518  3266  3266 W A01B01/com.ohos.sceneboard/HOME: SCBSCS: [SCBScenePanelViewModel] sceneAlpha from 1 to 0. reason: requestSceneContainerDestructionWithTransition, extra: EntryAbility/com.lanjie162.timestore/entry/0(persistentId: 8519)(containerId: 693)
+05-10 02:20:40.524  3266  3266 W A01A00/com.ohos.sceneboard/SYS_UI: AppLifeCycleManager: Ability state trtminated, uid: 20020335, key: com.lanjie162.timestore_entry_EntryAbility_52807
+05-10 02:20:40.524  3266  3266 W A01A00/com.ohos.sceneboard/SYS_UI: LiveCapsuleListVm: onAppForegroundStateChange foreground: false, uid: 20020335, bundleName: com.lanjie162.timestore, orientation: 0
+05-10 02:20:40.524  3266  3266 W A01A00/com.ohos.sceneboard/SYS_UI: AppLifeCycleManager: onProcessDied, uid: 20020335, bundleName: com.lanjie162.timestore, pid: 52807
+05-10 02:20:40.645 54316 54316 I A00000/com.huawei.hmos.quickpay/testTag: shift to other hap context !
+05-10 02:20:40.687  3423  3423 I A06666/com.huawei.hmos.aidataservice/160002366: PackageChangeAbility: publishData= {"dataName":"PackageChange","timestamp":1778350840686,"bundleName":"com.lanjie162.timestore","moduleName":"entry","isModuleUpdate":true,"userId":100,"uid":20020335,"foregroundUserId":100}
+05-10 02:20:40.688  3423  3423 I A06666/com.huawei.hmos.aidataservice/160002366: AppAtomicServiceManager: dataName: PackageChange, bundleName: com.lanjie162.timestore
+05-10 02:20:40.688 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351504672, index:0,[PackageEventSubscriber]:event callback: usual.event.PACKAGE_CHANGED, bundleName: com.lanjie162.timestore
+05-10 02:20:40.688  3266  3266 W A01B01/com.ohos.sceneboard/HOME: SCBSPVM: [SCBMain]onTerminateScene EntryAbility/com.lanjie162.timestore/entry/0(persistentId: 8519)(containerId: 693) isActive=false isFloat=false isSplit=false isMidScene=false needRemoveSession=true isForceClean=false
+05-10 02:20:40.688  3266  3266 W A01B01/com.ohos.sceneboard/HOME: SCBSPVM: [SCBMain]onTerminateSceneFromBackgroundOrRecent immediately name:EntryAbility/com.lanjie162.timestore/entry/0(persistentId: 8519)(containerId: 693) needRemoveSession:true
+05-10 02:20:40.688  3266  3266 W A0420A/com.ohos.sceneboard/WMSLife: Request scene container session destruction, name: EntryAbility/com.lanjie162.timestore/entry/0(persistentId: 8519)(containerId: 693) delete: true needClearData: true isSaveSnapshot: undefined isForceClean: false
+05-10 02:20:40.688 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351040074, index:0,[InstalledAppInfoUtil]:getBundleInfoForOs bundleFlags:227, bundleName:com.lanjie162.timestore
+05-10 02:20:40.688  3423 11014 I A00F00/com.huawei.hmos.aidataservice/160002366: IntentApiProcMgr: updateApp, userId: 100, bundleName: com.lanjie162.timestore
+05-10 02:20:40.688  3423 11014 I A00F00/com.huawei.hmos.aidataservice/160002366: IntentApiProcMgr: deleteApp, userId: 100, bundleName: com.lanjie162.timestore, moduleName: undefined
+05-10 02:20:40.688  3266  3266 I A04223/com.ohos.sceneboard/SCBMain: requestSceneSessionDestruction name: EntryAbility/com.lanjie162.timestore/entry/0(persistentId: 8519) isDeletePersistentMap: true isSaveSnapshot: undefined isForceClean: false terminateReason: 2
+05-10 02:20:40.689  3266  3266 W A01C06/com.ohos.sceneboard/ICON: AppIconCommonEvent --> onInactive bundleName:com.lanjie162.timestore, [SCBSPM] set icon from hidden to [show], caller: removeContainerSessionByIndex, extra info: undefined.
+05-10 02:20:40.689  3266  3266 W A01C06/com.ohos.sceneboard/ICON: AppIconData --> [SCBSPM] set icon opacity from [0] to [1], caller: removeContainerSessionByIndex, extra: undefined, iconId: AppIcon_Image_com.lanjie162.timestoreEntryAbilityentry0_undefined_0
+05-10 02:20:40.690  3266  3266 W A01B01/com.ohos.sceneboard/HOME: appInstall_CacheManager --> appAddedOrUpdated is not from app gallery, maybe from hdc install bundleName:com.lanjie162.timestore
+05-10 02:20:40.690  3266  3266 W A01B01/com.ohos.sceneboard/HOME: appInstall_CacheManager --> appAddedOrUpdated bundleName: com.lanjie162.timestore, appIndex: 0
+05-10 02:20:40.691  3266  3266 W A01B00/com.ohos.sceneboard/SCB: IconResourceManager: deleteIconResourceByBundle, bundleName:com.lanjie162.timestore, tag:removeItemCache
+05-10 02:20:40.691  3266  3266 W A04200/com.ohos.sceneboard/WINDOW: SCBMultiWindowManager: ignore package change event, bundleName: com.lanjie162.timestore appIndex: 0
+05-10 02:20:40.692  3266  3266 W A01B00/com.ohos.sceneboard/SCB: LauncherAbilityManager --> mBundleStatusCallback update bundleName: com.lanjie162.timestoreappIndex: 0
+05-10 02:20:40.696 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351111919, index:0,[InstalledAppInfoCache]:onPackageChange bundleName com.lanjie162.timestore
+05-10 02:20:40.696 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778350942917, index:0,[InstalledAppInfoUtil]:getBundleInfoForOs bundleFlags:227, bundleName:com.lanjie162.timestore
+05-10 02:20:40.696 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351405417, index:0,[PackageEventSubscriber]:onPackageChange#, bundleName:com.lanjie162.timestore}
+05-10 02:20:40.696 16769 16769 I A06666/AppGalleryService/AG/AppGallery: random:1778351793861, index:0,[AppDetailInfoManager]:onPackageChange data:com.lanjie162.timestore , waitAppDetailCount = 1
+05-10 02:20:40.701  3423  3423 I A06666/com.huawei.hmos.aidataservice/160002366: SearchableIntentProcessor: deleting [com.lanjie162.timestore|] SearchableIntents
+05-10 02:20:40.703  3266  3266 W A01B00/com.ohos.sceneboard/SCB: MemoryCache --> delete all memory cache com.lanjie162.timestore
+05-10 02:20:40.703  3266  3266 W A01B00/com.ohos.sceneboard/SCB: MemoryCache --> delete memory cache key: com.lanjie162.timestore#entryEntryAbility0
+05-10 02:20:40.703  3266  3266 W A01B00/com.ohos.sceneboard/SCB: MemoryCache --> delete memory cache key: com.lanjie162.timestore#entry16777219
+05-10 02:20:40.703  3266  3266 W A01B00/com.ohos.sceneboard/SCB: MemoryCache --> delete memory cache key: com.lanjie162.timestore#entryEntryAbility0
+05-10 02:20:40.703  3266  3266 W A01B00/com.ohos.sceneboard/SCB: IconResourceManager: deletingIcons remove, bundleName:com.lanjie162.timestore
+05-10 02:20:40.703  3266  3266 W A01B01/com.ohos.sceneboard/HOME: ResourceManager: deleteAppResourceCacheByBundle,bundleName is com.lanjie162.timestore
+05-10 02:20:40.703  3266  3266 W A01B01/com.ohos.sceneboard/HOME: ResourceManager: deleteShortcutMenuIconByBundle, bundleName: com.lanjie162.timestore
+05-10 02:20:40.705  3423  3423 I A06666/com.huawei.hmos.aidataservice/160002366: SearchableIntentProcessor: updateDataStatus: com.lanjie162.timestore
+05-10 02:20:40.706  3423  3423 I A06666/com.huawei.hmos.aidataservice/160002366: SearchableIntentProcessor: deleting [com.lanjie162.timestore|] SearchableIntents
+05-10 02:20:40.706  3423  3423 I A06666/com.huawei.hmos.aidataservice/160002366: PCModeAppBusinessHandler: bundleName: com.lanjie162.timestore, sourceChannel: 2, appIndex: 0, size: 0
+05-10 02:20:40.707 16769 16769 I A06666/AppGalleryService/AG/AppGallery: [a92ab27af84c7bb 64b58d 1d239c5]random:1778351618813, index:0,[AppFoundationServiceExtensionStub]:END_CERT_EXPIRES param: com.lanjie162.timestore

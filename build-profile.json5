@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\OseasyVM\\.ohos\\config\\default_timestore_QrdB1TKi2u3d5lQEFPy1YN-XfVzK75ZMmszVZdsadus=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B415FEFD506C5CF2F634D476718662BC238991150D66DEF3D6AD01639FC5E175F313158DDA529FB",
+          "profile": "C:\\Users\\OseasyVM\\.ohos\\config\\default_timestore_QrdB1TKi2u3d5lQEFPy1YN-XfVzK75ZMmszVZdsadus=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\OseasyVM\\.ohos\\config\\default_timestore_QrdB1TKi2u3d5lQEFPy1YN-XfVzK75ZMmszVZdsadus=.p12",
+          "storePassword": "0000001B88542049E6E9A2CBE3E252AC44DE1D0778ECD07680A05DBA3088DF4AB9A087C4954FDA62E31AF2"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",

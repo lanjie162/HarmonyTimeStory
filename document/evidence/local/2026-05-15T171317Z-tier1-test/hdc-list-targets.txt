@@ -1,0 +1,1 @@
+﻿192.168.50.160:46629		TCP	Connected	localhost	hdc
