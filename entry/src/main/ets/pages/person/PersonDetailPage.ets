@@ -1,8 +1,11 @@
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
 import photoAccessHelper from '@ohos.file.photoAccessHelper';
+import { fileIo } from '@kit.CoreFileKit';
 import BuildProfile from 'BuildProfile';
-import type { PersonModel, PhotoRefModel, StoryModel } from '../../domain/model/Models';
+import type { GenderEnum, PersonModel, PersonTypeEnum, PhotoRefModel, StoryModel } from '../../domain/model/Models';
+import { PersonTypeEnum as PT } from '../../domain/model/Models';
+import { GenderEnum as GE } from '../../domain/model/Models';
 import { getPersonService } from '../../features/person/PersonFeature';
 import { getStoryService } from '../../features/story/StoryFeature';
 import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
@@ -19,12 +22,72 @@ function parsePersonId(params: Record<string, Object>): number {
   return 0;
 }
 
+function typeLabel(val: PersonTypeEnum): string {
+  if (val === PT.BABY) {
+    return '宝宝';
+  }
+  if (val === PT.ADULT) {
+    return '成人';
+  }
+  if (val === PT.ELDER) {
+    return '长辈';
+  }
+  return '其他';
+}
+
+function genderLabel(val: GenderEnum | null): string {
+  if (val === null || val === GE.UNSPECIFIED) {
+    return '未填';
+  }
+  if (val === GE.MALE) {
+    return '男';
+  }
+  return '女';
+}
+
+function formatBirthday(ts: number | null): string {
+  if (ts === null || ts <= 0) {
+    return '未设置';
+  }
+  const d = new Date(ts);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function buildDatePickerDate(ts: number | null): Date {
+  if (ts !== null && ts > 0) {
+    return new Date(ts);
+  }
+  return new Date(2000, 0, 1);
+}
+
+interface GenderOption {
+  label: string;
+  value: GenderEnum | null;
+}
+
+const TYPE_OPTIONS: PersonTypeEnum[] = [PT.BABY, PT.ADULT, PT.ELDER, PT.OTHER];
+const GENDER_OPTIONS: GenderOption[] = [
+  { label: '男', value: GE.MALE },
+  { label: '女', value: GE.FEMALE },
+  { label: '未填', value: GE.UNSPECIFIED }
+];
+
 @Entry
 @Component
 export struct PersonDetailPage {
   @State personId: number = 0;
   @State person: PersonModel | null = null;
   @State draftName: string = '';
+  @State draftType: PersonTypeEnum = PT.OTHER;
+  @State draftGender: GenderEnum | null = null;
+  @State draftBirthday: number = 0;
+  @State draftBirthdayText: string = '选择日期';
+  @State draftRemark: string = '';
+  @State draftAvatarBlob: Uint8Array | null = null;
+  @State avatarImageUri: string = '';
   @State storiesAll: StoryModel[] = [];
   @State linkedStoryIds: number[] = [];
   @State photos: PhotoRefModel[] = [];
@@ -47,21 +110,127 @@ export struct PersonDetailPage {
   private refresh(): void {
     const pSvc = getPersonService();
     this.person = pSvc.getPerson(this.personId);
-    this.draftName = this.person?.displayName ?? '';
+    if (this.person !== null) {
+      this.draftName = this.person.displayName;
+      this.draftType = this.person.personType;
+      this.draftGender = this.person.gender;
+      this.draftBirthday = this.person.birthday ?? 0;
+      this.draftBirthdayText = formatBirthday(this.person.birthday);
+      this.draftRemark = this.person.remark;
+      this.draftAvatarBlob = this.person.avatarBlob;
+      if (this.person.avatarBlob !== null && this.person.avatarBlob.byteLength > 0) {
+        // Reconstruct temp file URI for Image display
+        this.avatarImageUri = 'data:image/png;base64,' + this.blobToBase64(this.person.avatarBlob);
+      } else {
+        this.avatarImageUri = '';
+      }
+    }
     this.storiesAll = getStoryService().listStories();
     this.linkedStoryIds = pSvc.listLinkedStories(this.personId).map((s): number => s.id);
     this.photos = pSvc.listPersonPhotos(this.personId);
   }
 
-  private saveName(): void {
+  private blobToBase64(blob: Uint8Array): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    let result = '';
+    const bytes = blob;
+    for (let i = 0; i < bytes.byteLength; i += 3) {
+      const b0 = bytes[i];
+      const b1 = i + 1 < bytes.byteLength ? bytes[i + 1] : 0;
+      const b2 = i + 2 < bytes.byteLength ? bytes[i + 2] : 0;
+      result += chars.charAt(b0 >> 2);
+      result += chars.charAt(((b0 & 3) << 4) | (b1 >> 4));
+      result += i + 1 < bytes.byteLength ? chars.charAt(((b1 & 15) << 2) | (b2 >> 6)) : '=';
+      result += i + 2 < bytes.byteLength ? chars.charAt(b2 & 63) : '=';
+    }
+    return result;
+  }
+
+  private savePerson(): void {
     dismissSoftKeyboard();
-    const ok = getPersonService().updatePerson(this.personId, this.draftName);
+    const svc = getPersonService();
+    const ok = svc.updatePerson(this.personId, this.draftName,
+      this.draftAvatarBlob,
+      this.draftBirthday > 0 ? this.draftBirthday : undefined,
+      this.draftGender,
+      this.draftRemark,
+      this.draftType
+    );
     if (!ok) {
-      promptAction.showToast({ message: '保存失败：人物不存在或名称为空' });
+      promptAction.showToast({ message: '保存失败：人物不存在或名称异常' });
       return;
     }
-    promptAction.showToast({ message: '已保存显示名' });
+    promptAction.showToast({ message: '已保存全部字段' });
     this.refresh();
+  }
+
+  private confirmDeleteCurrentPerson(): void {
+    AlertDialog.show({
+      title: '确认删除',
+      message: `确定要删除"${this.person?.displayName ?? ''}"吗？此操作不可撤销。`,
+      primaryButton: {
+        value: '取消',
+        action: (): void => {
+          // do nothing
+        }
+      },
+      secondaryButton: {
+        value: '删除',
+        fontColor: '#CC0000',
+        action: (): void => {
+          dismissSoftKeyboard();
+          const svc = getPersonService();
+          const ok = svc.deletePerson(this.personId);
+          if (ok) {
+            promptAction.showToast({ message: '已删除' });
+            router.back();
+          } else {
+            promptAction.showToast({ message: '删除失败：人物不存在' });
+          }
+        }
+      }
+    });
+  }
+
+  private async pickAvatar(): Promise<void> {
+    dismissSoftKeyboard();
+    try {
+      const options = new photoAccessHelper.PhotoSelectOptions();
+      options.maxSelectNumber = 1;
+      options.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
+      const picker = new photoAccessHelper.PhotoViewPicker();
+      const result = await picker.select(options);
+      const uris = result.photoUris;
+      if (!uris || uris.length === 0) {
+        return;
+      }
+      const uri = uris[0];
+      try {
+        const file = fileIo.openSync(uri, fileIo.OpenMode.READ_ONLY);
+        const stat = fileIo.statSync(uri);
+        const buf = new ArrayBuffer(stat.size);
+        fileIo.readSync(file.fd, buf);
+        fileIo.closeSync(file);
+        this.draftAvatarBlob = new Uint8Array(buf);
+        this.avatarImageUri = 'data:image/png;base64,' + this.blobToBase64(this.draftAvatarBlob);
+      } catch (_e) {
+        promptAction.showToast({ message: '读取头像文件失败' });
+      }
+    } catch (_e) {
+      // user cancelled
+    }
+  }
+
+  private removeAvatar(): void {
+    this.draftAvatarBlob = null;
+    this.avatarImageUri = '';
+  }
+
+  private onBirthdayChange(year: number, month: number, day: number): void {
+    // month from DatePicker is 0-based
+    const d = new Date(year, month, day);
+    this.draftBirthday = d.getTime();
+    this.draftBirthdayText = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   }
 
   private createStoryQuick(): void {
@@ -155,16 +324,34 @@ export struct PersonDetailPage {
       if (this.person !== null && this.personId > 0) {
         Scroll() {
           Column({ space: 14 }) {
-            Column({ space: 6 }) {
-              Text(this.person.displayName)
-                .fontSize($r('app.float.ts_font_headline'))
-                .fontColor($r('app.color.ts_text_primary'))
-                .fontWeight(FontWeight.Medium)
-                .width('100%')
-              Text(`人物 · id=${this.person.id}`)
-                .fontSize($r('app.float.ts_font_caption'))
-                .fontColor($r('app.color.ts_text_tertiary'))
-                .width('100%')
+            // ====== 头像 + 档案摘要 ======
+            Column({ space: 8 }) {
+              Row({ space: 12 }) {
+                // 头像
+                if (this.avatarImageUri.length > 0) {
+                  Image(this.avatarImageUri)
+                    .width(64).height(64)
+                    .borderRadius(32)
+                    .objectFit(ImageFit.Cover)
+                } else {
+                  Circle({ width: 64, height: 64 })
+                    .fill($r('app.color.ts_surface_container_high'))
+                }
+                Column({ space: 4 }) {
+                  Text(this.person.displayName)
+                    .fontSize($r('app.float.ts_font_headline'))
+                    .fontColor($r('app.color.ts_text_primary'))
+                    .fontWeight(FontWeight.Medium)
+                    .width('100%')
+                  Text(`${typeLabel(this.person.personType)} · ${formatBirthday(this.person.birthday)} · ${genderLabel(this.person.gender)}`)
+                    .fontSize($r('app.float.ts_font_caption'))
+                    .fontColor($r('app.color.ts_text_tertiary'))
+                    .width('100%')
+                }
+                .layoutWeight(1)
+                .alignItems(HorizontalAlign.Start)
+              }
+              .width('100%')
             }
             .width('100%')
             .padding(16)
@@ -172,26 +359,142 @@ export struct PersonDetailPage {
             .borderRadius(12)
             .border({ width: 1, color: $r('app.color.ts_outline') })
 
+            // ====== 编辑（全部字段） ======
             Column({ space: 12 }) {
               Text('编辑')
                 .fontSize($r('app.float.ts_font_label'))
                 .fontColor($r('app.color.ts_text_primary'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
+
+              // 头像操作
+              Row({ space: 8 }) {
+                Button('更换头像')
+                  .height(36)
+                  .fontSize($r('app.float.ts_font_overline'))
+                  .backgroundColor($r('app.color.ts_color_info_container'))
+                  .fontColor($r('app.color.ts_color_info'))
+                  .onClick((): void => {
+                    this.pickAvatar();
+                  })
+                if (this.draftAvatarBlob !== null && this.draftAvatarBlob.byteLength > 0) {
+                  Button('移除头像')
+                    .height(36)
+                    .fontSize($r('app.float.ts_font_overline'))
+                    .backgroundColor($r('app.color.ts_surface_container_high'))
+                    .fontColor($r('app.color.ts_color_warning'))
+                    .onClick((): void => {
+                      this.removeAvatar();
+                    })
+                }
+              }
+              .width('100%')
+
+              // 显示名
               TextInput({ placeholder: '显示名', text: this.draftName })
                 .onChange((v: string): void => {
                   this.draftName = v;
-                })
-                .enterKeyType(EnterKeyType.Done)
-                .onSubmit((): void => {
-                  this.saveName();
                 })
                 .width('100%')
                 .height(48)
                 .backgroundColor($r('app.color.ts_surface_container_high'))
                 .borderRadius(10)
                 .padding({ left: 12, right: 12 })
-              Button('保存显示名')
+
+              // 类型
+              Row({ space: 8 }) {
+                Text('类型')
+                  .fontSize($r('app.float.ts_font_support'))
+                  .fontColor($r('app.color.ts_text_secondary'))
+                Text(typeLabel(this.draftType))
+                  .fontSize($r('app.float.ts_font_support'))
+                  .fontColor($r('app.color.ts_text_primary'))
+                Row({ space: 4 }) {
+                  ForEach(TYPE_OPTIONS, (t: PersonTypeEnum) => {
+                    Button(typeLabel(t))
+                      .height(32)
+                      .fontSize($r('app.float.ts_font_overline'))
+                      .backgroundColor(this.draftType === t
+                        ? $r('app.color.ts_brand_primary')
+                        : $r('app.color.ts_surface_container_high'))
+                      .fontColor(this.draftType === t
+                        ? $r('app.color.ts_import_bar_on_bg')
+                        : $r('app.color.ts_text_secondary'))
+                      .onClick((): void => {
+                        this.draftType = t;
+                      })
+                  })
+                }
+                .layoutWeight(1)
+                .justifyContent(FlexAlign.End)
+              }
+              .width('100%')
+
+              // 性别
+              Row({ space: 8 }) {
+                Text('性别')
+                  .fontSize($r('app.float.ts_font_support'))
+                  .fontColor($r('app.color.ts_text_secondary'))
+                Row({ space: 4 }) {
+                  ForEach(GENDER_OPTIONS, (opt: GenderOption) => {
+                    Button(opt.label)
+                      .height(32)
+                      .fontSize($r('app.float.ts_font_overline'))
+                      .backgroundColor(this.draftGender === opt.value
+                        ? $r('app.color.ts_brand_primary')
+                        : $r('app.color.ts_surface_container_high'))
+                      .fontColor(this.draftGender === opt.value
+                        ? $r('app.color.ts_import_bar_on_bg')
+                        : $r('app.color.ts_text_secondary'))
+                      .onClick((): void => {
+                        this.draftGender = opt.value;
+                      })
+                  })
+                }
+                .layoutWeight(1)
+                .justifyContent(FlexAlign.End)
+              }
+              .width('100%')
+
+              // 生日 - DatePicker
+              Row({ space: 8 }) {
+                Text('生日')
+                  .fontSize($r('app.float.ts_font_support'))
+                  .fontColor($r('app.color.ts_text_secondary'))
+                Text(this.draftBirthdayText)
+                  .fontSize($r('app.float.ts_font_support'))
+                  .fontColor($r('app.color.ts_text_primary'))
+              }
+              .width('100%')
+              DatePicker({
+                start: new Date(1900, 0, 1),
+                end: new Date(2099, 11, 31),
+                selected: buildDatePickerDate(this.draftBirthday > 0 ? this.draftBirthday : null)
+              })
+                .width('100%')
+                .onChange((res: DatePickerResult): void => {
+                  const yr = res.year as number;
+                  const mo = res.month as number;
+                  const dy = res.day as number;
+                  this.onBirthdayChange(yr, mo, dy);
+                })
+                .disappearTextStyle({ color: $r('app.color.ts_text_tertiary') })
+                .textStyle({ color: $r('app.color.ts_text_primary') })
+                .selectedTextStyle({ color: $r('app.color.ts_brand_primary') })
+
+              // 备注
+              TextArea({ placeholder: '备注', text: this.draftRemark })
+                .onChange((v: string): void => {
+                  this.draftRemark = v;
+                })
+                .width('100%')
+                .height(80)
+                .backgroundColor($r('app.color.ts_surface_container_high'))
+                .borderRadius(10)
+                .padding({ left: 12, right: 12 })
+
+              // 保存按钮
+              Button('保存')
                 .width('100%')
                 .height(44)
                 .fontSize($r('app.float.ts_font_support'))
@@ -199,7 +502,7 @@ export struct PersonDetailPage {
                 .backgroundColor($r('app.color.ts_brand_primary'))
                 .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .onClick((): void => {
-                  this.saveName();
+                  this.savePerson();
                 })
             }
             .width('100%')
@@ -208,6 +511,30 @@ export struct PersonDetailPage {
             .borderRadius(12)
             .border({ width: 1, color: $r('app.color.ts_outline') })
 
+            // ====== 危险操作：删除人物 ======
+            Column({ space: 10 }) {
+              Button('删除人物')
+                .width('100%')
+                .height(44)
+                .fontSize($r('app.float.ts_font_support'))
+                .fontWeight(FontWeight.Medium)
+                .backgroundColor('#CC0000')
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
+                .onClick((): void => {
+                  this.confirmDeleteCurrentPerson();
+                })
+              Text('删除后将同时移除该人物的所有关联与照片挂载，不可撤销。')
+                .fontSize($r('app.float.ts_font_overline'))
+                .fontColor($r('app.color.ts_text_caption'))
+                .width('100%')
+            }
+            .width('100%')
+            .padding(16)
+            .backgroundColor($r('app.color.ts_surface_container'))
+            .borderRadius(12)
+            .border({ width: 1, color: $r('app.color.ts_outline') })
+
+            // ====== 关联故事（保持原样） ======
             Column({ space: 12 }) {
               Text('关联故事')
                 .fontSize($r('app.float.ts_font_label'))
@@ -280,6 +607,7 @@ export struct PersonDetailPage {
             .borderRadius(12)
             .border({ width: 1, color: $r('app.color.ts_outline') })
 
+            // ====== 照片（保持原样） ======
             Column({ space: 12 }) {
               Text('照片（PhotoOwnerLink）')
                 .fontSize($r('app.float.ts_font_label'))
@@ -363,6 +691,7 @@ export struct PersonDetailPage {
             .borderRadius(12)
             .border({ width: 1, color: $r('app.color.ts_outline') })
 
+            // ====== 批量导入入口 ======
             Column({ space: 10 }) {
               Text('批量导入')
                 .fontSize($r('app.float.ts_font_label'))

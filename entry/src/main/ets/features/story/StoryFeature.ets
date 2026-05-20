@@ -21,8 +21,24 @@ export class StoryService implements IStoryService {
     return this.store.getStory(id);
   }
 
+  deleteStory(id: number): boolean {
+    return this.store.deleteStory(id);
+  }
+
   updateStory(id: number, title: string): boolean {
     return this.store.updateStory(id, title);
+  }
+
+  updateStoryAll(id: number, title: string, description?: string, timeStart?: number | null, timeEnd?: number | null, coverUri?: string, location?: string, tags?: string[]): boolean {
+    return this.store.updateStoryAll!(id, {
+      title,
+      description,
+      timeStart,
+      timeEnd,
+      coverUri,
+      location,
+      tags
+    });
   }
 
   listLinkedPersons(storyId: number): PersonModel[] {

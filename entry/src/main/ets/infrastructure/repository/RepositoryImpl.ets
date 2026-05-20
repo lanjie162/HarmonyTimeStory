@@ -1,7 +1,62 @@
 import { relationalStore } from '@kit.ArkData';
-import type { IAppDataStore } from '../api/AppDataStore';
-import type { PersonModel, PhotoAddResult, PhotoRefModel, StoryModel } from '../../domain/model/Models';
+import type { CreatePersonParams, IAppDataStore, UpdatePersonParams, UpdateStoryParams } from '../api/AppDataStore';
+import type { GenderEnum, PersonModel, PersonTypeEnum, PhotoAddResult, PhotoRefModel, StoryModel } from '../../domain/model/Models';
 import { requireTrimmedNonEmpty } from './RepositoryTextNormalize';
+
+function parseTags(raw: string | null): string[] {
+  if (raw === null || raw.length === 0) {
+    return [];
+  }
+  // JSON.parse returns 'any' which ArkTS blocks, so manual parse for string arrays
+  const out: string[] = [];
+  let trimmed = raw.trim();
+  if (trimmed.length < 2 || trimmed[0] !== '[' || trimmed[trimmed.length - 1] !== ']') {
+    return out;
+  }
+  const inner = trimmed.substring(1, trimmed.length - 1).trim();
+  if (inner.length === 0) {
+    return out;
+  }
+  let i = 0;
+  while (i < inner.length) {
+    // skip whitespace
+    while (i < inner.length && (inner[i] === ' ' || inner[i] === '\t' || inner[i] === '\n')) {
+      i++;
+    }
+    if (i >= inner.length) {
+      break;
+    }
+    if (inner[i] !== '"') {
+      return out; // unexpected format
+    }
+    i++; // skip opening quote
+    let token = '';
+    while (i < inner.length && inner[i] !== '"') {
+      if (inner[i] === '\\') {
+        i++;
+        if (i < inner.length) {
+          token += inner[i];
+          i++;
+        }
+      } else {
+        token += inner[i];
+        i++;
+      }
+    }
+    if (i < inner.length) {
+      i++; // skip closing quote
+    }
+    out.push(token);
+    // skip whitespace and comma
+    while (i < inner.length && (inner[i] === ' ' || inner[i] === '\t' || inner[i] === '\n')) {
+      i++;
+    }
+    if (i < inner.length && inner[i] === ',') {
+      i++;
+    }
+  }
+  return out;
+}
 
 const OWN_STORY = 1;
 const OWN_PERSON = 2;
@@ -47,25 +102,63 @@ export class RepositoryImpl implements IAppDataStore {
     return this.rdb;
   }
 
+  private rowToPerson(rs: relationalStore.ResultSet): PersonModel {
+    const id = Number(rs.getLong(rs.getColumnIndex('id')));
+    const displayName = rs.getString(rs.getColumnIndex('display_name'));
+    const avatarBlob = rs.getBlob(rs.getColumnIndex('avatar_blob'));
+    const birthdayRaw = rs.getLong(rs.getColumnIndex('birthday'));
+    const genderRaw = rs.getLong(rs.getColumnIndex('gender'));
+    const remark = rs.getString(rs.getColumnIndex('remark')) ?? '';
+    const personTypeRaw = Number(rs.getLong(rs.getColumnIndex('person_type')));
+    return {
+      id,
+      displayName,
+      avatarBlob: avatarBlob ?? null,
+      birthday: birthdayRaw !== null ? Number(birthdayRaw) : null,
+      gender: genderRaw !== null ? (Number(genderRaw) as GenderEnum) : null,
+      remark,
+      personType: personTypeRaw as PersonTypeEnum
+    };
+  }
+
+  private rowToStory(rs: relationalStore.ResultSet): StoryModel {
+    const id = Number(rs.getLong(rs.getColumnIndex('id')));
+    const title = rs.getString(rs.getColumnIndex('title')) ?? '';
+    const description = rs.getString(rs.getColumnIndex('description')) ?? '';
+    const timeStartRaw = rs.getLong(rs.getColumnIndex('time_start'));
+    const timeEndRaw = rs.getLong(rs.getColumnIndex('time_end'));
+    const coverUri = rs.getString(rs.getColumnIndex('cover_uri')) ?? '';
+    const location = rs.getString(rs.getColumnIndex('location')) ?? '';
+    const tagsRaw = rs.getString(rs.getColumnIndex('tags'));
+    return {
+      id,
+      title,
+      description,
+      timeStart: timeStartRaw !== null ? Number(timeStartRaw) : null,
+      timeEnd: timeEndRaw !== null ? Number(timeEndRaw) : null,
+      coverUri,
+      location,
+      tags: parseTags(tagsRaw)
+    };
+  }
+
   listPersons(): PersonModel[] {
     const store = this.db();
     const rs = store.querySqlSync(
-      'SELECT id, display_name FROM person ORDER BY updated_at DESC;',
+      'SELECT id, display_name, avatar_blob, birthday, gender, remark, person_type ' +
+        'FROM person ORDER BY updated_at DESC;',
       []
     );
     const out: PersonModel[] = [];
     while (rs.goToNextRow()) {
-      out.push({
-        id: Number(rs.getLong(rs.getColumnIndex('id'))),
-        displayName: rs.getString(rs.getColumnIndex('display_name'))
-      });
+      out.push(this.rowToPerson(rs));
     }
     rs.close();
     return out;
   }
 
-  createPerson(displayName: string): number {
-    const t = requireTrimmedNonEmpty(displayName);
+  createPerson(params: CreatePersonParams): number {
+    const t = requireTrimmedNonEmpty(params.displayName);
     if (t === null) {
       return -1;
     }
@@ -76,49 +169,97 @@ export class RepositoryImpl implements IAppDataStore {
       created_at: ts,
       updated_at: ts
     };
+    if (params.avatarBlob !== undefined) {
+      vb['avatar_blob'] = params.avatarBlob;
+    }
+    if (params.birthday !== undefined) {
+      vb['birthday'] = params.birthday;
+    }
+    if (params.gender !== undefined) {
+      vb['gender'] = params.gender;
+    }
+    if (params.remark !== undefined) {
+      vb['remark'] = params.remark;
+    }
+    if (params.personType !== undefined) {
+      vb['person_type'] = params.personType;
+    }
     const rowId = store.insertSync('person', vb, relationalStore.ConflictResolution.ON_CONFLICT_ROLLBACK);
     return rowId > 0 ? rowId : -1;
   }
 
   getPerson(id: number): PersonModel | null {
     const store = this.db();
-    const rs = store.querySqlSync('SELECT id, display_name FROM person WHERE id = ?;', [id]);
+    const rs = store.querySqlSync(
+      'SELECT id, display_name, avatar_blob, birthday, gender, remark, person_type FROM person WHERE id = ?;',
+      [id]
+    );
     let p: PersonModel | null = null;
     if (rs.goToFirstRow()) {
-      p = {
-        id: Number(rs.getLong(rs.getColumnIndex('id'))),
-        displayName: rs.getString(rs.getColumnIndex('display_name'))
-      };
+      p = this.rowToPerson(rs);
     }
     rs.close();
     return p;
   }
 
-  updatePerson(id: number, displayName: string): boolean {
-    const t = requireTrimmedNonEmpty(displayName);
-    if (t === null) {
-      return false;
-    }
+  updatePerson(id: number, params: UpdatePersonParams): boolean {
     const store = this.db();
-    store.executeSql('UPDATE person SET display_name = ?, updated_at = ? WHERE id = ?;', [t, nowMs(), id]);
+    const setClauses: string[] = ['updated_at = ?'];
+    const bindArgs: relationalStore.ValueType[] = [nowMs()];
+
+    // displayName 有特殊校验：非空 + trim
+    if (params.displayName !== undefined) {
+      const t = requireTrimmedNonEmpty(params.displayName);
+      if (t === null) {
+        return false;
+      }
+      setClauses.push('display_name = ?');
+      bindArgs.push(t);
+    }
+    if (params.avatarBlob !== undefined) {
+      setClauses.push('avatar_blob = ?');
+      bindArgs.push(params.avatarBlob as Uint8Array);
+    }
+    if (params.birthday !== undefined) {
+      setClauses.push('birthday = ?');
+      bindArgs.push(params.birthday);
+    }
+    if (params.gender !== undefined) {
+      setClauses.push('gender = ?');
+      bindArgs.push(params.gender);
+    }
+    if (params.remark !== undefined) {
+      setClauses.push('remark = ?');
+      bindArgs.push(params.remark);
+    }
+    if (params.personType !== undefined) {
+      setClauses.push('person_type = ?');
+      bindArgs.push(params.personType);
+    }
+    bindArgs.push(id);
+    store.executeSql(
+      `UPDATE person SET ${setClauses.join(', ')} WHERE id = ?;`,
+      bindArgs
+    );
     return changesCount(store) > 0;
   }
 
   listStories(): StoryModel[] {
     const store = this.db();
-    const rs = store.querySqlSync('SELECT id, title FROM story ORDER BY updated_at DESC;', []);
+    const rs = store.querySqlSync(
+      'SELECT id, title, description, time_start, time_end, cover_uri, location, tags ' +
+        'FROM story ORDER BY updated_at DESC;',
+      []
+    );
     const out: StoryModel[] = [];
     while (rs.goToNextRow()) {
-      out.push({
-        id: Number(rs.getLong(rs.getColumnIndex('id'))),
-        title: rs.getString(rs.getColumnIndex('title'))
-      });
+      out.push(this.rowToStory(rs));
     }
     rs.close();
     return out;
   }
 
-  createStory(title: string): number {
+  createStory(title: string, description?: string, timeStart?: number | null, timeEnd?: number | null, coverUri?: string, location?: string, tags?: string[]): number {
     const t = requireTrimmedNonEmpty(title);
     if (t === null) {
       return -1;
@@ -130,19 +271,38 @@ export class RepositoryImpl implements IAppDataStore {
       created_at: ts,
       updated_at: ts
     };
+    if (description !== undefined) {
+      vb['description'] = description;
+    }
+    if (timeStart !== undefined) {
+      vb['time_start'] = timeStart;
+    }
+    if (timeEnd !== undefined) {
+      vb['time_end'] = timeEnd;
+    }
+    if (coverUri !== undefined) {
+      vb['cover_uri'] = coverUri;
+    }
+    if (location !== undefined) {
+      vb['location'] = location;
+    }
+    if (tags !== undefined) {
+      vb['tags'] = JSON.stringify(tags);
+    }
     const rowId = store.insertSync('story', vb, relationalStore.ConflictResolution.ON_CONFLICT_ROLLBACK);
     return rowId > 0 ? rowId : -1;
   }
 
   getStory(id: number): StoryModel | null {
     const store = this.db();
-    const rs = store.querySqlSync('SELECT id, title FROM story WHERE id = ?;', [id]);
+    const rs = store.querySqlSync(
+      'SELECT id, title, description, time_start, time_end, cover_uri, location, tags ' +
+        'FROM story WHERE id = ?;',
+      [id]
+    );
     let s: StoryModel | null = null;
     if (rs.goToFirstRow()) {
-      s = {
-        id: Number(rs.getLong(rs.getColumnIndex('id'))),
-        title: rs.getString(rs.getColumnIndex('title'))
-      };
+      s = this.rowToStory(rs);
     }
     rs.close();
     return s;
@@ -158,19 +318,62 @@ export class RepositoryImpl implements IAppDataStore {
     return changesCount(store) > 0;
   }
 
+  updateStoryAll(id: number, params: UpdateStoryParams): boolean {
+    const store = this.db();
+    const setClauses: string[] = ['updated_at = ?'];
+    const bindArgs: relationalStore.ValueType[] = [nowMs()];
+
+    if (params.title !== undefined) {
+      const t = requireTrimmedNonEmpty(params.title);
+      if (t === null) {
+        return false;
+      }
+      setClauses.push('title = ?');
+      bindArgs.push(t);
+    }
+    if (params.description !== undefined) {
+      setClauses.push('description = ?');
+      bindArgs.push(params.description);
+    }
+    if (params.timeStart !== undefined) {
+      setClauses.push('time_start = ?');
+      bindArgs.push(params.timeStart);
+    }
+    if (params.timeEnd !== undefined) {
+      setClauses.push('time_end = ?');
+      bindArgs.push(params.timeEnd);
+    }
+    if (params.coverUri !== undefined) {
+      setClauses.push('cover_uri = ?');
+      bindArgs.push(params.coverUri);
+    }
+    if (params.location !== undefined) {
+      setClauses.push('location = ?');
+      bindArgs.push(params.location);
+    }
+    if (params.tags !== undefined) {
+      setClauses.push('tags = ?');
+      bindArgs.push(JSON.stringify(params.tags));
+    }
+    bindArgs.push(id);
+    store.executeSql(
+      `UPDATE story SET ${setClauses.join(', ')} WHERE id = ?;`,
+      bindArgs
+    );
+    return changesCount(store) > 0;
+  }
+
   linkedPersonsForStory(storyId: number): PersonModel[] {
     const store = this.db();
     const rs = store.querySqlSync(
-      'SELECT p.id AS id, p.display_name AS display_name FROM person p ' +
+      'SELECT p.id AS id, p.display_name AS display_name, p.avatar_blob, p.birthday, p.gender, p.remark, p.person_type ' +
+        'FROM person p ' +
         'INNER JOIN person_story ps ON ps.person_id = p.id WHERE ps.story_id = ? ORDER BY p.updated_at DESC;',
       [storyId]
     );
     const out: PersonModel[] = [];
     while (rs.goToNextRow()) {
-      out.push({
-        id: Number(rs.getLong(rs.getColumnIndex('id'))),
-        displayName: rs.getString(rs.getColumnIndex('display_name'))
-      });
+      out.push(this.rowToPerson(rs));
     }
     rs.close();
     return out;
@@ -207,16 +410,14 @@ export class RepositoryImpl implements IAppDataStore {
   linkedStoriesForPerson(personId: number): StoryModel[] {
     const store = this.db();
     const rs = store.querySqlSync(
-      'SELECT s.id AS id, s.title AS title FROM story s ' +
+      'SELECT s.id AS id, s.title AS title, s.description, s.time_start, s.time_end, s.cover_uri, s.location, s.tags ' +
+        'FROM story s ' +
         'INNER JOIN person_story ps ON ps.story_id = s.id WHERE ps.person_id = ? ORDER BY s.updated_at DESC;',
       [personId]
     );
     const out: StoryModel[] = [];
     while (rs.goToNextRow()) {
-      out.push({
-        id: Number(rs.getLong(rs.getColumnIndex('id'))),
-        title: rs.getString(rs.getColumnIndex('title'))
-      });
+      out.push(this.rowToStory(rs));
     }
     rs.close();
     return out;
@@ -379,6 +580,80 @@ export class RepositoryImpl implements IAppDataStore {
     } catch (_e) {
       store.rollBack();
       return { success: false, duplicate: false };
+    }
+  }
+
+  deletePerson(id: number): boolean {
+    const store = this.db();
+    const p = this.getPerson(id);
+    if (p === null) {
+      return false;
+    }
+    try {
+      store.beginTransaction();
+      // Collect affected photo_ref ids before deleting links
+      const refRs = store.querySqlSync(
+        'SELECT photo_ref_id FROM photo_owner_link WHERE owner_kind = ? AND owner_id = ?;',
+        [OWN_PERSON, id]
+      );
+      const refIds: number[] = [];
+      while (refRs.goToNextRow()) {
+        refIds.push(Number(refRs.getLong(refRs.getColumnIndex('photo_ref_id'))));
+      }
+      refRs.close();
+      // Delete person-side photo owner links
+      store.executeSql('DELETE FROM photo_owner_link WHERE owner_kind = ? AND owner_id = ?;', [OWN_PERSON, id]);
+      // Decrement reference_count for each affected photo_ref
+      for (const rid of refIds) {
+        store.executeSql('UPDATE photo_ref SET reference_count = MAX(0, reference_count - 1) WHERE id = ?;', [rid]);
+        store.executeSql('UPDATE photo_ref SET is_referenced = 0 WHERE id = ? AND reference_count = 0;', [rid]);
+      }
+      // Delete person-story associations
+      store.executeSql('DELETE FROM person_story WHERE person_id = ?;', [id]);
+      // Delete person
+      store.executeSql('DELETE FROM person WHERE id = ?;', [id]);
+      store.commit();
+      return changesCount(store) > 0;
+    } catch (_e) {
+      store.rollBack();
+      return false;
+    }
+  }
+
+  deleteStory(id: number): boolean {
+    const store = this.db();
+    const s = this.getStory(id);
+    if (s === null) {
+      return false;
+    }
+    try {
+      store.beginTransaction();
+      // Collect affected photo_ref ids before deleting links
+      const refRs = store.querySqlSync(
+        'SELECT photo_ref_id FROM photo_owner_link WHERE owner_kind = ? AND owner_id = ?;',
+        [OWN_STORY, id]
+      );
+      const refIds: number[] = [];
+      while (refRs.goToNextRow()) {
+        refIds.push(Number(refRs.getLong(refRs.getColumnIndex('photo_ref_id'))));
+      }
+      refRs.close();
+      // Delete story-side photo owner links
+      store.executeSql('DELETE FROM photo_owner_link WHERE owner_kind = ? AND owner_id = ?;', [OWN_STORY, id]);
+      // Decrement reference_count for each affected photo_ref
+      for (const rid of refIds) {
+        store.executeSql('UPDATE photo_ref SET reference_count = MAX(0, reference_count - 1) WHERE id = ?;', [rid]);
+        store.executeSql('UPDATE photo_ref SET is_referenced = 0 WHERE id = ? AND reference_count = 0;', [rid]);
+      }
+      // Delete person-story associations
+      store.executeSql('DELETE FROM person_story WHERE story_id = ?;', [id]);
+      // Delete story
+      store.executeSql('DELETE FROM story WHERE id = ?;', [id]);
+      store.commit();
+      return changesCount(store) > 0;
+    } catch (_e) {
+      store.rollBack();
+      return false;
     }
   }
 }

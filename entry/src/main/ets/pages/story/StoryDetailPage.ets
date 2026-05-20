@@ -19,12 +19,39 @@ function parseStoryId(params: Record<string, Object>): number {
   return 0;
 }
 
+function formatDate(ts: number | null): string {
+  if (ts === null || ts <= 0) {
+    return '未设置';
+  }
+  const d = new Date(ts);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function buildPickerDate(ts: number | null): Date {
+  if (ts !== null && ts > 0) {
+    return new Date(ts);
+  }
+  return new Date(2000, 0, 1);
+}
+
 @Entry
 @Component
 export struct StoryDetailPage {
   @State storyId: number = 0;
   @State story: StoryModel | null = null;
   @State draftTitle: string = '';
+  @State draftDescription: string = '';
+  @State draftTimeStart: number = 0;
+  @State draftTimeEnd: number = 0;
+  @State draftTimeStartText: string = '选择开始日期';
+  @State draftTimeEndText: string = '选择结束日期';
+  @State draftCoverUri: string = '';
+  @State draftLocation: string = '';
+  @State draftTags: string[] = [];
+  @State draftTagInput: string = '';
   @State personsAll: PersonModel[] = [];
   @State linkedPersonIds: number[] = [];
   @State photos: PhotoRefModel[] = [];
@@ -46,21 +73,119 @@ export struct StoryDetailPage {
   private refresh(): void {
     const sSvc = getStoryService();
     this.story = sSvc.getStory(this.storyId);
-    this.draftTitle = this.story?.title ?? '';
+    if (this.story !== null) {
+      this.draftTitle = this.story.title;
+      this.draftDescription = this.story.description;
+      this.draftTimeStart = this.story.timeStart ?? 0;
+      this.draftTimeEnd = this.story.timeEnd ?? 0;
+      this.draftTimeStartText = formatDate(this.story.timeStart);
+      this.draftTimeEndText = formatDate(this.story.timeEnd);
+      this.draftCoverUri = this.story.coverUri;
+      this.draftLocation = this.story.location;
+      this.draftTags = [...this.story.tags];
+    }
     this.personsAll = getPersonService().listPersons();
     this.linkedPersonIds = sSvc.listLinkedPersons(this.storyId).map((p): number => p.id);
     this.photos = sSvc.listStoryPhotos(this.storyId);
   }
 
-  private saveTitle(): void {
+  private saveAll(): void {
     dismissSoftKeyboard();
-    const ok = getStoryService().updateStory(this.storyId, this.draftTitle);
+    const svc = getStoryService();
+    const ok = svc.updateStoryAll!(this.storyId, this.draftTitle,
+      this.draftDescription,
+      this.draftTimeStart > 0 ? this.draftTimeStart : null,
+      this.draftTimeEnd > 0 ? this.draftTimeEnd : null,
+      this.draftCoverUri,
+      this.draftLocation,
+      this.draftTags
+    );
     if (!ok) {
       promptAction.showToast({ message: '保存失败：故事不存在或标题为空' });
       return;
     }
-    promptAction.showToast({ message: '已保存标题' });
+    promptAction.showToast({ message: '已保存全部字段' });
     this.refresh();
+  }
+
+  private confirmDeleteCurrentStory(): void {
+    AlertDialog.show({
+      title: '确认删除',
+      message: `确定要删除"${this.story?.title ?? ''}"吗？此操作不可撤销。`,
+      primaryButton: {
+        value: '取消',
+        action: (): void => {
+          // do nothing
+        }
+      },
+      secondaryButton: {
+        value: '删除',
+        fontColor: '#CC0000',
+        action: (): void => {
+          dismissSoftKeyboard();
+          const svc = getStoryService();
+          const ok = svc.deleteStory(this.storyId);
+          if (ok) {
+            promptAction.showToast({ message: '已删除' });
+            router.back();
+          } else {
+            promptAction.showToast({ message: '删除失败：故事不存在' });
+          }
+        }
+      }
+    });
+  }
+
+  private async pickCoverFromAlbum(): Promise<void> {
+    dismissSoftKeyboard();
+    try {
+      const options = new photoAccessHelper.PhotoSelectOptions();
+      options.maxSelectNumber = 1;
+      options.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
+      const picker = new photoAccessHelper.PhotoViewPicker();
+      const result = await picker.select(options);
+      const uris = result.photoUris;
+      if (!uris || uris.length === 0) {
+        return;
+      }
+      this.draftCoverUri = uris[0];
+    } catch (_e) {
+      // user cancelled
+    }
+  }
+
+  private removeCover(): void {
+    this.draftCoverUri = '';
+  }
+
+  private addTag(): void {
+    const t = this.draftTagInput.trim();
+    if (t.length === 0) {
+      return;
+    }
+    if (this.draftTags.indexOf(t) >= 0) {
+      promptAction.showToast({ message: '标签已存在' });
+      return;
+    }
+    this.draftTags.push(t);
+    this.draftTagInput = '';
+  }
+
+  private removeTag(index: number): void {
+    this.draftTags.splice(index, 1);
+    this.draftTags = [...this.draftTags];
+  }
+
+  private onTimeStartChange(year: number, month: number, day: number): void {
+    const d = new Date(year, month, day);
+    this.draftTimeStart = d.getTime();
+    this.draftTimeStartText = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  }
+
+  private onTimeEndChange(year: number, month: number, day: number): void {
+    const d = new Date(year, month, day);
+    this.draftTimeEnd = d.getTime();
+    this.draftTimeEndText = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   }
 
   private createPersonQuick(): void {
@@ -153,13 +278,14 @@ export struct StoryDetailPage {
       if (this.story !== null && this.storyId > 0) {
         Scroll() {
           Column({ space: 14 }) {
+            // ====== 档案摘要 ======
             Column({ space: 6 }) {
               Text(this.story.title)
                 .fontSize($r('app.float.ts_font_headline'))
                 .fontColor($r('app.color.ts_text_primary'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
-              Text(`故事 · id=${this.story.id}`)
+              Text(`故事 · id=${this.story.id} · ${formatDate(this.story.timeStart)} ~ ${formatDate(this.story.timeEnd)}`)
                 .fontSize($r('app.float.ts_font_caption'))
                 .fontColor($r('app.color.ts_text_tertiary'))
                 .width('100%')
@@ -170,26 +296,191 @@ export struct StoryDetailPage {
             .borderRadius(12)
             .border({ width: 1, color: $r('app.color.ts_outline') })
 
+            // ====== 编辑（全部字段） ======
             Column({ space: 12 }) {
               Text('编辑')
                 .fontSize($r('app.float.ts_font_label'))
                 .fontColor($r('app.color.ts_text_primary'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
-              TextInput({ placeholder: '标题', text: this.draftTitle })
+
+              // 标题
+              TextInput({ placeholder: '标题（必填）', text: this.draftTitle })
                 .onChange((v: string): void => {
                   this.draftTitle = v;
-                })
-                .enterKeyType(EnterKeyType.Done)
-                .onSubmit((): void => {
-                  this.saveTitle();
                 })
                 .width('100%')
                 .height(48)
                 .backgroundColor($r('app.color.ts_surface_container_high'))
                 .borderRadius(10)
                 .padding({ left: 12, right: 12 })
-              Button('保存标题')
+
+              // 描述
+              TextArea({ placeholder: '描述（可选）', text: this.draftDescription })
+                .onChange((v: string): void => {
+                  this.draftDescription = v;
+                })
+                .width('100%')
+                .height(80)
+                .backgroundColor($r('app.color.ts_surface_container_high'))
+                .borderRadius(10)
+                .padding({ left: 12, right: 12 })
+
+              // 封面 URI
+              Row({ space: 8 }) {
+                Text('封面')
+                  .fontSize($r('app.float.ts_font_support'))
+                  .fontColor($r('app.color.ts_text_secondary'))
+                if (this.draftCoverUri.length > 0) {
+                  Text(this.draftCoverUri.length > 30 ? this.draftCoverUri.substring(0, 30) + '...' : this.draftCoverUri)
+                    .fontSize($r('app.float.ts_font_overline'))
+                    .fontColor($r('app.color.ts_text_primary'))
+                    .layoutWeight(1)
+                    .maxLines(1)
+                  Button('移除')
+                    .height(32)
+                    .fontSize($r('app.float.ts_font_overline'))
+                    .backgroundColor($r('app.color.ts_surface_container_high'))
+                    .fontColor($r('app.color.ts_color_warning'))
+                    .onClick((): void => {
+                      this.removeCover();
+                    })
+                } else {
+                  Button('选择封面')
+                    .height(32)
+                    .fontSize($r('app.float.ts_font_overline'))
+                    .backgroundColor($r('app.color.ts_color_info_container'))
+                    .fontColor($r('app.color.ts_color_info'))
+                    .onClick((): void => {
+                      this.pickCoverFromAlbum();
+                    })
+                }
+              }
+              .width('100%')
+
+              // 地点
+              TextInput({ placeholder: '地点（可选）', text: this.draftLocation })
+                .onChange((v: string): void => {
+                  this.draftLocation = v;
+                })
+                .width('100%')
+                .height(48)
+                .backgroundColor($r('app.color.ts_surface_container_high'))
+                .borderRadius(10)
+                .padding({ left: 12, right: 12 })
+
+              // 时间范围 - 开始日期
+              Row({ space: 8 }) {
+                Text('开始日期')
+                  .fontSize($r('app.float.ts_font_support'))
+                  .fontColor($r('app.color.ts_text_secondary'))
+                Text(this.draftTimeStartText)
+                  .fontSize($r('app.float.ts_font_support'))
+                  .fontColor($r('app.color.ts_text_primary'))
+              }
+              .width('100%')
+              DatePicker({
+                start: new Date(1900, 0, 1),
+                end: new Date(2099, 11, 31),
+                selected: buildPickerDate(this.draftTimeStart > 0 ? this.draftTimeStart : null)
+              })
+                .width('100%')
+                .onChange((res: DatePickerResult): void => {
+                  const yr = res.year as number;
+                  const mo = res.month as number;
+                  const dy = res.day as number;
+                  this.onTimeStartChange(yr, mo, dy);
+                })
+                .disappearTextStyle({ color: $r('app.color.ts_text_tertiary') })
+                .textStyle({ color: $r('app.color.ts_text_primary') })
+                .selectedTextStyle({ color: $r('app.color.ts_brand_primary') })
+
+              // 时间范围 - 结束日期
+              Row({ space: 8 }) {
+                Text('结束日期')
+                  .fontSize($r('app.float.ts_font_support'))
+                  .fontColor($r('app.color.ts_text_secondary'))
+                Text(this.draftTimeEndText)
+                  .fontSize($r('app.float.ts_font_support'))
+                  .fontColor($r('app.color.ts_text_primary'))
+              }
+              .width('100%')
+              DatePicker({
+                start: new Date(1900, 0, 1),
+                end: new Date(2099, 11, 31),
+                selected: buildPickerDate(this.draftTimeEnd > 0 ? this.draftTimeEnd : null)
+              })
+                .width('100%')
+                .onChange((res: DatePickerResult): void => {
+                  const yr = res.year as number;
+                  const mo = res.month as number;
+                  const dy = res.day as number;
+                  this.onTimeEndChange(yr, mo, dy);
+                })
+                .disappearTextStyle({ color: $r('app.color.ts_text_tertiary') })
+                .textStyle({ color: $r('app.color.ts_text_primary') })
+                .selectedTextStyle({ color: $r('app.color.ts_brand_primary') })
+
+              // 标签
+              Column({ space: 6 }) {
+                Text('自定义标签')
+                  .fontSize($r('app.float.ts_font_support'))
+                  .fontColor($r('app.color.ts_text_secondary'))
+                  .width('100%')
+                Row({ space: 8 }) {
+                  TextInput({ placeholder: '输入标签', text: this.draftTagInput })
+                    .layoutWeight(1)
+                    .height(40)
+                    .backgroundColor($r('app.color.ts_surface_container_high'))
+                    .borderRadius(10)
+                    .padding({ left: 12, right: 12 })
+                    .onChange((v: string): void => {
+                      this.draftTagInput = v;
+                    })
+                    .enterKeyType(EnterKeyType.Done)
+                    .onSubmit((): void => {
+                      this.addTag();
+                    })
+                  Button('添加')
+                    .height(40)
+                    .fontSize($r('app.float.ts_font_overline'))
+                    .backgroundColor($r('app.color.ts_color_info_container'))
+                    .fontColor($r('app.color.ts_color_info'))
+                    .onClick((): void => {
+                      this.addTag();
+                    })
+                }
+                .width('100%')
+
+                if (this.draftTags.length > 0) {
+                  Flex({ wrap: FlexWrap.Wrap }) {
+                    ForEach(this.draftTags, (tag: string, idx: number) => {
+                      Row({ space: 4 }) {
+                        Text(tag)
+                          .fontSize($r('app.float.ts_font_overline'))
+                          .fontColor($r('app.color.ts_brand_primary'))
+                        Button('x')
+                          .height('20vp')
+                          .width('20vp')
+                          .fontSize('10fp')
+                          .backgroundColor($r('app.color.ts_surface_container_high'))
+                          .fontColor($r('app.color.ts_color_warning'))
+                          .onClick((): void => {
+                            this.removeTag(idx);
+                          })
+                      }
+                      .padding({ left: 8, right: 4, top: 2, bottom: 2 })
+                      .backgroundColor($r('app.color.ts_brand_primary_container'))
+                      .borderRadius(14)
+                    })
+                  }
+                  .width('100%')
+                }
+              }
+              .width('100%')
+
+              // 保存按钮
+              Button('保存全部字段')
                 .width('100%')
                 .height(44)
                 .fontSize($r('app.float.ts_font_support'))
@@ -197,7 +488,7 @@ export struct StoryDetailPage {
                 .backgroundColor($r('app.color.ts_brand_primary'))
                 .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .onClick((): void => {
-                  this.saveTitle();
+                  this.saveAll();
                 })
             }
             .width('100%')
@@ -206,6 +497,7 @@ export struct StoryDetailPage {
             .borderRadius(12)
             .border({ width: 1, color: $r('app.color.ts_outline') })
 
+            // ====== 关联人物 ======
             Column({ space: 12 }) {
               Text('关联人物')
                 .fontSize($r('app.float.ts_font_label'))
@@ -278,6 +570,7 @@ export struct StoryDetailPage {
             .borderRadius(12)
             .border({ width: 1, color: $r('app.color.ts_outline') })
 
+            // ====== 照片 ======
             Column({ space: 12 }) {
               Text('照片（故事 · PhotoOwnerLink）')
                 .fontSize($r('app.float.ts_font_label'))
@@ -359,6 +652,7 @@ export struct StoryDetailPage {
             .borderRadius(12)
             .border({ width: 1, color: $r('app.color.ts_outline') })
 
+            // ====== 批量导入入口 ======
             Column({ space: 10 }) {
               Text('批量导入')
                 .fontSize($r('app.float.ts_font_label'))
@@ -387,6 +681,29 @@ export struct StoryDetailPage {
             .width('100%')
             .padding(16)
             .backgroundColor($r('app.color.ts_brand_primary_container'))
+            .borderRadius(12)
+            .border({ width: 1, color: $r('app.color.ts_outline') })
+
+            // ====== 危险操作：删除故事 ======
+            Column({ space: 10 }) {
+              Button('删除故事')
+                .width('100%')
+                .height(44)
+                .fontSize($r('app.float.ts_font_support'))
+                .fontWeight(FontWeight.Medium)
+                .backgroundColor('#CC0000')
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
+                .onClick((): void => {
+                  this.confirmDeleteCurrentStory();
+                })
+              Text('删除后将同时移除该故事的所有关联与照片挂载，不可撤销。')
+                .fontSize($r('app.float.ts_font_overline'))
+                .fontColor($r('app.color.ts_text_caption'))
+                .width('100%')
+            }
+            .width('100%')
+            .padding(16)
+            .backgroundColor($r('app.color.ts_surface_container'))
             .borderRadius(12)
             .border({ width: 1, color: $r('app.color.ts_outline') })
           }

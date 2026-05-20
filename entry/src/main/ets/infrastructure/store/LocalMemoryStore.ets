@@ -1,4 +1,5 @@
 import type { PersonModel, PhotoRefModel, PhotoAddResult, StoryModel } from '../../domain/model/Models';
+import { PersonTypeEnum as PT } from '../../domain/model/Models';
 
 interface PersonStoryTuple {
   personId: number;
@@ -10,6 +11,56 @@ interface PhotoOwnerTuple {
   ownerKind: 'person' | 'story';
   ownerId: number;
   photoRefId: number;
+}
+
+function defaultPersonModel(id: number, displayName: string): PersonModel {
+  return {
+    id,
+    displayName,
+    avatarBlob: null,
+    birthday: null,
+    gender: null,
+    remark: '',
+    personType: PT.OTHER
+  };
+}
+
+function defaultStoryModel(id: number, title: string): StoryModel {
+  return {
+    id,
+    title,
+    description: '',
+    timeStart: null,
+    timeEnd: null,
+    coverUri: '',
+    location: '',
+    tags: []
+  };
+}
+
+function clonePerson(p: PersonModel): PersonModel {
+  return {
+    id: p.id,
+    displayName: p.displayName,
+    avatarBlob: p.avatarBlob,
+    birthday: p.birthday,
+    gender: p.gender,
+    remark: p.remark,
+    personType: p.personType
+  };
+}
+
+function cloneStory(s: StoryModel): StoryModel {
+  return {
+    id: s.id,
+    title: s.title,
+    description: s.description,
+    timeStart: s.timeStart,
+    timeEnd: s.timeEnd,
+    coverUri: s.coverUri,
+    location: s.location,
+    tags: [...s.tags]
+  };
 }
 
 /**
@@ -28,7 +79,11 @@ export class LocalMemoryStore {
   private nextLinkId = 1;
 
   listPersons(): PersonModel[] {
-    return this.persons.map((p): PersonModel => ({ id: p.id, displayName: p.displayName }));
+    const out: PersonModel[] = [];
+    for (const p of this.persons) {
+      out.push(clonePerson(p));
+    }
+    return out;
   }
 
   createPerson(displayName: string): number {
@@ -37,13 +92,13 @@ export class LocalMemoryStore {
       return -1;
     }
     const id = this.nextPersonId++;
-    this.persons.push({ id, displayName: t });
+    this.persons.push(defaultPersonModel(id, t));
     return id;
   }
 
   getPerson(id: number): PersonModel | null {
     const p = this.persons.find((x): boolean => x.id === id);
-    return p ?? null;
+    return p ? clonePerson(p) : null;
   }
 
   updatePerson(id: number, displayName: string): boolean {
@@ -60,7 +115,7 @@ export class LocalMemoryStore {
   }
 
   listStories(): StoryModel[] {
-    return this.stories.map((s): StoryModel => ({ id: s.id, title: s.title }));
+    return this.stories.map((s): StoryModel => cloneStory(s));
   }
 
   createStory(title: string): number {
@@ -69,13 +124,13 @@ export class LocalMemoryStore {
       return -1;
     }
     const id = this.nextStoryId++;
-    this.stories.push({ id, title: t });
+    this.stories.push(defaultStoryModel(id, t));
     return id;
   }
 
   getStory(id: number): StoryModel | null {
     const s = this.stories.find((x): boolean => x.id === id);
-    return s ?? null;
+    return s ? cloneStory(s) : null;
   }
 
   updateStory(id: number, title: string): boolean {
@@ -101,7 +156,7 @@ export class LocalMemoryStore {
     const out: PersonModel[] = [];
     for (const p of this.persons) {
       if (ids.has(p.id)) {
-        out.push({ id: p.id, displayName: p.displayName });
+        out.push(clonePerson(p));
       }
     }
     return out;
@@ -139,7 +194,7 @@ export class LocalMemoryStore {
     const result: StoryModel[] = [];
     for (const s of this.stories) {
       if (ids.has(s.id)) {
-        result.push({ id: s.id, title: s.title });
+        result.push(cloneStory(s));
       }
     }
     return result;
@@ -225,6 +280,46 @@ export class LocalMemoryStore {
       photoRefId: prId
     });
     return { success: true, duplicate: false };
+  }
+
+  deletePerson(id: number): boolean {
+    const idx = this.persons.findIndex((p): boolean => p.id === id);
+    if (idx < 0) {
+      return false;
+    }
+    // Remove person-story links
+    this.personStories = this.personStories.filter((ps): boolean => ps.personId !== id);
+    // Remove person-side photo owner links
+    const keepLinks: PhotoOwnerTuple[] = [];
+    for (const l of this.ownerLinks) {
+      if (!(l.ownerKind === 'person' && l.ownerId === id)) {
+        keepLinks.push(l);
+      }
+    }
+    this.ownerLinks = keepLinks;
+    // Remove person
+    this.persons.splice(idx, 1);
+    return true;
+  }
+
+  deleteStory(id: number): boolean {
+    const idx = this.stories.findIndex((s): boolean => s.id === id);
+    if (idx < 0) {
+      return false;
+    }
+    // Remove person-story links
+    this.personStories = this.personStories.filter((ps): boolean => ps.storyId !== id);
+    // Remove story-side photo owner links
+    const keepLinks: PhotoOwnerTuple[] = [];
+    for (const l of this.ownerLinks) {
+      if (!(l.ownerKind === 'story' && l.ownerId === id)) {
+        keepLinks.push(l);
+      }
+    }
+    this.ownerLinks = keepLinks;
+    // Remove story
+    this.stories.splice(idx, 1);
+    return true;
   }
 }
 

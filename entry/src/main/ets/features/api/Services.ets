@@ -1,11 +1,12 @@
-import type { PersonModel, PhotoAddResult, PhotoRefModel, StoryModel } from '../../domain/model/Models';
+import type { GenderEnum, PersonModel, PersonTypeEnum, PhotoAddResult, PhotoRefModel, StoryModel } from '../../domain/model/Models';
 
 /** 人物领域服务（RDB 真相经 IAppDataStore，见 PersonFeature + RepositoryImpl）。 */
 export interface IPersonService {
   listPersons(): PersonModel[];
-  createPerson(displayName: string): number;
+  createPerson(displayName: string, avatarBlob?: Uint8Array, birthday?: number, gender?: GenderEnum, remark?: string, personType?: PersonTypeEnum): number;
   getPerson(id: number): PersonModel | null;
-  updatePerson(id: number, displayName: string): boolean;
+  updatePerson(id: number, displayName: string, avatarBlob?: Uint8Array | null, birthday?: number | null, gender?: GenderEnum | null, remark?: string, personType?: PersonTypeEnum): boolean;
+  deletePerson(id: number): boolean;
   listLinkedStories(personId: number): StoryModel[];
   linkPersonToStory(personId: number, storyId: number): void;
   unlinkPersonFromStory(personId: number, storyId: number): void;
@@ -20,6 +21,8 @@ export interface IStoryService {
   createStory(title: string): number;
   getStory(id: number): StoryModel | null;
   updateStory(id: number, title: string): boolean;
+  updateStoryAll?(id: number, title: string, description?: string, timeStart?: number | null, timeEnd?: number | null, coverUri?: string, location?: string, tags?: string[]): boolean;
+  deleteStory(id: number): boolean;
   listLinkedPersons(storyId: number): PersonModel[];
   linkStoryToPerson(storyId: number, personId: number): void;
   unlinkStoryFromPerson(storyId: number, personId: number): void;

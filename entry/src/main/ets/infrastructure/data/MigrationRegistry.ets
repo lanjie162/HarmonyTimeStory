@@ -66,6 +66,77 @@ function applyV1ToV2(ctx: MigrationContext): void {
   ctx.schemaVersion = 2;
 }
 
+function ensureV2ToV3Precheck(ctx: MigrationContext): void {
+  if (ctx.schemaVersion !== 2) {
+    throw new Error(`unexpected version ${ctx.schemaVersion}, expected 2`);
+  }
+  if (ctx.rdbStore) {
+    const requiredTables = ['person'];
+    const missing = checkMissingTablesSqlite(ctx.rdbStore, requiredTables);
+    if (missing.length > 0) {
+      throw new Error(`v2 minimal tables are not ready, missing: ${missing.join(', ')}`);
+    }
+  } else {
+    if (!ctx.tables.has('person')) {
+      throw new Error('v2 minimal tables are not ready');
+    }
+  }
+}
+
+function applyV2ToV3(ctx: MigrationContext): void {
+  if (ctx.rdbStore) {
+    const newColumns: string[] = [
+      'avatar_blob BLOB',
+      'birthday INTEGER',
+      'gender INTEGER',
+      'remark TEXT DEFAULT \'\'',
+      'person_type INTEGER DEFAULT 3'
+    ];
+    for (const colDef of newColumns) {
+      ctx.rdbStore.executeSql(`ALTER TABLE person ADD COLUMN ${colDef};`, []);
+    }
+  }
+
+  ctx.appliedSteps.add('v2_to_v3_person_fields');
+  ctx.schemaVersion = 3;
+}
+
+function ensureV3ToV4Precheck(ctx: MigrationContext): void {
+  if (ctx.schemaVersion !== 3) {
+    throw new Error(`unexpected version ${ctx.schemaVersion}, expected 3`);
+  }
+  if (ctx.rdbStore) {
+    const requiredTables = ['story'];
+    const missing = checkMissingTablesSqlite(ctx.rdbStore, requiredTables);
+    if (missing.length > 0) {
+      throw new Error(`v3 minimal tables are not ready, missing: ${missing.join(', ')}`);
+    }
+  } else {
+    if (!ctx.tables.has('story')) {
+      throw new Error('v3 minimal tables are not ready');
+    }
+  }
+}
+
+function applyV3ToV4(ctx: MigrationContext): void {
+  if (ctx.rdbStore) {
+    const newColumns: string[] = [
+      'description TEXT DEFAULT \'\'',
+      'time_start INTEGER',
+      'time_end INTEGER',
+      'cover_uri TEXT DEFAULT \'\'',
+      'location TEXT DEFAULT \'\'',
+      'tags TEXT DEFAULT \'[]\''
+    ];
+    for (const colDef of newColumns) {
+      ctx.rdbStore.executeSql(`ALTER TABLE story ADD COLUMN ${colDef};`, []);
+    }
+  }
+
+  ctx.appliedSteps.add('v3_to_v4_story_fields');
+  ctx.schemaVersion = 4;
+}
+
 export const migrationSteps: MigrationStep[] = [
   {
     fromVersion: 1,
@@ -73,5 +144,19 @@ export const migrationSteps: MigrationStep[] = [
     stepId: 'v1_to_v2_core',
     precheck: ensureV1ToV2Precheck,
     apply: applyV1ToV2
+  },
+  {
+    fromVersion: 2,
+    toVersion: 3,
+    stepId: 'v2_to_v3_person_fields',
+    precheck: ensureV2ToV3Precheck,
+    apply: applyV2ToV3
+  },
+  {
+    fromVersion: 3,
+    toVersion: 4,
+    stepId: 'v3_to_v4_story_fields',
+    precheck: ensureV3ToV4Precheck,
+    apply: applyV3ToV4
   }
 ];

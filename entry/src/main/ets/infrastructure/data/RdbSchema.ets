@@ -1,7 +1,12 @@
 import { relationalStore } from '@kit.ArkData';
 
-/** 与 `schema_meta.version` 对齐；供 Tier1 契约断言（勿与 RDB 运行时 DDL 混测）。 */
-export const RDB_SCHEMA_META_VERSION = 1;
+/** 与 `schema_meta.version` 对齐；供 Tier1 契约断言（勿与 RDB 运行时 DDL 混测）。
+ *  v1: MVP 最小字段集 (display_name, created_at, updated_at)
+ *  v2: V2.1 持久化闸门 (migration_audit)
+ *  v3: V2.2 Person 字段扩展 (avatar_blob, birthday, gender, remark, person_type)
+ *  v4: V2.2 Story 字段扩展 (description, time_start, time_end, cover_uri, location, tags)
+ */
+export const RDB_SCHEMA_META_VERSION = 4;
 
 /** V2.1 首版：与当前 MVP 主链字段对齐；后续迁移由 T-18 扩展。 */
 export function ensureSchemaV1(store: relationalStore.RdbStore): void {
@@ -18,7 +23,12 @@ export function ensureSchemaV1(store: relationalStore.RdbStore): void {
       'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
       'display_name TEXT NOT NULL, ' +
       'created_at INTEGER NOT NULL, ' +
-      'updated_at INTEGER NOT NULL' +
+      'updated_at INTEGER NOT NULL, ' +
+      'avatar_blob BLOB, ' +
+      'birthday INTEGER, ' +
+      'gender INTEGER, ' +
+      'remark TEXT DEFAULT \'\', ' +
+      'person_type INTEGER DEFAULT 3' +
       ');',
     []
   );
@@ -26,6 +36,12 @@ export function ensureSchemaV1(store: relationalStore.RdbStore): void {
     'CREATE TABLE IF NOT EXISTS story (' +
       'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
       'title TEXT NOT NULL, ' +
+      'description TEXT DEFAULT \'\', ' +
+      'time_start INTEGER, ' +
+      'time_end INTEGER, ' +
+      'cover_uri TEXT DEFAULT \'\', ' +
+      'location TEXT DEFAULT \'\', ' +
+      'tags TEXT DEFAULT \'[]\', ' +
       'created_at INTEGER NOT NULL, ' +
       'updated_at INTEGER NOT NULL' +
       ');',
@@ -70,7 +86,9 @@ export function ensureSchemaV1(store: relationalStore.RdbStore): void {
     current = rs.getLong(rs.getColumnIndex('version')) as number;
   }
   rs.close();
-  if (current < RDB_SCHEMA_META_VERSION) {
+  if (current === 0) {
+    // Fresh database: set version to RDB_SCHEMA_META_VERSION directly
     store.executeSql('UPDATE schema_meta SET version = ? WHERE id = 1;', [RDB_SCHEMA_META_VERSION]);
   }
+  // Otherwise, existing DB stays at its current version; MigrationRunner handles upgrades.
 }

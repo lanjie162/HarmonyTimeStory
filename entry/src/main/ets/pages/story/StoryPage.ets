@@ -5,6 +5,27 @@ import { getStoryService } from '../../features/story/StoryFeature';
 import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
 import { MainTabBar } from '../../common/ui/MainTabBar';
 
+function timeRangeLabel(s: StoryModel): string {
+  if (s.timeStart === null || s.timeStart <= 0) {
+    return '';
+  }
+  if (s.timeEnd !== null && s.timeEnd > 0 && s.timeEnd !== s.timeStart) {
+    return `${formatDate(s.timeStart)} ~ ${formatDate(s.timeEnd)}`;
+  }
+  return formatDate(s.timeStart);
+}
+
+function formatDate(ts: number | null): string {
+  if (ts === null || ts <= 0) {
+    return '';
+  }
+  const d = new Date(ts);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 @Entry
 @Component
 export struct StoryPage {
@@ -30,6 +51,34 @@ export struct StoryPage {
     this.newTitle = '';
     promptAction.showToast({ message: `已创建故事 #${id}` });
     this.reload();
+  }
+
+  private confirmDeleteStory(s: StoryModel): void {
+    AlertDialog.show({
+      title: '确认删除',
+      message: `确定要删除"${s.title}"吗？此操作不可撤销，将同时移除该故事的所有关联与照片挂载。`,
+      primaryButton: {
+        value: '取消',
+        action: (): void => {
+          // do nothing
+        }
+      },
+      secondaryButton: {
+        value: '删除',
+        fontColor: '#CC0000',
+        action: (): void => {
+          dismissSoftKeyboard();
+          const svc = getStoryService();
+          const ok = svc.deleteStory(s.id);
+          if (ok) {
+            promptAction.showToast({ message: `已删除"${s.title}"` });
+          } else {
+            promptAction.showToast({ message: '删除失败：故事不存在' });
+          }
+          this.reload();
+        }
+      }
+    });
   }
 
   build() {
@@ -124,9 +173,37 @@ export struct StoryPage {
                       .fontColor($r('app.color.ts_text_muted'))
                   }
                   .width('100%')
-                  Text('时间线与关联人物')
-                    .fontSize($r('app.float.ts_font_overline'))
-                    .fontColor($r('app.color.ts_text_tertiary'))
+                  Row({ space: 12 }) {
+                    if (s.location.length > 0) {
+                      Text(s.location)
+                        .fontSize($r('app.float.ts_font_overline'))
+                        .fontColor($r('app.color.ts_text_tertiary'))
+                    }
+                    if (s.timeStart !== null && s.timeStart > 0) {
+                      Text(timeRangeLabel(s))
+                        .fontSize($r('app.float.ts_font_overline'))
+                        .fontColor($r('app.color.ts_text_tertiary'))
+                    }
+                    if (s.tags.length > 0) {
+                      Text(s.tags.slice(0, 3).join(', '))
+                        .fontSize($r('app.float.ts_font_overline'))
+                        .fontColor($r('app.color.ts_brand_primary'))
+                    }
+                  }
+                  .width('100%')
+                  Row() {
+                    Row()
+                      .layoutWeight(1)
+                    Button('删除')
+                      .height(28)
+                      .fontSize($r('app.float.ts_font_overline'))
+                      .backgroundColor($r('app.color.ts_surface_container_high'))
+                      .fontColor('#CC0000')
+                      .onClick((): void => {
+                        this.confirmDeleteStory(s);
+                      })
+                  }
+                  .width('100%')
                 }
                 .width('100%')
                 .alignItems(HorizontalAlign.Start)

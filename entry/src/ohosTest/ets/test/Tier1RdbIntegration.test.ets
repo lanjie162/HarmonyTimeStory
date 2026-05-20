@@ -8,6 +8,7 @@ import { relationalStore } from '@kit.ArkData';
 import { afterAll, beforeAll, describe, expect, it } from '@ohos/hypium';
 import { ensureSchemaV1 } from '../../../main/ets/infrastructure/data/RdbSchema';
 import { RepositoryImpl } from '../../../main/ets/infrastructure/repository/RepositoryImpl';
+import type { CreatePersonParams, UpdatePersonParams } from '../../../main/ets/infrastructure/api/AppDataStore';
 
 function sleepMs(ms: number): Promise<void> {
   return new Promise<void>((resolve: () => void): void => {
@@ -62,13 +63,13 @@ export default function tier1RepositoryRdb(): void {
 
     it('rdb_createPerson_rejects_blank', 0, (): void => {
       const r = repo as RepositoryImpl;
-      expect(r.createPerson('   ')).assertEqual(-1);
-      expect(r.createPerson('\t\n')).assertEqual(-1);
+      expect(r.createPerson({ displayName: '   ' })).assertEqual(-1);
+      expect(r.createPerson({ displayName: '\t\n' })).assertEqual(-1);
     });
 
     it('rdb_createPerson_trims_and_reads', 0, (): void => {
       const r = repo as RepositoryImpl;
-      const id = r.createPerson('  Alice  ');
+      const id = r.createPerson({ displayName: '  Alice  ' });
       expect(id > 0).assertTrue();
       expect((r.getPerson(id)?.displayName ?? '')).assertEqual('Alice');
     });
@@ -94,17 +95,17 @@ export default function tier1RepositoryRdb(): void {
 
     it('rdb_updatePerson_rejects_blank', 0, (): void => {
       const r = repo as RepositoryImpl;
-      const id = r.createPerson('Bob');
+      const id = r.createPerson({ displayName: 'Bob' });
       expect(id > 0).assertTrue();
-      expect(r.updatePerson(id, '  ')).assertFalse();
+      expect(r.updatePerson(id, { displayName: '  ' })).assertFalse();
       expect((r.getPerson(id)?.displayName ?? '')).assertEqual('Bob');
     });
 
     it('rdb_listPersons_newest_first', 0, async (): Promise<void> => {
       const r = repo as RepositoryImpl;
-      const idA = r.createPerson('ListA');
+      const idA = r.createPerson({ displayName: 'ListA' });
       await sleepMs(15);
-      const idB = r.createPerson('ListB');
+      const idB = r.createPerson({ displayName: 'ListB' });
       expect(idA > 0 && idB > 0).assertTrue();
       const list = r.listPersons();
       expect(list.length >= 2).assertTrue();
@@ -118,12 +119,12 @@ export default function tier1RepositoryRdb(): void {
 
     it('rdb_updatePerson_no_row', 0, (): void => {
       const r = repo as RepositoryImpl;
-      expect(r.updatePerson(999999999, 'Ghost')).assertFalse();
+      expect(r.updatePerson(999999999, { displayName: 'Ghost' })).assertFalse();
     });
 
     it('rdb_link_unlink_and_query', 0, (): void => {
       const r = repo as RepositoryImpl;
-      const pid = r.createPerson('LinkPerson');
+      const pid = r.createPerson({ displayName: 'LinkPerson' });
       const sid = r.createStory('LinkStory');
       expect(r.isPersonStoryLinked(pid, sid)).assertFalse();
       r.linkPersonStory(pid, sid);
@@ -149,7 +150,7 @@ export default function tier1RepositoryRdb(): void {
 
     it('rdb_addPhoto_person_success_and_duplicate', 0, (): void => {
       const r = repo as RepositoryImpl;
-      const pid = r.createPerson('PhotoP');
+      const pid = r.createPerson({ displayName: 'PhotoP' });
       const uri = 'file://tier1/photo-person-1';
       const a1 = r.addPhotoForPerson(pid, uri);
       expect(a1.success).assertTrue();
@@ -171,7 +172,7 @@ export default function tier1RepositoryRdb(): void {
 
     it('rdb_addPhoto_empty_uri_fails', 0, (): void => {
       const r = repo as RepositoryImpl;
-      const pid = r.createPerson('UriEmpty');
+      const pid = r.createPerson({ displayName: 'UriEmpty' });
       const res = r.addPhotoForPerson(pid, '  \t');
       expect(res.success).assertFalse();
     });
@@ -189,8 +190,8 @@ export default function tier1RepositoryRdb(): void {
 
     it('rdb_shared_photo_ref_across_two_persons', 0, (): void => {
       const r = repo as RepositoryImpl;
-      const p1 = r.createPerson('Share1');
-      const p2 = r.createPerson('Share2');
+      const p1 = r.createPerson({ displayName: 'Share1' });
+      const p2 = r.createPerson({ displayName: 'Share2' });
       const uri = 'file://tier1/shared-ref-1';
       expect(r.addPhotoForPerson(p1, uri).success).assertTrue();
       expect(r.addPhotoForPerson(p2, uri).success).assertTrue();

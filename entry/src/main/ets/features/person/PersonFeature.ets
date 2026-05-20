@@ -1,6 +1,6 @@
 import type { IPersonService } from '../api/Services';
-import type { PersonModel, PhotoAddResult, PhotoRefModel, StoryModel } from '../../domain/model/Models';
-import type { IAppDataStore } from '../../infrastructure/api/AppDataStore';
+import type { GenderEnum, PersonModel, PersonTypeEnum, PhotoAddResult, PhotoRefModel, StoryModel } from '../../domain/model/Models';
+import type { CreatePersonParams, IAppDataStore, UpdatePersonParams } from '../../infrastructure/api/AppDataStore';
 
 export class PersonService implements IPersonService {
   private readonly store: IAppDataStore;
@@ -13,16 +13,52 @@ export class PersonService implements IPersonService {
     return this.store.listPersons();
   }
 
-  createPerson(displayName: string): number {
-    return this.store.createPerson(displayName);
+  createPerson(displayName: string, avatarBlob?: Uint8Array, birthday?: number, gender?: GenderEnum, remark?: string, personType?: PersonTypeEnum): number {
+    const params: CreatePersonParams = { displayName };
+    if (avatarBlob !== undefined) {
+      params.avatarBlob = avatarBlob;
+    }
+    if (birthday !== undefined) {
+      params.birthday = birthday;
+    }
+    if (gender !== undefined) {
+      params.gender = gender;
+    }
+    if (remark !== undefined) {
+      params.remark = remark;
+    }
+    if (personType !== undefined) {
+      params.personType = personType;
+    }
+    return this.store.createPerson(params);
   }
 
   getPerson(id: number): PersonModel | null {
     return this.store.getPerson(id);
   }
 
-  updatePerson(id: number, displayName: string): boolean {
-    return this.store.updatePerson(id, displayName);
+  deletePerson(id: number): boolean {
+    return this.store.deletePerson(id);
+  }
+
+  updatePerson(id: number, displayName: string, avatarBlob?: Uint8Array | null, birthday?: number | null, gender?: GenderEnum | null, remark?: string, personType?: PersonTypeEnum): boolean {
+    const params: UpdatePersonParams = { displayName };
+    if (avatarBlob !== undefined) {
+      params.avatarBlob = avatarBlob;
+    }
+    if (birthday !== undefined) {
+      params.birthday = birthday;
+    }
+    if (gender !== undefined) {
+      params.gender = gender;
+    }
+    if (remark !== undefined) {
+      params.remark = remark;
+    }
+    if (personType !== undefined) {
+      params.personType = personType;
+    }
+    return this.store.updatePerson(id, params);
   }
 
   listLinkedStories(personId: number): StoryModel[] {
