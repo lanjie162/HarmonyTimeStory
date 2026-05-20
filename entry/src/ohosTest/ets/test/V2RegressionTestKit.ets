@@ -438,3 +438,86 @@ export async function clickConfirmCancelDialog(driver: Driver): Promise<void> {
   }
   throw new Error('未找到对话框按钮「确定取消」或「确定」');
 }
+
+// ── V2.2 新增辅助函数 ──────────────────────────────────────────
+
+/**
+ * 通用滚动到文本组件可见（基于 scrollDetailUntilVisible 模式）。
+ * 从 Scroll 内部滚动寻找，提供更明确的文本断言。
+ */
+export async function scrollToText(driver: Driver, text: string, timeoutMs: number = V2_TIMEOUT.NORMAL): Promise<void> {
+  const matcher = ON.text(text);
+  const found = await driver.waitForComponent(matcher, timeoutMs);
+  if (found === null) {
+    const scrolls = await safeFindComponents(driver, ON.type('Scroll'));
+    for (const sc of scrolls) {
+      try {
+        const hit = await sc.scrollSearch(matcher, true, 30);
+        if (hit !== null) {
+          return;
+        }
+      } catch (_e) {
+        // ignore
+      }
+    }
+    // fling 短迭代兜底
+    for (let i = 0; i < 2; i++) {
+      await driver.fling(UiDirection.DOWN, 6000);
+      await driver.waitForIdle(300, 600);
+      if ((await driver.findComponent(matcher)) !== null) {
+        return;
+      }
+    }
+    throw new Error('scrollToText: text not found after scrolling: ' + text);
+  }
+}
+
+/**
+ * 等待 AlertDialog 标题出现（如「确认删除」「超上限阻断」）。
+ * AlertDialog 在 Hypium 中表现为普通 Text 组件。
+ */
+export async function waitForDialog(driver: Driver, title: string, timeoutMs: number = V2_TIMEOUT.NORMAL): Promise<boolean> {
+  const comp = await driver.waitForComponent(ON.text(title), timeoutMs);
+  return comp !== null;
+}
+
+/**
+ * 验证某人物已从 PersonPage 列表中消失（用于删除后断言）。
+ * 先寻找该名称，若找到说明删除未生效。
+ */
+export async function assertPersonListItemNotExist(driver: Driver, displayName: string): Promise<void> {
+  // 尝试直接 find（快速失败）
+  const found = await driver.findComponent(ON.text(displayName));
+  if (found !== null) {
+    throw new Error('人物仍存在于列表中（删除未生效）: ' + displayName);
+  }
+  // Scroll 查找以防列表分页
+  const lists = await safeFindComponents(driver, ON.type('List'));
+  for (const list of lists) {
+    try {
+      const row = await list.scrollSearch(ON.text(displayName), true, 30);
+      if (row !== null) {
+        throw new Error('人物仍存在于列表中（scroll 后找到）: ' + displayName);
+      }
+    } catch (_e) {
+      // ignore - not found in this list
+    }
+  }
+}
+
+/**
+ * 点击详情页的 DEBUG GC 按钮。
+ */
+export async function clickDebugGcButton(driver: Driver): Promise<void> {
+  const m = ON.text('【DEBUG】GC 孤儿 PhotoRef');
+  await scrollDetailUntilVisible(driver, m);
+  const comp = await driver.findComponent(m);
+  if (comp !== null) {
+    await comp.click();
+    return;
+  }
+  // fallback: try to find via button text
+  const alt = ON.text('GC 孤儿 PhotoRef');
+  await scrollDetailUntilVisible(driver, alt);
+  await clickComponentSafely(driver, alt);
+}

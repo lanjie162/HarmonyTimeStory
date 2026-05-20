@@ -136,6 +136,34 @@ export struct StoryDetailPage {
     });
   }
 
+  private confirmRemovePhoto(ph: PhotoRefModel): void {
+    AlertDialog.show({
+      title: '确认移除',
+      message: `确定移除该照片（ref#${ph.id}）？仅解除关联，不删系统原图。`,
+      primaryButton: {
+        value: '取消',
+        action: (): void => {
+          // do nothing
+        }
+      },
+      secondaryButton: {
+        value: '移除',
+        fontColor: '#CC0000',
+        action: (): void => {
+          dismissSoftKeyboard();
+          const svc = getStoryService();
+          const ok = svc.removePhotoFromStory(this.storyId, ph.id);
+          if (ok) {
+            promptAction.showToast({ message: '已移除照片' });
+          } else {
+            promptAction.showToast({ message: '移除失败' });
+          }
+          this.refresh();
+        }
+      }
+    });
+  }
+
   private async pickCoverFromAlbum(): Promise<void> {
     dismissSoftKeyboard();
     try {
@@ -618,6 +646,17 @@ export struct StoryDetailPage {
                     })
                 }
                 .width('100%')
+                Button('【DEBUG】GC 孤儿 PhotoRef')
+                  .fontSize($r('app.float.ts_font_overline'))
+                  .backgroundColor($r('app.color.ts_surface_container_high'))
+                  .fontColor($r('app.color.ts_text_secondary'))
+                  .width('100%')
+                  .height(36)
+                  .onClick((): void => {
+                    const n = getStoryService().gcOrphanPhotoRefs();
+                    promptAction.showToast({ message: `GC 完成：清理 ${n} 个孤儿 PhotoRef` });
+                    this.refresh();
+                  })
               }
 
               if (this.photos.length === 0) {
@@ -629,12 +668,21 @@ export struct StoryDetailPage {
                 Grid() {
                   ForEach(this.photos, (ph: PhotoRefModel) => {
                     GridItem() {
-                      Column() {
+                      Column({ space: 4 }) {
                         Image(ph.uri).width('100%').height(96).objectFit(ImageFit.Cover).borderRadius(8)
                         Text(`ref#${ph.id}`)
                           .fontSize($r('app.float.ts_font_overline'))
                           .fontColor($r('app.color.ts_text_caption'))
                           .margin({ top: 4 })
+                        Button('移除')
+                          .height(26)
+                          .fontSize($r('app.float.ts_font_overline'))
+                          .backgroundColor($r('app.color.ts_surface_container_high'))
+                          .fontColor('#CC0000')
+                          .width('100%')
+                          .onClick((): void => {
+                            this.confirmRemovePhoto(ph);
+                          })
                       }
                     }
                   }, (ph: PhotoRefModel): string => `sph-${ph.id}`)

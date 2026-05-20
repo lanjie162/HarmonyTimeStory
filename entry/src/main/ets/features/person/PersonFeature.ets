@@ -84,6 +84,14 @@ export class PersonService implements IPersonService {
   addPhotoToPerson(personId: number, uri: string): PhotoAddResult {
     return this.store.addPhotoForPerson(personId, uri);
   }
+
+  removePhotoFromPerson(personId: number, photoRefId: number): boolean {
+    return this.store.removePhotoForPerson(personId, photoRefId);
+  }
+
+  gcOrphanPhotoRefs(): number {
+    return this.store.gcOrphanPhotoRefs();
+  }
 }
 
 let cached: PersonService | undefined;

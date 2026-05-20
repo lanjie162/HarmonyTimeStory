@@ -79,15 +79,16 @@ const GENDER_OPTIONS: GenderOption[] = [
 @Component
 export struct PersonDetailPage {
   @State personId: number = 0;
-  @State person: PersonModel | null = null;
+  private person: PersonModel | null = null;
   @State draftName: string = '';
   @State draftType: PersonTypeEnum = PT.OTHER;
   @State draftGender: GenderEnum | null = null;
   @State draftBirthday: number = 0;
   @State draftBirthdayText: string = '选择日期';
   @State draftRemark: string = '';
-  @State draftAvatarBlob: Uint8Array | null = null;
+  private draftAvatarBlob: Uint8Array | null = null;
   @State avatarImageUri: string = '';
+  @State hasAvatar: boolean = false;
   @State storiesAll: StoryModel[] = [];
   @State linkedStoryIds: number[] = [];
   @State photos: PhotoRefModel[] = [];
@@ -124,6 +125,9 @@ export struct PersonDetailPage {
       } else {
         this.avatarImageUri = '';
       }
+    this.hasAvatar = this.person.avatarBlob !== null && this.person.avatarBlob.byteLength > 0;
+    } else {
+      this.hasAvatar = false;
     }
     this.storiesAll = getStoryService().listStories();
     this.linkedStoryIds = pSvc.listLinkedStories(this.personId).map((s): number => s.id);
@@ -192,6 +196,34 @@ export struct PersonDetailPage {
     });
   }
 
+  private confirmRemovePhoto(ph: PhotoRefModel): void {
+    AlertDialog.show({
+      title: '确认移除',
+      message: `确定移除该照片（ref#${ph.id}）？仅解除关联，不删系统原图。`,
+      primaryButton: {
+        value: '取消',
+        action: (): void => {
+          // do nothing
+        }
+      },
+      secondaryButton: {
+        value: '移除',
+        fontColor: '#CC0000',
+        action: (): void => {
+          dismissSoftKeyboard();
+          const svc = getPersonService();
+          const ok = svc.removePhotoFromPerson(this.personId, ph.id);
+          if (ok) {
+            promptAction.showToast({ message: '已移除照片' });
+          } else {
+            promptAction.showToast({ message: '移除失败' });
+          }
+          this.refresh();
+        }
+      }
+    });
+  }
+
   private async pickAvatar(): Promise<void> {
     dismissSoftKeyboard();
     try {
@@ -213,6 +245,7 @@ export struct PersonDetailPage {
         fileIo.closeSync(file);
         this.draftAvatarBlob = new Uint8Array(buf);
         this.avatarImageUri = 'data:image/png;base64,' + this.blobToBase64(this.draftAvatarBlob);
+        this.hasAvatar = true;
       } catch (_e) {
         promptAction.showToast({ message: '读取头像文件失败' });
       }
@@ -224,6 +257,7 @@ export struct PersonDetailPage {
   private removeAvatar(): void {
     this.draftAvatarBlob = null;
     this.avatarImageUri = '';
+    this.hasAvatar = false;
   }
 
   private onBirthdayChange(year: number, month: number, day: number): void {
@@ -377,7 +411,7 @@ export struct PersonDetailPage {
                   .onClick((): void => {
                     this.pickAvatar();
                   })
-                if (this.draftAvatarBlob !== null && this.draftAvatarBlob.byteLength > 0) {
+                if (this.hasAvatar) {
                   Button('移除头像')
                     .height(36)
                     .fontSize($r('app.float.ts_font_overline'))
@@ -658,6 +692,17 @@ export struct PersonDetailPage {
                   .fontSize($r('app.float.ts_font_overline'))
                   .fontColor($r('app.color.ts_debug_banner'))
                   .width('100%')
+                Button('【DEBUG】GC 孤儿 PhotoRef')
+                  .fontSize($r('app.float.ts_font_overline'))
+                  .backgroundColor($r('app.color.ts_surface_container_high'))
+                  .fontColor($r('app.color.ts_text_secondary'))
+                  .width('100%')
+                  .height(36)
+                  .onClick((): void => {
+                    const n = getPersonService().gcOrphanPhotoRefs();
+                    promptAction.showToast({ message: `GC 完成：清理 ${n} 个孤儿 PhotoRef` });
+                    this.refresh();
+                  })
               }
               if (this.photos.length === 0) {
                 Text('暂无挂载照片')
@@ -668,12 +713,20 @@ export struct PersonDetailPage {
                 Grid() {
                   ForEach(this.photos, (ph: PhotoRefModel) => {
                     GridItem() {
-                      Column() {
+                      Column({ space: 4 }) {
                         Image(ph.uri).width('100%').height(96).objectFit(ImageFit.Cover).borderRadius(8)
                         Text(`ref#${ph.id}`)
                           .fontSize($r('app.float.ts_font_overline'))
                           .fontColor($r('app.color.ts_text_caption'))
-                          .margin({ top: 4 })
+                        Button('移除')
+                          .height(26)
+                          .fontSize($r('app.float.ts_font_overline'))
+                          .backgroundColor($r('app.color.ts_surface_container_high'))
+                          .fontColor('#CC0000')
+                          .width('100%')
+                          .onClick((): void => {
+                            this.confirmRemovePhoto(ph);
+                          })
                       }
                     }
                   }, (ph: PhotoRefModel): string => `ph-${ph.id}`)

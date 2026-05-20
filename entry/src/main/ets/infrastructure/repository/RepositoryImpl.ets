@@ -455,7 +455,7 @@ export class RepositoryImpl implements IAppDataStore {
     const rs = store.querySqlSync(
       'SELECT pr.id AS id, pr.uri AS uri FROM photo_ref pr ' +
         'INNER JOIN photo_owner_link pol ON pol.photo_ref_id = pr.id ' +
-        'WHERE pol.owner_kind = ? AND pol.owner_id = ? ORDER BY pol.linked_at DESC;',
+        'WHERE pol.owner_kind = ? AND pol.owner_id = ? ORDER BY pr.taken_at_cache DESC NULLS LAST, pol.linked_at DESC;',
       [ownerKind, ownerId]
     );
     const out: PhotoRefModel[] = [];
@@ -655,5 +655,83 @@ export class RepositoryImpl implements IAppDataStore {
       store.rollBack();
       return false;
     }
+  }
+
+  removePhotoForPerson(personId: number, photoRefId: number): boolean {
+    return this.removePhotoForOwner(OWN_PERSON, personId, photoRefId);
+  }
+
+  removePhotoForStory(storyId: number, photoRefId: number): boolean {
+    return this.removePhotoForOwner(OWN_STORY, storyId, photoRefId);
+  }
+
+  private removePhotoForOwner(ownerKind: number, ownerId: number, photoRefId: number): boolean {
+    const store = this.db();
+    try {
+      store.beginTransaction();
+      const rs = store.querySqlSync(
+        'SELECT COUNT(*) AS c FROM photo_owner_link WHERE owner_kind = ? AND owner_id = ? AND photo_ref_id = ?;',
+        [ownerKind, ownerId, photoRefId]
+      );
+      let exists = false;
+      if (rs.goToFirstRow()) {
+        exists = (rs.getLong(rs.getColumnIndex('c')) as number) > 0;
+      }
+      rs.close();
+      if (!exists) {
+        store.rollBack();
+        return false;
+      }
+      store.executeSql(
+        'DELETE FROM photo_owner_link WHERE owner_kind = ? AND owner_id = ? AND photo_ref_id = ?;',
+        [ownerKind, ownerId, photoRefId]
+      );
+      store.executeSql(
+        'UPDATE photo_ref SET reference_count = MAX(0, reference_count - 1) WHERE id = ?;',
+        [photoRefId]
+      );
+      store.executeSql(
+        'UPDATE photo_ref SET is_referenced = 0 WHERE id = ? AND reference_count = 0;',
+        [photoRefId]
+      );
+      store.commit();
+      return true;
+    } catch (_e) {
+      store.rollBack();
+      return false;
+    }
+  }
+
+  gcOrphanPhotoRefs(): number {
+    const store = this.db();
+    // Query orphan IDs before GC
+    const idRs = store.querySqlSync(
+      'SELECT pr.id FROM photo_ref pr LEFT JOIN photo_owner_link pol ON pol.photo_ref_id = pr.id WHERE pol.id IS NULL;',
+      []
+    );
+    const ids: number[] = [];
+    while (idRs.goToNextRow()) {
+      ids.push(Number(idRs.getLong(idRs.getColumnIndex('id'))));
+    }
+    idRs.close();
+    if (ids.length === 0) {
+      console.info('T-27-GC', 'no orphan photo_ref found');
+      return 0;
+    }
+    const before = ids.length;
+    // Delete each orphan in a transaction
+    try {
+      store.beginTransaction();
+      for (const orphanId of ids) {
+        store.executeSql('DELETE FROM photo_ref WHERE id = ?;', [orphanId]);
+      }
+      store.commit();
+    } catch (_e) {
+      store.rollBack();
+      console.info('T-27-GC', `orphan GC failed, rolled back ${ids.length} deletions`);
+      return 0;
+    }
+    console.info('T-27-GC', `orphan GC: before=${before}, deleted=${ids.length}`);
+    return ids.length;
   }
 }

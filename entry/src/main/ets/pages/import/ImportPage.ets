@@ -5,6 +5,7 @@ import BuildProfile from 'BuildProfile';
 import { getImportService } from '../../features/import/ImportFeature';
 import { getPersonService } from '../../features/person/PersonFeature';
 import { getStoryService } from '../../features/story/StoryFeature';
+import { DomainRules } from '../../domain/rules/Rules';
 
 type ImportCtx = 'person' | 'story';
 type WizardStep = 'pick' | 'prepare' | 'conditions' | 'scan' | 'confirm' | 'done';
@@ -61,18 +62,34 @@ export struct ImportPage {
   @State uiLocked: boolean = false;
   /** DEBUG：Hypium 断言 B2 错误 requestId 分支（与 Toast 同文案场景）。 */
   @State debugB2WrongCancelBanner: string = '';
+  @State ownerName: string = '';
 
   aboutToAppear(): void {
     const params = router.getParams() as Record<string, Object>;
     this.ctx = parseCtx(params);
     this.ownerId = parseOwnerId(params);
+    this.lookupOwnerName();
+  }
+
+  private lookupOwnerName(): void {
+    if (this.ownerId <= 0) {
+      this.ownerName = '未知';
+      return;
+    }
+    if (this.ctx === 'person') {
+      const p = getPersonService().getPerson(this.ownerId);
+      this.ownerName = p !== null ? p.displayName : `人物 #${this.ownerId}`;
+    } else {
+      const s = getStoryService().getStory(this.ownerId);
+      this.ownerName = s !== null ? s.title : `故事 #${this.ownerId}`;
+    }
   }
 
   private contextLabel(): string {
     if (this.ownerId <= 0) {
       return '未携带上下文（需从人物/故事详情进入，带 ownerId）';
     }
-    return this.ctx === 'person' ? `形态二 · 人物 #${this.ownerId}` : `形态一 · 故事 #${this.ownerId}`;
+    return this.ctx === 'person' ? `形态二 · ${this.ownerName}` : `形态一 · ${this.ownerName}`;
   }
 
   private stepShortLabel(s: WizardStep): string {
@@ -110,7 +127,7 @@ export struct ImportPage {
         return;
       }
       this.pickedUris = [...uris];
-      promptAction.showToast({ message: `已选 ${this.pickedUris.length} 张（单次≤9，ST-07）` });
+      promptAction.showToast({ message: `已选 ${this.pickedUris.length} 张（单次≤${DomainRules.maxStoryPhotos}，ST-07）` });
       this.step = 'prepare';
     } catch (_e) {
       promptAction.showToast({ message: '选图取消（IM-09）' });
@@ -172,8 +189,24 @@ export struct ImportPage {
       promptAction.showToast({ message: '请至少勾选一项候选' });
       return;
     }
-    if (this.selectedCount() > 9) {
-      promptAction.showToast({ message: '勾选超过 9 张：超过单次导入上限（ST-07），请减少勾选' });
+    if (this.selectedCount() > DomainRules.maxStoryPhotos) {
+      AlertDialog.show({
+        title: '超上限阻断',
+        message: `当前勾选 ${this.selectedCount()} 张，超出单故事上限 ${DomainRules.maxStoryPhotos} 张（ST-07）。请减少勾选后重试。`,
+        primaryButton: {
+          value: '取消',
+          action: (): void => {
+            // do nothing
+          }
+        },
+        secondaryButton: {
+          value: '减少勾选',
+          fontColor: $r('app.color.ts_brand_primary'),
+          action: (): void => {
+            // do nothing, user can uncheck and retry
+          }
+        }
+      });
       return;
     }
     let ok = 0;

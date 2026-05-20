@@ -321,6 +321,37 @@ export class LocalMemoryStore {
     this.stories.splice(idx, 1);
     return true;
   }
+
+  removePhotoForPerson(personId: number, photoRefId: number): boolean {
+    return this.removePhotoForOwner('person', personId, photoRefId);
+  }
+
+  removePhotoForStory(storyId: number, photoRefId: number): boolean {
+    return this.removePhotoForOwner('story', storyId, photoRefId);
+  }
+
+  private removePhotoForOwner(ownerKind: string, ownerId: number, photoRefId: number): boolean {
+    const idx = this.ownerLinks.findIndex(
+      (l): boolean => l.ownerKind === ownerKind && l.ownerId === ownerId && l.photoRefId === photoRefId
+    );
+    if (idx < 0) {
+      return false;
+    }
+    this.ownerLinks.splice(idx, 1);
+    return true;
+  }
+
+  gcOrphanPhotoRefs(): number {
+    const linkedRefIds = new Set<number>();
+    for (const l of this.ownerLinks) {
+      linkedRefIds.add(l.photoRefId);
+    }
+    const before = this.photoRefs.length;
+    this.photoRefs = this.photoRefs.filter((pr): boolean => linkedRefIds.has(pr.id));
+    const deleted = before - this.photoRefs.length;
+    console.info('T-27-GC', `memory orphan GC: before=${before}, deleted=${deleted}`);
+    return deleted;
+  }
 }
 
 let singleton: LocalMemoryStore | undefined;

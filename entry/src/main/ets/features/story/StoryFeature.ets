@@ -60,6 +60,14 @@ export class StoryService implements IStoryService {
   addPhotoToStory(storyId: number, uri: string): PhotoAddResult {
     return this.store.addPhotoForStory(storyId, uri);
   }
+
+  removePhotoFromStory(storyId: number, photoRefId: number): boolean {
+    return this.store.removePhotoForStory(storyId, photoRefId);
+  }
+
+  gcOrphanPhotoRefs(): number {
+    return this.store.gcOrphanPhotoRefs();
+  }
 }
 
 let storyCached: StoryService | undefined;

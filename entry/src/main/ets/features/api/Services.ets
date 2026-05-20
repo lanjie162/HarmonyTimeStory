@@ -13,6 +13,8 @@ export interface IPersonService {
   isLinked(personId: number, storyId: number): boolean;
   listPersonPhotos(personId: number): PhotoRefModel[];
   addPhotoToPerson(personId: number, uri: string): PhotoAddResult;
+  removePhotoFromPerson(personId: number, photoRefId: number): boolean;
+  gcOrphanPhotoRefs(): number;
 }
 
 /** 故事主链（RDB 真相经 IAppDataStore）；人物关联与 PhotoOwnerLink 与 RepositoryImpl 对齐。 */
@@ -28,6 +30,8 @@ export interface IStoryService {
   unlinkStoryFromPerson(storyId: number, personId: number): void;
   listStoryPhotos(storyId: number): PhotoRefModel[];
   addPhotoToStory(storyId: number, uri: string): PhotoAddResult;
+  removePhotoFromStory(storyId: number, photoRefId: number): boolean;
+  gcOrphanPhotoRefs(): number;
 }
 
 /**
