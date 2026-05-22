@@ -9,6 +9,7 @@ import { GenderEnum as GE } from '../../domain/model/Models';
 import { getPersonService } from '../../features/person/PersonFeature';
 import { getStoryService } from '../../features/story/StoryFeature';
 import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
+import { TextInputWithKeyboard, TextAreaWithKeyboard } from '../../common/ui/KeyboardAwareInput';
 
 function parsePersonId(params: Record<string, Object>): number {
   const raw = params['personId'];
@@ -425,15 +426,11 @@ export struct PersonDetailPage {
               .width('100%')
 
               // 显示名
-              TextInput({ placeholder: '显示名', text: this.draftName })
-                .onChange((v: string): void => {
-                  this.draftName = v;
-                })
-                .width('100%')
-                .height(48)
-                .backgroundColor($r('app.color.ts_surface_container_high'))
-                .borderRadius(10)
-                .padding({ left: 12, right: 12 })
+              TextInputWithKeyboard({
+                placeholder: '显示名',
+                value: this.draftName,
+                onChange: (v: string): void => { this.draftName = v; }
+              })
 
               // 类型
               Row({ space: 8 }) {
@@ -517,15 +514,17 @@ export struct PersonDetailPage {
                 .selectedTextStyle({ color: $r('app.color.ts_brand_primary') })
 
               // 备注
-              TextArea({ placeholder: '备注', text: this.draftRemark })
-                .onChange((v: string): void => {
-                  this.draftRemark = v;
+              Column() {
+                TextAreaWithKeyboard({
+                  placeholder: '备注',
+                  value: this.draftRemark,
+                  onChange: (v: string): void => { this.draftRemark = v; }
                 })
-                .width('100%')
-                .height(80)
-                .backgroundColor($r('app.color.ts_surface_container_high'))
-                .borderRadius(10)
-                .padding({ left: 12, right: 12 })
+              }
+              .width('100%')
+              .onClick((): void => {
+                dismissSoftKeyboard();
+              })
 
               // 保存按钮
               Button('保存')
@@ -580,19 +579,13 @@ export struct PersonDetailPage {
                 .fontColor($r('app.color.ts_text_tertiary'))
                 .width('100%')
               Row({ space: 8 }) {
-                TextInput({ placeholder: '新故事标题', text: this.newStoryTitle })
-                  .layoutWeight(1)
-                  .height(48)
-                  .backgroundColor($r('app.color.ts_surface_container_high'))
-                  .borderRadius(10)
-                  .padding({ left: 12, right: 12 })
-                  .onChange((v: string): void => {
-                    this.newStoryTitle = v;
-                  })
-                  .enterKeyType(EnterKeyType.Done)
-                  .onSubmit((): void => {
-                    this.createStoryQuick();
-                  })
+                TextInputWithKeyboard({
+                  placeholder: '新故事标题',
+                  value: this.newStoryTitle,
+                  onChange: (v: string): void => { this.newStoryTitle = v; },
+                  onSubmit: (): void => { this.createStoryQuick(); },
+                  layoutWeight: 1
+                })
                 Button('创建')
                   .height(48)
                   .fontSize($r('app.float.ts_font_support'))

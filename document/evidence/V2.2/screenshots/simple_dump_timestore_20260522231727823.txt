@@ -1,0 +1,593 @@
+
+-------------------------------[ability]-------------------------------
+
+
+----------------------------------WindowManagerService----------------------------------
+WindowName: timestore0
+DisplayId: 0
+WinId: 2737
+Pid: 53312
+Type: 1
+Mode: 1
+Flag: 0
+Orientation: 0
+FirstFrameCallbackCalled: 1
+IsVisible: true
+isRSVisible: true
+Focusable: true
+DecoStatus: false
+isPrivacyMode: false
+WindowRect: [ 0, 0, 1264, 1848 ]
+scaleX: 1
+scaleY: 1
+Offset: [ 0, 0 ]
+Scale: [ 1, 1, 0.5, 0.5 ]
+ParentWindowId: 0
+bundleName:com.lanjie162.timestore
+moduleName:entry
+ LastRequestVsyncTime: 112620621984106
+ transactionFlags: [53312,183]
+ last vsyncId: 3887888
+ finishCount:[ ]
+ UINodeCount:41
+  |-> root childSize:1
+    | ID: 0
+    | compid: 
+    | text: 
+    | accessibilityText: 
+    | accessibilityGroup: 0
+    | accessibilityLevel: auto
+    | accessibilityCustomRole: 
+    | top: 0.000000
+    | left: 0.000000
+    | width: 1264.000000
+    | height: 1848.000000
+    | visible: 1
+    | clickable: 0
+    | longclickable: 0
+    | checkable: 0
+    | scrollable: 0
+    | checked: 0
+    | hint: 
+    | childTree: -1
+    |-> Column childSize:2
+      | ID: 22
+      | compid: 
+      | text: 
+      | accessibilityText: 
+      | accessibilityGroup: 0
+      | accessibilityLevel: auto
+      | accessibilityCustomRole: 
+      | top: 107.000000
+      | left: 0.000000
+      | width: 1264.000000
+      | height: 1664.000000
+      | visible: 1
+      | clickable: 0
+      | longclickable: 0
+      | checkable: 0
+      | scrollable: 0
+      | checked: 0
+      | hint: 
+      | childTree: -1
+      |-> Column childSize:4
+        | ID: 23
+        | compid: 
+        | text: 
+        | accessibilityText: 
+        | accessibilityGroup: 0
+        | accessibilityLevel: auto
+        | accessibilityCustomRole: 
+        | top: 107.000000
+        | left: 0.000000
+        | width: 1264.000000
+        | height: 1481.000000
+        | visible: 1
+        | clickable: 0
+        | longclickable: 0
+        | checkable: 0
+        | scrollable: 0
+        | checked: 0
+        | hint: 
+        | childTree: -1
+        |-> Row childSize:3
+          | ID: 24
+          | compid: 
+          | text: 
+          | accessibilityText: 
+          | accessibilityGroup: 0
+          | accessibilityLevel: auto
+          | accessibilityCustomRole: 
+          | top: 107.000000
+          | left: 0.000000
+          | width: 1264.000000
+          | height: 159.000000
+          | visible: 1
+          | clickable: 0
+          | longclickable: 0
+          | checkable: 0
+          | scrollable: 0
+          | checked: 0
+          | hint: 
+          | childTree: -1
+          |-> Button childSize:0
+              ID: 25
+              compid: 
+              text: 返回
+              accessibilityText: 
+              accessibilityGroup: 0
+              accessibilityLevel: auto
+              accessibilityCustomRole: 
+              top: 140.000000
+              left: 44.000000
+              width: 160.000000
+              height: 99.000000
+              visible: 1
+              clickable: 1
+              longclickable: 0
+              checkable: 0
+              scrollable: 0
+              checked: 0
+              hint: 
+              childTree: -1
+          |-> Text childSize:0
+              ID: 27
+              compid: 
+              text: 人物
+              accessibilityText: 
+              accessibilityGroup: 0
+              accessibilityLevel: auto
+              accessibilityCustomRole: 
+              top: 158.000000
+              left: 232.000000
+              width: 742.000000
+              height: 64.000000
+              visible: 1
+              clickable: 0
+              longclickable: 0
+              checkable: 0
+              scrollable: 0
+              checked: 0
+              hint: 
+              childTree: -1
+          |-> Button childSize:0
+              ID: 28
+              compid: 
+              text: 人脸建议
+              accessibilityText: 
+              accessibilityGroup: 0
+              accessibilityLevel: auto
+              accessibilityCustomRole: 
+              top: 140.000000
+              left: 1001.000000
+              width: 219.000000
+              height: 99.000000
+              visible: 1
+              clickable: 1
+              longclickable: 0
+              checkable: 0
+              scrollable: 0
+              checked: 0
+              hint: 
+              childTree: -1
+        |-> Column childSize:3
+          | ID: 30
+          | compid: 
+          | text: 
+          | accessibilityText: 
+          | accessibilityGroup: 0
+          | accessibilityLevel: auto
+          | accessibilityCustomRole: 
+          | top: 266.000000
+          | left: 0.000000
+          | width: 1264.000000
+          | height: 478.000000
+          | visible: 1
+          | clickable: 0
+          | longclickable: 0
+          | checkable: 0
+          | scrollable: 0
+          | checked: 0
+          | hint: 
+          | childTree: -1
+          |-> Text childSize:0
+              ID: 31
+              compid: 
+              text: 新建人物
+              accessibilityText: 
+              accessibilityGroup: 0
+              accessibilityLevel: auto
+              accessibilityCustomRole: 
+              top: 312.000000
+              left: 46.000000
+              width: 1172.000000
+              height: 45.000000
+              visible: 1
+              clickable: 0
+              longclickable: 0
+              checkable: 0
+              scrollable: 0
+              checked: 0
+              hint: 
+              childTree: -1
+          |-> TextInput childSize:0
+              ID: 32
+              compid: 
+              text: 
+              accessibilityText: 
+              accessibilityGroup: 0
+              accessibilityLevel: auto
+              accessibilityCustomRole: 
+              top: 396.000000
+              left: 46.000000
+              width: 1172.000000
+              height: 132.000000
+              visible: 1
+              clickable: 1
+              longclickable: 1
+              checkable: 0
+              scrollable: 1
+              checked: 0
+              hint: 显示名（必填）
+              childTree: -1
+          |-> Button childSize:0
+              ID: 33
+              compid: 
+              text: 创建人物
+              accessibilityText: 
+              accessibilityGroup: 0
+              accessibilityLevel: auto
+              accessibilityCustomRole: 
+              top: 566.000000
+              left: 46.000000
+              width: 1172.000000
+              height: 132.000000
+              visible: 1
+              clickable: 1
+              longclickable: 0
+              checkable: 0
+              scrollable: 0
+              checked: 0
+              hint: 
+              childTree: -1
+        |-> Divider childSize:0
+            ID: 35
+            compid: 
+            text: 
+            accessibilityText: 
+            accessibilityGroup: 0
+            accessibilityLevel: auto
+            accessibilityCustomRole: 
+            top: 777.000000
+            left: 44.000000
+            width: 1176.000000
+            height: 1.000000
+            visible: 1
+            clickable: 0
+            longclickable: 0
+            checkable: 0
+            scrollable: 0
+            checked: 0
+            hint: 
+            childTree: -1
+        |-> List childSize:1
+          | ID: 57
+          | compid: 
+          | text: 
+          | accessibilityText: 
+          | accessibilityGroup: 0
+          | accessibilityLevel: auto
+          | accessibilityCustomRole: 
+          | top: 778.000000
+          | left: 0.000000
+          | width: 1264.000000
+          | height: 810.000000
+          | visible: 1
+          | clickable: 0
+          | longclickable: 0
+          | checkable: 0
+          | scrollable: 0
+          | checked: 0
+          | hint: 
+          | childTree: -1
+          |-> ListItem childSize:1
+            | ID: 60
+            | compid: 
+            | text: 
+            | accessibilityText: 
+            | accessibilityGroup: 0
+            | accessibilityLevel: auto
+            | accessibilityCustomRole: 
+            | top: 811.000000
+            | left: 44.000000
+            | width: 1176.000000
+            | height: 232.000000
+            | visible: 1
+            | clickable: 0
+            | longclickable: 0
+            | checkable: 0
+            | scrollable: 0
+            | checked: 0
+            | hint: 
+            | childTree: -1
+            |-> Column childSize:2
+              | ID: 61
+              | compid: 
+              | text: 
+              | accessibilityText: 
+              | accessibilityGroup: 0
+              | accessibilityLevel: auto
+              | accessibilityCustomRole: 
+              | top: 811.000000
+              | left: 44.000000
+              | width: 1176.000000
+              | height: 232.000000
+              | visible: 1
+              | clickable: 1
+              | longclickable: 0
+              | checkable: 0
+              | scrollable: 0
+              | checked: 0
+              | hint: 
+              | childTree: -1
+              |-> Row childSize:2
+                | ID: 62
+                | compid: 
+                | text: 
+                | accessibilityText: 
+                | accessibilityGroup: 0
+                | accessibilityLevel: auto
+                | accessibilityCustomRole: 
+                | top: 851.000000
+                | left: 90.000000
+                | width: 1084.000000
+                | height: 58.000000
+                | visible: 1
+                | clickable: 0
+                | longclickable: 0
+                | checkable: 0
+                | scrollable: 0
+                | checked: 0
+                | hint: 
+                | childTree: -1
+                |-> Text childSize:0
+                    ID: 63
+                    compid: 
+                    text: TestPerson
+                    accessibilityText: 
+                    accessibilityGroup: 0
+                    accessibilityLevel: auto
+                    accessibilityCustomRole: 
+                    top: 851.000000
+                    left: 90.000000
+                    width: 979.000000
+                    height: 58.000000
+                    visible: 1
+                    clickable: 0
+                    longclickable: 0
+                    checkable: 0
+                    scrollable: 0
+                    checked: 0
+                    hint: 
+                    childTree: -1
+                |-> Text childSize:0
+                    ID: 64
+                    compid: 
+                    text: 其他
+                    accessibilityText: 
+                    accessibilityGroup: 0
+                    accessibilityLevel: auto
+                    accessibilityCustomRole: 
+                    top: 858.000000
+                    left: 1069.000000
+                    width: 105.000000
+                    height: 45.000000
+                    visible: 1
+                    clickable: 0
+                    longclickable: 0
+                    checkable: 0
+                    scrollable: 0
+                    checked: 0
+                    hint: 
+                    childTree: -1
+              |-> Row childSize:2
+                | ID: 65
+                | compid: 
+                | text: 
+                | accessibilityText: 
+                | accessibilityGroup: 0
+                | accessibilityLevel: auto
+                | accessibilityCustomRole: 
+                | top: 926.000000
+                | left: 90.000000
+                | width: 1084.000000
+                | height: 77.000000
+                | visible: 1
+                | clickable: 0
+                | longclickable: 0
+                | checkable: 0
+                | scrollable: 0
+                | checked: 0
+                | hint: 
+                | childTree: -1
+                |-> Text childSize:0
+                    ID: 66
+                    compid: 
+                    text: 档案、故事与照片
+                    accessibilityText: 
+                    accessibilityGroup: 0
+                    accessibilityLevel: auto
+                    accessibilityCustomRole: 
+                    top: 947.000000
+                    left: 90.000000
+                    width: 913.000000
+                    height: 35.000000
+                    visible: 1
+                    clickable: 0
+                    longclickable: 0
+                    checkable: 0
+                    scrollable: 0
+                    checked: 0
+                    hint: 
+                    childTree: -1
+                |-> Button childSize:0
+                    ID: 67
+                    compid: 
+                    text: 删除
+                    accessibilityText: 
+                    accessibilityGroup: 0
+                    accessibilityLevel: auto
+                    accessibilityCustomRole: 
+                    top: 926.000000
+                    left: 1025.000000
+                    width: 149.000000
+                    height: 77.000000
+                    visible: 1
+                    clickable: 1
+                    longclickable: 0
+                    checkable: 0
+                    scrollable: 0
+                    checked: 0
+                    hint: 
+                    childTree: -1
+      |-> Row childSize:2
+        | ID: 41
+        | compid: 
+        | text: 
+        | accessibilityText: 
+        | accessibilityGroup: 0
+        | accessibilityLevel: auto
+        | accessibilityCustomRole: 
+        | top: 1588.000000
+        | left: 0.000000
+        | width: 1264.000000
+        | height: 183.000000
+        | visible: 1
+        | clickable: 0
+        | longclickable: 0
+        | checkable: 0
+        | scrollable: 0
+        | checked: 0
+        | hint: 
+        | childTree: -1
+        |-> Column childSize:2
+          | ID: 42
+          | compid: 
+          | text: 
+          | accessibilityText: 
+          | accessibilityGroup: 0
+          | accessibilityLevel: auto
+          | accessibilityCustomRole: 
+          | top: 1606.000000
+          | left: 22.000000
+          | width: 610.000000
+          | height: 143.000000
+          | visible: 1
+          | clickable: 1
+          | longclickable: 0
+          | checkable: 0
+          | scrollable: 0
+          | checked: 0
+          | hint: 
+          | childTree: -1
+          |-> Text childSize:0
+              ID: 43
+              compid: 
+              text: 人物
+              accessibilityText: 
+              accessibilityGroup: 0
+              accessibilityLevel: auto
+              accessibilityCustomRole: 
+              top: 1644.000000
+              left: 291.000000
+              width: 72.000000
+              height: 42.000000
+              visible: 1
+              clickable: 0
+              longclickable: 0
+              checkable: 0
+              scrollable: 0
+              checked: 0
+              hint: 
+              childTree: -1
+          |-> Divider childSize:0
+              ID: 45
+              compid: 
+              text: 
+              accessibilityText: 
+              accessibilityGroup: 0
+              accessibilityLevel: auto
+              accessibilityCustomRole: 
+              top: 1702.000000
+              left: 289.000000
+              width: 77.000000
+              height: 9.000000
+              visible: 1
+              clickable: 0
+              longclickable: 0
+              checkable: 0
+              scrollable: 0
+              checked: 0
+              hint: 
+              childTree: -1
+        |-> Column childSize:2
+          | ID: 46
+          | compid: 
+          | text: 
+          | accessibilityText: 
+          | accessibilityGroup: 0
+          | accessibilityLevel: auto
+          | accessibilityCustomRole: 
+          | top: 1606.000000
+          | left: 632.000000
+          | width: 610.000000
+          | height: 143.000000
+          | visible: 1
+          | clickable: 1
+          | longclickable: 0
+          | checkable: 0
+          | scrollable: 0
+          | checked: 0
+          | hint: 
+          | childTree: -1
+          |-> Text childSize:0
+              ID: 47
+              compid: 
+              text: 故事
+              accessibilityText: 
+              accessibilityGroup: 0
+              accessibilityLevel: auto
+              accessibilityCustomRole: 
+              top: 1636.000000
+              left: 901.000000
+              width: 72.000000
+              height: 42.000000
+              visible: 1
+              clickable: 0
+              longclickable: 0
+              checkable: 0
+              scrollable: 0
+              checked: 0
+              hint: 
+              childTree: -1
+          |-> Blank childSize:0
+              ID: 49
+              compid: 
+              text: 
+              accessibilityText: 
+              accessibilityGroup: 0
+              accessibilityLevel: auto
+              accessibilityCustomRole: 
+              top: 1694.000000
+              left: 632.000000
+              width: 610.000000
+              height: 25.000000
+              visible: 1
+              clickable: 0
+              longclickable: 0
+              checkable: 0
+              scrollable: 0
+              checked: 0
+              hint: 
+              childTree: -1
+

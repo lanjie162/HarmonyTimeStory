@@ -4,6 +4,7 @@ import type { StoryModel } from '../../domain/model/Models';
 import { getStoryService } from '../../features/story/StoryFeature';
 import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
 import { MainTabBar } from '../../common/ui/MainTabBar';
+import { TextInputWithKeyboard } from '../../common/ui/KeyboardAwareInput';
 
 function timeRangeLabel(s: StoryModel): string {
   if (s.timeStart === null || s.timeStart <= 0) {
@@ -110,19 +111,12 @@ export struct StoryPage {
             .fontColor($r('app.color.ts_text_secondary'))
             .fontWeight(FontWeight.Medium)
             .width('100%')
-          TextInput({ placeholder: '标题（必填）', text: this.newTitle })
-            .onChange((v: string): void => {
-              this.newTitle = v;
-            })
-            .enterKeyType(EnterKeyType.Done)
-            .onSubmit((): void => {
-              this.createStory();
-            })
-            .width('100%')
-            .height(48)
-            .backgroundColor($r('app.color.ts_surface_container_high'))
-            .borderRadius(10)
-            .padding({ left: 12, right: 12 })
+          TextInputWithKeyboard({
+            placeholder: '标题（必填）',
+            value: this.newTitle,
+            onChange: (v: string): void => { this.newTitle = v; },
+            onSubmit: (): void => { this.createStory(); }
+          })
           Button('创建故事')
             .width('100%')
             .height(48)

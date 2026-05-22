@@ -5,6 +5,7 @@ import { PersonTypeEnum as PT } from '../../domain/model/Models';
 import { getPersonService } from '../../features/person/PersonFeature';
 import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
 import { MainTabBar } from '../../common/ui/MainTabBar';
+import { TextInputWithKeyboard } from '../../common/ui/KeyboardAwareInput';
 
 function typeLabel(val: PersonTypeEnum): string {
   if (val === PT.BABY) {
@@ -113,19 +114,12 @@ export struct PersonPage {
             .fontColor($r('app.color.ts_text_secondary'))
             .fontWeight(FontWeight.Medium)
             .width('100%')
-          TextInput({ placeholder: '显示名（必填）', text: this.newDisplayName })
-            .onChange((v: string): void => {
-              this.newDisplayName = v;
-            })
-            .enterKeyType(EnterKeyType.Done)
-            .onSubmit((): void => {
-              this.createPerson();
-            })
-            .width('100%')
-            .height(48)
-            .backgroundColor($r('app.color.ts_surface_container_high'))
-            .borderRadius(10)
-            .padding({ left: 12, right: 12 })
+          TextInputWithKeyboard({
+            placeholder: '显示名（必填）',
+            value: this.newDisplayName,
+            onChange: (v: string): void => { this.newDisplayName = v; },
+            onSubmit: (): void => { this.createPerson(); }
+          })
           Button('创建人物')
             .width('100%')
             .height(48)

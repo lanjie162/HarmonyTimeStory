@@ -6,6 +6,7 @@ import type { PersonModel, PhotoRefModel, StoryModel } from '../../domain/model/
 import { getPersonService } from '../../features/person/PersonFeature';
 import { getStoryService } from '../../features/story/StoryFeature';
 import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
+import { TextInputWithKeyboard, TextAreaWithKeyboard } from '../../common/ui/KeyboardAwareInput';
 
 function parseStoryId(params: Record<string, Object>): number {
   const raw = params['storyId'];
@@ -187,6 +188,7 @@ export struct StoryDetailPage {
   }
 
   private addTag(): void {
+    dismissSoftKeyboard();
     const t = this.draftTagInput.trim();
     if (t.length === 0) {
       return;
@@ -333,26 +335,24 @@ export struct StoryDetailPage {
                 .width('100%')
 
               // 标题
-              TextInput({ placeholder: '标题（必填）', text: this.draftTitle })
-                .onChange((v: string): void => {
-                  this.draftTitle = v;
-                })
-                .width('100%')
-                .height(48)
-                .backgroundColor($r('app.color.ts_surface_container_high'))
-                .borderRadius(10)
-                .padding({ left: 12, right: 12 })
+              TextInputWithKeyboard({
+                placeholder: '标题（必填）',
+                value: this.draftTitle,
+                onChange: (v: string): void => { this.draftTitle = v; }
+              })
 
               // 描述
-              TextArea({ placeholder: '描述（可选）', text: this.draftDescription })
-                .onChange((v: string): void => {
-                  this.draftDescription = v;
+              Column() {
+                TextAreaWithKeyboard({
+                  placeholder: '描述（可选）',
+                  value: this.draftDescription,
+                  onChange: (v: string): void => { this.draftDescription = v; }
                 })
-                .width('100%')
-                .height(80)
-                .backgroundColor($r('app.color.ts_surface_container_high'))
-                .borderRadius(10)
-                .padding({ left: 12, right: 12 })
+              }
+              .width('100%')
+              .onClick((): void => {
+                dismissSoftKeyboard();
+              })
 
               // 封面 URI
               Row({ space: 8 }) {
@@ -387,15 +387,11 @@ export struct StoryDetailPage {
               .width('100%')
 
               // 地点
-              TextInput({ placeholder: '地点（可选）', text: this.draftLocation })
-                .onChange((v: string): void => {
-                  this.draftLocation = v;
-                })
-                .width('100%')
-                .height(48)
-                .backgroundColor($r('app.color.ts_surface_container_high'))
-                .borderRadius(10)
-                .padding({ left: 12, right: 12 })
+              TextInputWithKeyboard({
+                placeholder: '地点（可选）',
+                value: this.draftLocation,
+                onChange: (v: string): void => { this.draftLocation = v; }
+              })
 
               // 时间范围 - 开始日期
               Row({ space: 8 }) {
@@ -456,19 +452,14 @@ export struct StoryDetailPage {
                   .fontColor($r('app.color.ts_text_secondary'))
                   .width('100%')
                 Row({ space: 8 }) {
-                  TextInput({ placeholder: '输入标签', text: this.draftTagInput })
-                    .layoutWeight(1)
-                    .height(40)
-                    .backgroundColor($r('app.color.ts_surface_container_high'))
-                    .borderRadius(10)
-                    .padding({ left: 12, right: 12 })
-                    .onChange((v: string): void => {
-                      this.draftTagInput = v;
-                    })
-                    .enterKeyType(EnterKeyType.Done)
-                    .onSubmit((): void => {
-                      this.addTag();
-                    })
+                  TextInputWithKeyboard({
+                    placeholder: '输入标签',
+                    value: this.draftTagInput,
+                    onChange: (v: string): void => { this.draftTagInput = v; },
+                    onSubmit: (): void => { this.addTag(); },
+                    layoutWeight: 1,
+                    height: 40
+                  })
                   Button('添加')
                     .height(40)
                     .fontSize($r('app.float.ts_font_overline'))
@@ -537,19 +528,13 @@ export struct StoryDetailPage {
                 .fontColor($r('app.color.ts_text_tertiary'))
                 .width('100%')
               Row({ space: 8 }) {
-                TextInput({ placeholder: '新人物显示名', text: this.newPersonName })
-                  .layoutWeight(1)
-                  .height(48)
-                  .backgroundColor($r('app.color.ts_surface_container_high'))
-                  .borderRadius(10)
-                  .padding({ left: 12, right: 12 })
-                  .onChange((v: string): void => {
-                    this.newPersonName = v;
-                  })
-                  .enterKeyType(EnterKeyType.Done)
-                  .onSubmit((): void => {
-                    this.createPersonQuick();
-                  })
+                TextInputWithKeyboard({
+                  placeholder: '新人物显示名',
+                  value: this.newPersonName,
+                  onChange: (v: string): void => { this.newPersonName = v; },
+                  onSubmit: (): void => { this.createPersonQuick(); },
+                  layoutWeight: 1
+                })
                 Button('创建人物')
                   .height(48)
                   .fontSize($r('app.float.ts_font_support'))
