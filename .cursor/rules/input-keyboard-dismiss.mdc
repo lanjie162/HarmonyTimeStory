@@ -1,0 +1,73 @@
+---
+description: 所有 TextInput/TextArea 必须使用 common/ui/KeyboardAwareInput 中的 Builder 声明，禁止直接使用原生组件
+globs: entry/src/main/ets/pages/**/*.ets
+---
+
+# 输入组件键盘收起规范
+
+## 规则
+
+1. 所有 `TextInput` / `TextArea` 必须使用 `common/ui/KeyboardAwareInput` 中导出的 `TextInputWithKeyboard` / `TextAreaWithKeyboard` Builder 声明。
+
+2. **禁止直接使用** `TextInput` / `TextArea` 组件，除非有非常规参数需求且已用注释显式说明原因（如 `// skip-rule: KeyboardAwareInput`）。
+
+3. Builder 的 `onSubmit` 参数内**不要手动调用** `dismissSoftKeyboard()` — Builder 在 `onSubmit` 中已自动兜底。
+
+4. 新增含文本输入的页面时需要确保：
+   - 导入 `TextInputWithKeyboard` / `TextAreaWithKeyboard`
+   - 所有文本输入字段均使用 Builder 而非原生组件
+
+## 正确用法
+
+```typescript
+import { TextInputWithKeyboard, TextAreaWithKeyboard } from '../../common/ui/KeyboardAwareInput';
+
+// 多字段编辑页：按 Done 仅收键盘，不触发保存
+TextInputWithKeyboard({
+  placeholder: '名称',
+  value: this.draftName,
+  onChange: (v: string): void => { this.draftName = v; }
+})
+
+// 单操作字段：按 Done 执行业务回调 + 收键盘
+TextInputWithKeyboard({
+  placeholder: '新标题',
+  value: this.newTitle,
+  onChange: (v: string): void => { this.newTitle = v; },
+  onSubmit: (): void => { this.createItem(); }
+})
+
+// TextArea 一样
+TextAreaWithKeyboard({
+  placeholder: '备注',
+  value: this.draftRemark,
+  onChange: (v: string): void => { this.draftRemark = v; }
+})
+```
+
+## 错误用法
+
+```typescript
+// 错误：直接用 TextInput 不自动收键盘
+TextInput({ placeholder: '名称', text: this.name })
+  .onChange((v: string): void => { this.name = v; })
+
+// 错误：直接用 TextArea 不自动收键盘
+TextArea({ placeholder: '备注', text: this.remark })
+  .onChange((v: string): void => { this.remark = v; })
+
+// 错误：在 onSubmit 回调内手动调用 dismissSoftKeyboard（Builder 已自动兜底）
+TextInputWithKeyboard({
+  placeholder: '名称',
+  value: this.name,
+  onChange: (v: string): void => { this.name = v; },
+  onSubmit: (): void => {
+    dismissSoftKeyboard(); // 多余
+    this.doSave();
+  }
+})
+```
+
+## 背景
+
+HarmonyOS 上 `TextInput` / `TextArea` 在控件失焦或路由切换时不保证收起 IME，表现为键盘遮挡列表与导航控件，影响用户体验与 Hypium 自动化稳定性。使用此 Builder 确保每次按 Done 都自动收起键盘。

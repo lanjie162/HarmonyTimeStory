@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+  <defs>
+    <clipPath id="screen"><rect x="0" y="0" width="390" height="844" rx="0"/></clipPath>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+  <rect width="390" height="844" rx="40" fill="#222" stroke="#444" stroke-width="2"/>
+  <rect x="12" y="12" width="366" height="820" rx="30" fill="#FFFBF7"/>
+  <g clip-path="url(#screen)">
+    <rect x="12" y="12" width="366" height="44" fill="#00000010"/>
+    <text x="36" y="40" font-family="-apple-system, system-ui, sans-serif" font-size="14" fill="#1C1B1F" font-weight="600">9:41</text>
+    <text x="330" y="40" font-family="-apple-system, system-ui, sans-serif" font-size="14" fill="#1C1B1F">📶 🔋</text>
+    故事列表页（原型 #04）
+    
+    <rect x="12" y="56" width="366" height="48" fill="#FFFBF7"/>
+    <text x="28" y="85" font-family="-apple-system, system-ui, sans-serif" font-size="18" fill="#1C1B1F" font-weight="600">故事</text>
+    <text x="340" y="85" font-family="-apple-system, system-ui, sans-serif" font-size="14" fill="#B85C38" font-weight="500" text-anchor="end">+ 创建</text>
+    <text x="28" y="125" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#49454F" font-weight="500">4 个故事</text>
+    <line x1="28" y1="135" x2="362" y2="135" stroke="#CAC4D0" stroke-width="0.5"/>
+    
+    <rect x="28" y="154" width="52" height="52" rx="8" fill="#E3F2FD" stroke="#CAC4D0" stroke-width="1"/><text x="54" y="184" font-family="-apple-system, system-ui, sans-serif" font-size="16" fill="#1565C0" text-anchor="middle">🖼️</text>
+    <text x="92" y="172" font-family="-apple-system, system-ui, sans-serif" font-size="15" fill="#1C1B1F" font-weight="500">国庆游</text>
+    <text x="92" y="190" font-family="-apple-system, system-ui, sans-serif" font-size="12" fill="#666666">2025-10-01 ~ 2025-10-07</text>
+    <text x="92" y="206" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#999999">北京 · #旅行 #国庆</text>
+    <text x="340" y="188" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#888888" text-anchor="end">24 张照片</text>
+  
+    <line x1="28" y1="222" x2="362" y2="222" stroke="#CAC4D0" stroke-width="0.5"/>
+    
+    <rect x="28" y="241" width="52" height="52" rx="8" fill="#FAFAFA" stroke="#CAC4D0" stroke-width="1"/><text x="54" y="271" font-family="-apple-system, system-ui, sans-serif" font-size="16" fill="#999999" text-anchor="middle">🖼️</text>
+    <text x="92" y="259" font-family="-apple-system, system-ui, sans-serif" font-size="15" fill="#1C1B1F" font-weight="500">家庭聚会</text>
+    <text x="92" y="277" font-family="-apple-system, system-ui, sans-serif" font-size="12" fill="#666666">2024-12-24</text>
+    <text x="92" y="293" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#999999">#家庭 #团圆</text>
+    <text x="340" y="275" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#888888" text-anchor="end">8 张照片</text>
+  
+    <line x1="28" y1="309" x2="362" y2="309" stroke="#CAC4D0" stroke-width="0.5"/>
+    
+    <rect x="28" y="328" width="52" height="52" rx="8" fill="#E3F2FD" stroke="#CAC4D0" stroke-width="1"/><text x="54" y="358" font-family="-apple-system, system-ui, sans-serif" font-size="16" fill="#1565C0" text-anchor="middle">🖼️</text>
+    <text x="92" y="346" font-family="-apple-system, system-ui, sans-serif" font-size="15" fill="#1C1B1F" font-weight="500">毕业旅行</text>
+    <text x="92" y="364" font-family="-apple-system, system-ui, sans-serif" font-size="12" fill="#666666">2024-06-15 ~ 2024-06-20</text>
+    <text x="92" y="380" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#999999">成都 · #毕业 #旅行</text>
+    <text x="340" y="362" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#888888" text-anchor="end">45 张照片</text>
+  
+    <line x1="28" y1="396" x2="362" y2="396" stroke="#CAC4D0" stroke-width="0.5"/>
+    
+    <rect x="28" y="415" width="52" height="52" rx="8" fill="#FAFAFA" stroke="#CAC4D0" stroke-width="1"/><text x="54" y="445" font-family="-apple-system, system-ui, sans-serif" font-size="16" fill="#999999" text-anchor="middle">🖼️</text>
+    <text x="92" y="433" font-family="-apple-system, system-ui, sans-serif" font-size="15" fill="#1C1B1F" font-weight="500">我们的家</text>
+    <text x="92" y="451" font-family="-apple-system, system-ui, sans-serif" font-size="12" fill="#666666">2024-01-01</text>
+    <text x="92" y="467" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#999999">深圳</text>
+    <text x="340" y="449" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#888888" text-anchor="end">3 张照片</text>
+  
+  
+    <rect x="12" y="768" width="366" height="64" fill="#FAFAFA"/>
+    <line x1="12" y1="768" x2="378" y2="768" stroke="#CAC4D0" stroke-width="0.5"/>
+    <text x="195" y="790" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#B85C38" font-weight="600" text-anchor="middle">人物</text>
+    <rect x="120" y="799" width="28" height="3" rx="1.5" fill="#B85C38"/>
+    <text x="195" y="816" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#666666" font-weight="400" text-anchor="middle">故事</text>
+    
+  </g>
+</svg>

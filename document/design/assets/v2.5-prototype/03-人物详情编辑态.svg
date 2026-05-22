@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+  <defs>
+    <clipPath id="screen"><rect x="0" y="0" width="390" height="844" rx="0"/></clipPath>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+  <rect width="390" height="844" rx="40" fill="#222" stroke="#444" stroke-width="2"/>
+  <rect x="12" y="12" width="366" height="820" rx="30" fill="#FFFBF7"/>
+  <g clip-path="url(#screen)">
+    <rect x="12" y="12" width="366" height="44" fill="#00000010"/>
+    <text x="36" y="40" font-family="-apple-system, system-ui, sans-serif" font-size="14" fill="#1C1B1F" font-weight="600">9:41</text>
+    <text x="330" y="40" font-family="-apple-system, system-ui, sans-serif" font-size="14" fill="#1C1B1F">📶 🔋</text>
+    人物详情编辑态（原型 #03）
+    
+    <rect x="12" y="56" width="366" height="48" fill="#FFFBF7"/>
+    <text x="28" y="85" font-family="-apple-system, system-ui, sans-serif" font-size="18" fill="#1C1B1F" font-weight="600">← 编辑人物</text>
+    <text x="340" y="85" font-family="-apple-system, system-ui, sans-serif" font-size="14" fill="#B85C38" font-weight="500" text-anchor="end">保存</text>
+    <line x1="28" y1="108" x2="362" y2="108" stroke="#CAC4D0" stroke-width="0.5"/>
+    
+    <text x="28" y="136" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#49454F">头像</text>
+    <circle cx="100" cy="168" r="36" fill="#F4E7DF" stroke="#CAC4D0" stroke-width="1"/>
+    <text x="100" y="173" font-family="-apple-system, system-ui, sans-serif" font-size="20" fill="#B85C38" text-anchor="middle" font-weight="600">小</text>
+    <rect x="140" y="150" width="70" height="32" rx="16" fill="#E3F2FD"/><text x="175" y="170" font-family="-apple-system, system-ui, sans-serif" font-size="12" fill="#1565C0" text-anchor="middle">更换头像</text>
+    <rect x="218" y="150" width="70" height="32" rx="16" fill="#FAFAFA"/><text x="253" y="170" font-family="-apple-system, system-ui, sans-serif" font-size="12" fill="#BF360C" text-anchor="middle">移除头像</text>
+  
+    
+    <text x="28" y="206" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#49454F">显示名</text>
+    <rect x="28" y="215" width="334" height="40" rx="10" fill="#FAFAFA" stroke="#CAC4D0" stroke-width="1"/>
+    <text x="40" y="240" font-family="-apple-system, system-ui, sans-serif" font-size="14" fill="#1C1B1F">小明</text>
+  
+    
+    <text x="28" y="266" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#49454F">类型</text>
+    
+    <rect x="28" y="275" width="46" height="30" rx="15" fill="#B85C38"/>
+    <text x="51" y="295" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#FFFFFF" text-anchor="middle">宝宝</text>
+  
+    
+    <rect x="78" y="275" width="46" height="30" rx="15" fill="#FAFAFA"/>
+    <text x="101" y="295" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#49454F" text-anchor="middle">成人</text>
+  
+    
+    <rect x="128" y="275" width="46" height="30" rx="15" fill="#FAFAFA"/>
+    <text x="151" y="295" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#49454F" text-anchor="middle">长辈</text>
+  
+    
+    <rect x="178" y="275" width="46" height="30" rx="15" fill="#FAFAFA"/>
+    <text x="201" y="295" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#49454F" text-anchor="middle">其他</text>
+  
+  
+    
+    <text x="28" y="326" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#49454F">生日</text>
+    <text x="28" y="332" font-family="-apple-system, system-ui, sans-serif" font-size="14" fill="#1C1B1F">2024-08-15</text>
+    <circle cx="80" cy="326" r="12" fill="#FAFAFA" stroke="#CAC4D0" stroke-width="1"/>
+    <text x="80" y="331" font-family="-apple-system, system-ui, sans-serif" font-size="12" fill="#49454F" text-anchor="middle">📅</text>
+  
+    
+    <text x="28" y="366" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#49454F">性别</text>
+    
+    <circle cx="46" cy="390" r="14" fill="transparent" stroke="#CAC4D0" stroke-width="1.5"/>
+    
+    <text x="70" y="395" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#49454F">男</text>
+  
+    
+    <circle cx="96" cy="390" r="14" fill="#B85C38" stroke="#B85C38" stroke-width="1.5"/>
+    <circle cx="96" cy="390" r="5" fill="#FFFFFF"/>
+    <text x="120" y="395" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#B85C38">女</text>
+  
+    
+    <circle cx="146" cy="390" r="14" fill="transparent" stroke="#CAC4D0" stroke-width="1.5"/>
+    
+    <text x="170" y="395" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#49454F">未填</text>
+  
+  
+    
+    <text x="28" y="426" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#49454F">备注</text>
+    <rect x="28" y="435" width="334" height="60" rx="10" fill="#FAFAFA" stroke="#CAC4D0" stroke-width="1"/>
+    <text x="40" y="455" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#1C1B1F">XX 幼儿园小班，喜欢画画和</text>
+    <text x="40" y="475" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#1C1B1F">唱歌。</text>
+  
+    <rect x="28" y="510" width="334" height="40" rx="8" fill="#F5F5F5"/>
+    <text x="195" y="535" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#C62828" text-anchor="middle">删除人物</text>
+    <text x="195" y="560" font-family="-apple-system, system-ui, sans-serif" font-size="10" fill="#999999" text-anchor="middle">删除后不可撤销，将同时移除所有关联与照片挂载。</text>
+  
+    <rect x="12" y="768" width="366" height="64" fill="#FAFAFA"/>
+    <line x1="12" y1="768" x2="378" y2="768" stroke="#CAC4D0" stroke-width="0.5"/>
+    <text x="195" y="790" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#B85C38" font-weight="600" text-anchor="middle">人物</text>
+    <rect x="120" y="799" width="28" height="3" rx="1.5" fill="#B85C38"/>
+    <text x="195" y="816" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#666666" font-weight="400" text-anchor="middle">故事</text>
+    
+  </g>
+</svg>
