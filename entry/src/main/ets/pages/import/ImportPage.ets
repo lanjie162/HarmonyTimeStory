@@ -1,11 +1,13 @@
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
 import photoAccessHelper from '@ohos.file.photoAccessHelper';
+import { common } from '@kit.AbilityKit';
 import BuildProfile from 'BuildProfile';
 import { getImportService } from '../../features/import/ImportFeature';
 import { getPersonService } from '../../features/person/PersonFeature';
 import { getStoryService } from '../../features/story/StoryFeature';
 import { DomainRules } from '../../domain/rules/Rules';
+import { PermissionManager } from '../../infrastructure/api/PermissionManager';
 
 type ImportCtx = 'person' | 'story';
 type WizardStep = 'pick' | 'prepare' | 'conditions' | 'scan' | 'confirm' | 'done';
@@ -309,6 +311,43 @@ export struct ImportPage {
     this.scanOutcome = '';
     this.step = 'conditions';
     promptAction.showToast({ message: '可重试：返回条件步（IM-09）' });
+  }
+
+  /** CR-01: 权限测试临时入口。T-31 后台扫描上线后移除。 */
+  private async runPermissionTest(): Promise<void> {
+    const ctx: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    if (PermissionManager.getInstance().hasMediaPermission(ctx)) {
+      promptAction.showToast({ message: '权限已授予，无需操作' });
+      return;
+    }
+    const result = await PermissionManager.getInstance().requestMediaPermission(ctx);
+    if (!result.granted) {
+      if (result.isPermanentlyDenied) {
+        this.showPermissionDeniedDialog(ctx);
+      } else {
+        promptAction.showToast({ message: '权限拒绝（可选图取消态），不弹引导避免循环弹窗' });
+      }
+    } else {
+      promptAction.showToast({ message: '权限已授予' });
+    }
+  }
+
+  private showPermissionDeniedDialog(ctx: common.UIAbilityContext): void {
+    AlertDialog.show({
+      title: '需要相册权限',
+      message: '时光故事当前没有照片访问权限。请在系统设置中开启"媒体和照片"权限。',
+      primaryButton: {
+        value: '取消',
+        action: (): void => {}
+      },
+      secondaryButton: {
+        value: '前往设置',
+        fontColor: $r('app.color.ts_brand_primary'),
+        action: (): void => {
+          PermissionManager.getInstance().openAppPermissionSettings(ctx);
+        }
+      }
+    });
   }
 
   @Builder
@@ -657,6 +696,24 @@ export struct ImportPage {
               }
               .margin({ top: 8 })
               .width('100%')
+
+              // CR-01: 权限测试临时 DEBUG 入口——见 runPermissionTest() 注释
+              if (BuildProfile.DEBUG) {
+                Divider().margin({ top: 8, bottom: 4 }).color($r('app.color.ts_outline'))
+                Text('【ER-02 权限测试】')
+                  .fontSize($r('app.float.ts_font_overline'))
+                  .fontColor($r('app.color.ts_color_warning'))
+                  .width('100%')
+                Button('权限链条测试（ER-02）')
+                  .fontSize($r('app.float.ts_font_overline'))
+                  .width('100%')
+                  .height(36)
+                  .backgroundColor($r('app.color.ts_surface_container_high'))
+                  .fontColor($r('app.color.ts_text_secondary'))
+                  .onClick((): void => {
+                    this.runPermissionTest();
+                  })
+              }
             }
             .width('100%')
             .padding(16)

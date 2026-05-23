@@ -11,6 +11,10 @@
     {
       "name": "EntryAbility_label",
       "value": "label"
+    },
+    {
+      "name": "perm_read_imagevideo_reason",
+      "value": "用于导入照片时验证图片有效性"
     }
   ]
 }
