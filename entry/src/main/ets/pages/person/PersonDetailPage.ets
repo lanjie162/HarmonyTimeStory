@@ -8,6 +8,8 @@ import { PersonTypeEnum as PT } from '../../domain/model/Models';
 import { GenderEnum as GE } from '../../domain/model/Models';
 import { getPersonService } from '../../features/person/PersonFeature';
 import { getStoryService } from '../../features/story/StoryFeature';
+import { getPhotoLibraryService } from '../../features/photolibrary/PhotoLibraryFeature';
+import { PhotoGridItem } from '../../common/ui/PhotoGridItem';
 import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
 import { TextInputWithKeyboard, TextAreaWithKeyboard } from '../../common/ui/KeyboardAwareInput';
 
@@ -197,10 +199,10 @@ export struct PersonDetailPage {
     });
   }
 
-  private confirmRemovePhoto(ph: PhotoRefModel): void {
+  private confirmRemovePhoto(photoRefId: number): void {
     AlertDialog.show({
       title: '确认移除',
-      message: `确定移除该照片（ref#${ph.id}）？仅解除关联，不删系统原图。`,
+      message: `确定移除该照片（ref#${photoRefId}）？仅解除关联，不删系统原图。`,
       primaryButton: {
         value: '取消',
         action: (): void => {
@@ -213,7 +215,7 @@ export struct PersonDetailPage {
         action: (): void => {
           dismissSoftKeyboard();
           const svc = getPersonService();
-          const ok = svc.removePhotoFromPerson(this.personId, ph.id);
+          const ok = svc.removePhotoFromPerson(this.personId, photoRefId);
           if (ok) {
             promptAction.showToast({ message: '已移除照片' });
           } else {
@@ -706,21 +708,15 @@ export struct PersonDetailPage {
                 Grid() {
                   ForEach(this.photos, (ph: PhotoRefModel) => {
                     GridItem() {
-                      Column({ space: 4 }) {
-                        Image(ph.uri).width('100%').height(96).objectFit(ImageFit.Cover).borderRadius(8)
-                        Text(`ref#${ph.id}`)
-                          .fontSize($r('app.float.ts_font_overline'))
-                          .fontColor($r('app.color.ts_text_caption'))
-                        Button('移除')
-                          .height(26)
-                          .fontSize($r('app.float.ts_font_overline'))
-                          .backgroundColor($r('app.color.ts_surface_container_high'))
-                          .fontColor('#CC0000')
-                          .width('100%')
-                          .onClick((): void => {
-                            this.confirmRemovePhoto(ph);
-                          })
-                      }
+                      PhotoGridItem({
+                        ph: ph,
+                        onRemove: (photoRefId: number): void => {
+                          this.confirmRemovePhoto(photoRefId);
+                        },
+                        onStatusChanged: (photoRefId: number, status: number): void => {
+                          getPhotoLibraryService().markPhotoAsFailed(photoRefId, status);
+                        }
+                      })
                     }
                   }, (ph: PhotoRefModel): string => `ph-${ph.id}`)
                 }

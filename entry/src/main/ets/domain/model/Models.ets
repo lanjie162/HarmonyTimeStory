@@ -53,10 +53,22 @@ export interface StoryModel {
   tags: string[];
 }
 
+/** URI 健康状态枚举：与 photo_ref.ref_status 列对齐。 */
+export enum UriHealthStatus {
+  /** 初始状态：尚未检测 */
+  UNKNOWN = 0,
+  /** URI 可正常加载 */
+  HEALTHY = 1,
+  /** 本地文件已被删除 */
+  LOCAL_DELETED = 2
+}
+
 /** 人物挂载的照片引用最小字段（PH-01 去重用 uri）。 */
 export interface PhotoRefModel {
   id: number;
   uri: string;
+  /** URI 健康状态，默认 UNKNOWN(0)；写入时由 resolveOrCreatePhotoRef 设为 HEALTHY(1)。 */
+  refStatus: number;
 }
 
 export interface PhotoAddResult {

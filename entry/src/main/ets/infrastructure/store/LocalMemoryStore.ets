@@ -214,7 +214,7 @@ export class LocalMemoryStore {
     const out: PhotoRefModel[] = [];
     for (const pr of this.photoRefs) {
       if (refIds.has(pr.id)) {
-        out.push({ id: pr.id, uri: pr.uri });
+        out.push({ id: pr.id, uri: pr.uri, refStatus: pr.refStatus ?? 1 });
       }
     }
     return out;
@@ -233,7 +233,7 @@ export class LocalMemoryStore {
       return { success: false, duplicate: true };
     }
     const prId = this.nextPhotoId++;
-    this.photoRefs.push({ id: prId, uri: trimmed });
+    this.photoRefs.push({ id: prId, uri: trimmed, refStatus: 1 });
     this.ownerLinks.push({
       id: this.nextLinkId++,
       ownerKind: 'person',
@@ -253,7 +253,7 @@ export class LocalMemoryStore {
     const out: PhotoRefModel[] = [];
     for (const pr of this.photoRefs) {
       if (refIds.has(pr.id)) {
-        out.push({ id: pr.id, uri: pr.uri });
+        out.push({ id: pr.id, uri: pr.uri, refStatus: pr.refStatus ?? 1 });
       }
     }
     return out;
@@ -272,7 +272,7 @@ export class LocalMemoryStore {
       return { success: false, duplicate: true };
     }
     const prId = this.nextPhotoId++;
-    this.photoRefs.push({ id: prId, uri: trimmed });
+    this.photoRefs.push({ id: prId, uri: trimmed, refStatus: 1 });
     this.ownerLinks.push({
       id: this.nextLinkId++,
       ownerKind: 'story',
@@ -320,6 +320,13 @@ export class LocalMemoryStore {
     // Remove story
     this.stories.splice(idx, 1);
     return true;
+  }
+
+  updatePhotoRefStatus(photoRefId: number, status: number): void {
+    const pr = this.photoRefs.find((x): boolean => x.id === photoRefId);
+    if (pr !== undefined) {
+      pr.refStatus = status;
+    }
   }
 
   removePhotoForPerson(personId: number, photoRefId: number): boolean {

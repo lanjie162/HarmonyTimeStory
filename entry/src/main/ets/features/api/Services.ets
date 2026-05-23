@@ -49,3 +49,9 @@ export interface IImportService {
 }
 
 export interface ISuggestionService {}
+
+/** 图库操作：集中管理 PhotoRef 健康检测与状态更新，后续可扩展独立图库扫描入口。 */
+export interface IPhotoLibraryService {
+  /** 标记指定 PhotoRef 为指定健康状态。 */
+  markPhotoAsFailed(photoRefId: number, status: number): void;
+}

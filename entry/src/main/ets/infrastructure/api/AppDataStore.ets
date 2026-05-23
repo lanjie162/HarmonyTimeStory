@@ -62,6 +62,8 @@ export interface IAppDataStore {
   removePhotoForPerson(personId: number, photoRefId: number): boolean;
   /** 移除故事侧照片：仅删 photo_owner_link，递减 photo_ref.reference_count（§6.3 ST-05）。 */
   removePhotoForStory(storyId: number, photoRefId: number): boolean;
+  /** 更新指定 PhotoRef 的健康状态。 */
+  updatePhotoRefStatus(photoRefId: number, status: number): void;
   /** 扫描并清理无任何 owner 关联的孤立 PhotoRef，返回清理数。 */
   gcOrphanPhotoRefs(): number;
 }

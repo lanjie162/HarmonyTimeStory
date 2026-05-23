@@ -453,7 +453,7 @@ export class RepositoryImpl implements IAppDataStore {
   private queryPhotosForOwner(ownerKind: number, ownerId: number): PhotoRefModel[] {
     const store = this.db();
     const rs = store.querySqlSync(
-      'SELECT pr.id AS id, pr.uri AS uri FROM photo_ref pr ' +
+      'SELECT pr.id AS id, pr.uri AS uri, pr.ref_status AS ref_status FROM photo_ref pr ' +
         'INNER JOIN photo_owner_link pol ON pol.photo_ref_id = pr.id ' +
         'WHERE pol.owner_kind = ? AND pol.owner_id = ? ORDER BY pr.taken_at_cache DESC NULLS LAST, pol.linked_at DESC;',
       [ownerKind, ownerId]
@@ -462,7 +462,8 @@ export class RepositoryImpl implements IAppDataStore {
     while (rs.goToNextRow()) {
       out.push({
         id: Number(rs.getLong(rs.getColumnIndex('id'))),
-        uri: rs.getString(rs.getColumnIndex('uri'))
+        uri: rs.getString(rs.getColumnIndex('uri')),
+        refStatus: Number(rs.getLong(rs.getColumnIndex('ref_status')))
       });
     }
     rs.close();
@@ -700,6 +701,11 @@ export class RepositoryImpl implements IAppDataStore {
       store.rollBack();
       return false;
     }
+  }
+
+  updatePhotoRefStatus(photoRefId: number, status: number): void {
+    const store = this.db();
+    store.executeSql('UPDATE photo_ref SET ref_status = ? WHERE id = ?;', [status, photoRefId]);
   }
 
   gcOrphanPhotoRefs(): number {
