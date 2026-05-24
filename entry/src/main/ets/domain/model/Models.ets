@@ -60,7 +60,9 @@ export enum UriHealthStatus {
   /** URI 可正常加载 */
   HEALTHY = 1,
   /** 本地文件已被删除 */
-  LOCAL_DELETED = 2
+  LOCAL_DELETED = 2,
+  /** 云端不可访问 */
+  CLOUD_INACCESSIBLE = 3
 }
 
 /** 人物挂载的照片引用最小字段（PH-01 去重用 uri）。 */

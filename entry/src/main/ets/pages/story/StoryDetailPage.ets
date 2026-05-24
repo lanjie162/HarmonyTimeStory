@@ -7,6 +7,7 @@ import { getPersonService } from '../../features/person/PersonFeature';
 import { getStoryService } from '../../features/story/StoryFeature';
 import { getPhotoLibraryService } from '../../features/photolibrary/PhotoLibraryFeature';
 import { PhotoGridItem } from '../../common/ui/PhotoGridItem';
+import { UriHealthChecker } from '../../infrastructure/media/UriHealthChecker';
 import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
 import { TextInputWithKeyboard, TextAreaWithKeyboard } from '../../common/ui/KeyboardAwareInput';
 
@@ -90,6 +91,15 @@ export struct StoryDetailPage {
     this.personsAll = getPersonService().listPersons();
     this.linkedPersonIds = sSvc.listLinkedPersons(this.storyId).map((p): number => p.id);
     this.photos = sSvc.listStoryPhotos(this.storyId);
+  }
+
+  /** T-31 UriHealthChecker：进一步区分本地已删 vs 云端不可访问，并更新 DB 状态。 */
+  private async checkPhotoHealthAndUpdate(photoRefId: number, uri: string): Promise<void> {
+    const health = await UriHealthChecker.check(uri);
+    if (health > 1) {
+      getPhotoLibraryService().markPhotoAsFailed(photoRefId, health);
+      this.refresh();
+    }
   }
 
   private saveAll(): void {
@@ -662,6 +672,8 @@ export struct StoryDetailPage {
                         },
                         onStatusChanged: (photoRefId: number, status: number): void => {
                           getPhotoLibraryService().markPhotoAsFailed(photoRefId, status);
+                          // T-31：当 Image 加载失败时，用 UriHealthChecker 进一步区分本地已删 vs 云端不可访问
+                          this.checkPhotoHealthAndUpdate(photoRefId, ph.uri);
                         }
                       })
                     }

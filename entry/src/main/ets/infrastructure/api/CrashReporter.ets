@@ -4,13 +4,15 @@
  * 职责：
  * - 注册 ErrorManager 全局错误/未捕获 Promise 拒绝回调
  * - 开关控制（AppStorage 持久化，默认开启）
- * - 可选查询 FaultLogger 历史故障日志
+ * - 集成系统 FaultLogger 查询历史故障日志（D-M2-1 采纳方案 A）
+ * - 提供崩溃诊断摘要供隐私页展示
  *
  * 集成方案：D-M2-1 采纳方案 A（系统内置 FaultLogger）。
  * 仅在开关开启时记录崩溃栈（hilog.error），不上传原图、可匿名/去标识化。
  */
 import { errorManager } from '@kit.AbilityKit';
 import hilog from '@ohos.hilog';
+import { FaultLogger } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
 const DOMAIN = 0x0000;
@@ -42,6 +44,18 @@ class CrashErrorObserverImpl implements CrashErrorObserver {
   }
 }
 
+/** 崩溃诊断摘要信息。 */
+export interface CrashDiagnosisSummary {
+  /** 崩溃总数（JS + CPP + FREEZE） */
+  totalCount: number;
+  /** 最近一次崩溃的简要原因 */
+  lastReason: string;
+  /** 最近一次崩溃的时间戳（毫秒） */
+  lastTimestamp: number;
+  /** 是否正在查询中 */
+  loading: boolean;
+}
+
 export class CrashReporter {
   private static instance: CrashReporter;
   private observerId: number = -1;
@@ -67,9 +81,14 @@ export class CrashReporter {
     return val === undefined ? true : val;
   }
 
-  /** 设置上报开关。 */
+  /** 设置上报开关。开启时自动注册监听，关闭时自动取消注册。 */
   setEnabled(enabled: boolean): void {
     AppStorage.SetOrCreate<boolean>(PREF_KEY, enabled);
+    if (enabled) {
+      this.register();
+    } else {
+      this.unregister();
+    }
   }
 
   /** 注册全局错误监听。仅在开关开启时生效。 */
@@ -104,5 +123,64 @@ export class CrashReporter {
     }
     this.registered = false;
     this.observerId = -1;
+  }
+
+  /**
+   * T-34：查询 FaultLogger 最近崩溃诊断摘要。
+   * 查询所有故障类型（JS_CRASH, CPP_CRASH, APP_FREEZE），合并返回摘要。
+   * 不上传原图、可匿名/去标识化。
+   *
+   * @returns 崩溃诊断摘要
+   */
+  async queryCrashDiagnosisSummary(): Promise<CrashDiagnosisSummary> {
+    const summary: CrashDiagnosisSummary = {
+      totalCount: 0,
+      lastReason: '',
+      lastTimestamp: 0,
+      loading: false
+    };
+
+    if (!this.isEnabled()) {
+      return summary;
+    }
+
+    const types: FaultLogger.FaultType[] = [
+      FaultLogger.FaultType.JS_CRASH,
+      FaultLogger.FaultType.CPP_CRASH,
+      FaultLogger.FaultType.APP_FREEZE
+    ];
+
+    try {
+      for (const faultType of types) {
+        const logs: FaultLogger.FaultLogInfo[] = await FaultLogger.query(faultType);
+        if (logs !== undefined && logs.length > 0) {
+          summary.totalCount += logs.length;
+          for (const log of logs) {
+            if (log.timestamp > summary.lastTimestamp) {
+              summary.lastTimestamp = log.timestamp;
+              summary.lastReason = log.reason;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      hilog.warn(DOMAIN, 'CrashReporter', 'queryFaultLogger failed: %{public}s',
+        (e as BusinessError).message);
+    }
+
+    return summary;
+  }
+
+  /**
+   * 获取崩溃诊断摘要的文案描述（用于隐私页显示）。
+   */
+  async getCrashDiagnosisText(): Promise<string> {
+    const summary = await this.queryCrashDiagnosisSummary();
+    if (summary.totalCount === 0) {
+      return '截至目前，未检测到应用崩溃记录。崩溃诊断信息仅在本机记录，不上传任何服务器。';
+    }
+    const lastDate = new Date(summary.lastTimestamp);
+    const dateStr = `${lastDate.getFullYear()}-${String(lastDate.getMonth() + 1).padStart(2, '0')}-${String(lastDate.getDate()).padStart(2, '0')}`;
+    return `截至目前，共记录 ${summary.totalCount} 条崩溃/故障日志。最近一次于 ${dateStr}，原因：${summary.lastReason}。所有诊断信息仅在本机记录，不上传任何服务器。`;
   }
 }

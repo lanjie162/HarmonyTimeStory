@@ -10,7 +10,17 @@ export struct PhotoGridItem {
   @State imageLoadFailed: boolean = false;
 
   aboutToAppear(): void {
-    this.imageLoadFailed = this.ph.refStatus === UriHealthStatus.LOCAL_DELETED;
+    this.imageLoadFailed = this.ph.refStatus >= UriHealthStatus.LOCAL_DELETED;
+  }
+
+  private getStatusText(): string {
+    if (this.ph.refStatus === UriHealthStatus.LOCAL_DELETED) {
+      return '本地已删除';
+    }
+    if (this.ph.refStatus === UriHealthStatus.CLOUD_INACCESSIBLE) {
+      return '云端不可访问';
+    }
+    return '图片已失效';
   }
 
   build() {
@@ -29,7 +39,7 @@ export struct PhotoGridItem {
 
         if (this.imageLoadFailed) {
           Column() {
-            Text('图片已失效')
+            Text(this.getStatusText())
               .fontSize($r('app.float.ts_font_overline'))
               .fontColor('#FFFFFF')
           }
