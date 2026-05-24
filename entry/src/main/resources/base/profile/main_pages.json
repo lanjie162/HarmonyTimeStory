@@ -6,6 +6,7 @@
     "pages/story/StoryPage",
     "pages/story/StoryDetailPage",
     "pages/import/ImportPage",
-    "pages/suggest/SuggestPage"
+    "pages/suggest/SuggestPage",
+    "pages/privacy/PrivacyPage"
   ]
 }
