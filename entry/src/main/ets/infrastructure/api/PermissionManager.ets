@@ -17,6 +17,11 @@ const DOMAIN = 0x0000;
  *
  * 职责：媒体库权限（READ_IMAGEVIDEO）的检查、请求、拒绝检测、引导跳转。
  * 放 infrastructure/api 层，跨特性可复用（T-31 后台扫描也需要）。
+ *
+ * 注意：当前 module.json5 中未声明 ohos.permission.READ_IMAGEVIDEO
+ * （受控权限需 AGC ACL 审批），因此 hasMediaPermission() 始终返回 false，
+ * requestMediaPermission() 会抛异常并在 catch 后返回拒绝态。
+ * PermissionManager 的完整功能需在 T-31 后台扫描上线 + AGC 批准 ACL 后启用。
  */
 export class PermissionManager {
   private static instance: PermissionManager;
