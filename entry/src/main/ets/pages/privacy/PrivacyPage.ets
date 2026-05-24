@@ -1,8 +1,11 @@
 import router from '@ohos.router';
+import { CrashReporter } from '../../infrastructure/api/CrashReporter';
 
 @Entry
 @Component
 export struct PrivacyPage {
+  @State crashReportEnabled: boolean = CrashReporter.getInstance().isEnabled();
+
   build() {
     Column({ space: 0 }) {
       // 顶栏
@@ -50,10 +53,10 @@ export struct PrivacyPage {
             '人脸检测与特征提取完全在设备本地完成，不上传至任何服务器。特征数据仅用于同设备内的人物分组与建议。关闭人脸开关后停止新索引，已有关联保留。'
           )
 
-          // 板块 4：崩溃诊断信息收集
-          this.PrivacySection(
+          // 板块 4：崩溃诊断信息收集（含开关）
+          this.CrashDiagnosisSection(
             '崩溃诊断信息收集',
-            '在不上传原图、可匿名/去标识化前提下采集崩溃栈信息（通过系统 FaultLogger）。采集内容不包含照片内容、联系人等个人数据。您可在设置中开关此功能。'
+            '在不上传原图、可匿名/去标识化前提下采集崩溃栈信息（通过系统 FaultLogger）。采集内容不包含照片内容、联系人等个人数据。您可在本页开关此功能。'
           )
 
           // 板块 5：缓存清理说明
@@ -86,6 +89,33 @@ export struct PrivacyPage {
         .fontSize($r('app.float.ts_font_title'))
         .fontColor($r('app.color.ts_text_primary'))
         .fontWeight(FontWeight.Medium)
+      Text(text)
+        .fontSize($r('app.float.ts_font_body'))
+        .fontColor($r('app.color.ts_text_secondary'))
+        .lineHeight(22)
+    }
+    .width('100%')
+    .padding(16)
+    .backgroundColor($r('app.color.ts_surface_container'))
+    .borderRadius(12)
+  }
+
+  @Builder
+  private CrashDiagnosisSection(title: string, text: string): void {
+    Column({ space: 8 }) {
+      Row() {
+        Text(title)
+          .fontSize($r('app.float.ts_font_title'))
+          .fontColor($r('app.color.ts_text_primary'))
+          .fontWeight(FontWeight.Medium)
+        Blank()
+        Toggle({ type: ToggleType.Switch, isOn: this.crashReportEnabled })
+          .onChange((isOn: boolean): void => {
+            this.crashReportEnabled = isOn;
+            CrashReporter.getInstance().setEnabled(isOn);
+          })
+      }
+      .width('100%')
       Text(text)
         .fontSize($r('app.float.ts_font_body'))
         .fontColor($r('app.color.ts_text_secondary'))

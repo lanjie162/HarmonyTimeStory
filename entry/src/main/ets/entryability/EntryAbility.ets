@@ -9,6 +9,7 @@ import { ensureSchemaV1, RDB_SCHEMA_META_VERSION } from '../infrastructure/data/
 import { MigrationRunner } from '../infrastructure/data/MigrationRunner';
 import type { MigrationContext } from '../infrastructure/data/MigrationTypes';
 import { RepositoryImpl } from '../infrastructure/repository/RepositoryImpl';
+import { CrashReporter } from '../infrastructure/api/CrashReporter';
 
 const DOMAIN = 0x0000;
 
@@ -65,6 +66,7 @@ export default class EntryAbility extends UIAbility {
         }
         hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
         installAppDataStore(repo);
+        CrashReporter.getInstance().register();
       });
     }).catch((e: object) => {
       hilog.error(DOMAIN, 'testTag', 'RDB init failed: %{public}s', JSON.stringify(e));
@@ -72,7 +74,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   onWindowStageDestroy(): void {
-    // Main window is destroyed, release UI related resources
+    CrashReporter.getInstance().unregister();
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
   }
 
