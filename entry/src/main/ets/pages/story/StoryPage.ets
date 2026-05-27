@@ -3,7 +3,6 @@ import promptAction from '@ohos.promptAction';
 import type { StoryModel } from '../../domain/model/Models';
 import { getStoryService } from '../../features/story/StoryFeature';
 import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
-import { MainTabBar } from '../../common/ui/MainTabBar';
 import { TextInputWithKeyboard } from '../../common/ui/KeyboardAwareInput';
 
 function timeRangeLabel(s: StoryModel): string {
@@ -27,7 +26,6 @@ function formatDate(ts: number | null): string {
   return `${y}-${m}-${day}`;
 }
 
-@Entry
 @Component
 export struct StoryPage {
   @State private stories: StoryModel[] = [];
@@ -86,15 +84,6 @@ export struct StoryPage {
     Column({ space: 0 }) {
       Column({ space: 0 }) {
         Row({ space: 10 }) {
-          Button('返回')
-            .height(36)
-            .fontSize($r('app.float.ts_font_support'))
-            .backgroundColor($r('app.color.ts_surface_container_high'))
-            .fontColor($r('app.color.ts_text_secondary'))
-            .onClick((): void => {
-              dismissSoftKeyboard();
-              router.replaceUrl({ url: 'pages/shell/ShellPage' });
-            })
           Text('故事')
             .fontSize($r('app.float.ts_font_title'))
             .fontColor($r('app.color.ts_text_primary'))
@@ -222,8 +211,6 @@ export struct StoryPage {
       }
       .layoutWeight(1)
       .width('100%')
-
-      MainTabBar({ currentTab: 'story' })
     }
     .width('100%')
     .height('100%')

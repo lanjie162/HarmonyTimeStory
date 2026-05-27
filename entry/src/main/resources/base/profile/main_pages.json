@@ -1,9 +1,7 @@
 {
   "src": [
     "pages/shell/ShellPage",
-    "pages/person/PersonPage",
     "pages/person/PersonDetailPage",
-    "pages/story/StoryPage",
     "pages/story/StoryDetailPage",
     "pages/import/ImportPage",
     "pages/suggest/SuggestPage",

@@ -110,6 +110,7 @@ export class RepositoryImpl implements IAppDataStore {
     const genderRaw = rs.getLong(rs.getColumnIndex('gender'));
     const remark = rs.getString(rs.getColumnIndex('remark')) ?? '';
     const personTypeRaw = Number(rs.getLong(rs.getColumnIndex('person_type')));
+    const updatedAt = Number(rs.getLong(rs.getColumnIndex('updated_at')));
     return {
       id,
       displayName,
@@ -117,7 +118,8 @@ export class RepositoryImpl implements IAppDataStore {
       birthday: birthdayRaw !== null ? Number(birthdayRaw) : null,
       gender: genderRaw !== null ? (Number(genderRaw) as GenderEnum) : null,
       remark,
-      personType: personTypeRaw as PersonTypeEnum
+      personType: personTypeRaw as PersonTypeEnum,
+      updatedAt
     };
   }
 
@@ -145,7 +147,7 @@ export class RepositoryImpl implements IAppDataStore {
   listPersons(): PersonModel[] {
     const store = this.db();
     const rs = store.querySqlSync(
-      'SELECT id, display_name, avatar_blob, birthday, gender, remark, person_type ' +
+      'SELECT id, display_name, avatar_blob, birthday, gender, remark, person_type, updated_at ' +
         'FROM person ORDER BY updated_at DESC;',
       []
     );
@@ -191,7 +193,7 @@ export class RepositoryImpl implements IAppDataStore {
   getPerson(id: number): PersonModel | null {
     const store = this.db();
     const rs = store.querySqlSync(
-      'SELECT id, display_name, avatar_blob, birthday, gender, remark, person_type FROM person WHERE id = ?;',
+      'SELECT id, display_name, avatar_blob, birthday, gender, remark, person_type, updated_at FROM person WHERE id = ?;',
       [id]
     );
     let p: PersonModel | null = null;
@@ -366,7 +368,7 @@ export class RepositoryImpl implements IAppDataStore {
   linkedPersonsForStory(storyId: number): PersonModel[] {
     const store = this.db();
     const rs = store.querySqlSync(
-      'SELECT p.id AS id, p.display_name AS display_name, p.avatar_blob, p.birthday, p.gender, p.remark, p.person_type ' +
+      'SELECT p.id AS id, p.display_name AS display_name, p.avatar_blob, p.birthday, p.gender, p.remark, p.person_type, p.updated_at ' +
         'FROM person p ' +
         'INNER JOIN person_story ps ON ps.person_id = p.id WHERE ps.story_id = ? ORDER BY p.updated_at DESC;',
       [storyId]

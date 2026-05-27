@@ -33,6 +33,8 @@ export interface PersonModel {
   remark: string;
   /** 人物类型枚举。 */
   personType: PersonTypeEnum;
+  /** 更新时间戳（毫秒），由 RDB updated_at 列映射。 */
+  updatedAt: number;
 }
 
 /** 故事主数据：与 MVP §6.1 Story 字段表对齐。 */

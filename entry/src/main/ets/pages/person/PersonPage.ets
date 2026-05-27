@@ -1,10 +1,9 @@
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
-import type { PersonModel, PersonTypeEnum } from '../../domain/model/Models';
-import { PersonTypeEnum as PT } from '../../domain/model/Models';
+import type { PersonModel, PersonTypeEnum, GenderEnum } from '../../domain/model/Models';
+import { PersonTypeEnum as PT, GenderEnum as GE } from '../../domain/model/Models';
 import { getPersonService } from '../../features/person/PersonFeature';
 import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
-import { MainTabBar } from '../../common/ui/MainTabBar';
 import { TextInputWithKeyboard } from '../../common/ui/KeyboardAwareInput';
 
 function typeLabel(val: PersonTypeEnum): string {
@@ -20,11 +19,123 @@ function typeLabel(val: PersonTypeEnum): string {
   return '其他';
 }
 
-@Entry
+function genderLabel(val: GenderEnum | null): string {
+  if (val === GE.MALE) {
+    return '男';
+  }
+  if (val === GE.FEMALE) {
+    return '女';
+  }
+  return '';
+}
+
+function formatRelativeTime(ts: number): string {
+  const now = Date.now();
+  const diff = now - ts;
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) {
+    return '刚刚';
+  }
+  if (minutes < 60) {
+    return `${minutes} 分钟前`;
+  }
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    return `${hours} 小时前`;
+  }
+  const days = Math.floor(hours / 24);
+  if (days === 1) {
+    return '昨天';
+  }
+  if (days < 7) {
+    return `${days} 天前`;
+  }
+  const weeks = Math.floor(days / 7);
+  if (weeks <= 1) {
+    return '1 周前';
+  }
+  if (weeks < 4) {
+    return `${weeks} 周前`;
+  }
+  const months = Math.floor(days / 30);
+  if (months <= 1) {
+    return '1 个月前';
+  }
+  if (months < 12) {
+    return `${months} 个月前`;
+  }
+  const years = Math.floor(months / 12);
+  return `${years} 年前`;
+}
+
+@CustomDialog
+export struct CreatePersonBottomSheet {
+  controller: CustomDialogController;
+  @State displayName: string = '';
+  onCreated?: () => void;
+
+  build() {
+    Column({ space: 16 }) {
+      Text('新建人物')
+        .fontSize($r('app.float.ts_font_title'))
+        .fontColor($r('app.color.ts_text_primary'))
+        .fontWeight(FontWeight.Bold)
+        .width('100%')
+
+      TextInputWithKeyboard({
+        placeholder: '显示名（必填）',
+        value: this.displayName,
+        onChange: (v: string): void => {
+          this.displayName = v;
+        },
+        onSubmit: (): void => {
+          this.doCreate();
+        }
+      })
+
+      Button('创建')
+        .width('100%')
+        .height(48)
+        .fontSize($r('app.float.ts_font_body'))
+        .fontWeight(FontWeight.Medium)
+        .backgroundColor($r('app.color.ts_brand_primary'))
+        .fontColor($r('app.color.ts_import_bar_on_bg'))
+        .onClick((): void => {
+          this.doCreate();
+        })
+    }
+    .width('100%')
+    .padding(24)
+    .backgroundColor($r('app.color.ts_surface'))
+    .borderRadius({ topLeft: 16, topRight: 16 })
+  }
+
+  private doCreate(): void {
+    const svc = getPersonService();
+    const id = svc.createPerson(this.displayName);
+    if (id < 0) {
+      promptAction.showToast({ message: '请输入非空显示名' });
+      return;
+    }
+    this.displayName = '';
+    promptAction.showToast({ message: `已创建人物 #${id}` });
+    this.controller.close();
+    this.onCreated?.();
+  }
+}
+
 @Component
 export struct PersonPage {
   @State private persons: PersonModel[] = [];
-  @State private newDisplayName: string = '';
+  /** 当前正在左滑删除的 person id，用于 SwipeAction builder 回调。 */
+  @State private swipedPersonId: number = -1;
+  createDialogController: CustomDialogController | null = new CustomDialogController({
+    builder: CreatePersonBottomSheet({ onCreated: (): void => this.reload() }),
+    alignment: DialogAlignment.Bottom,
+    customStyle: true,
+    autoCancel: true,
+    cornerRadius: { topLeft: 16, topRight: 16 }
+  });
 
   aboutToAppear(): void {
     this.reload();
@@ -34,17 +145,9 @@ export struct PersonPage {
     this.persons = getPersonService().listPersons();
   }
 
-  private createPerson(): void {
+  private openCreateSheet(): void {
     dismissSoftKeyboard();
-    const svc = getPersonService();
-    const id = svc.createPerson(this.newDisplayName);
-    if (id < 0) {
-      promptAction.showToast({ message: '请输入非空显示名' });
-      return;
-    }
-    this.newDisplayName = '';
-    promptAction.showToast({ message: `已创建人物 #${id}` });
-    this.reload();
+    this.createDialogController?.open();
   }
 
   private confirmDeletePerson(p: PersonModel): void {
@@ -75,24 +178,42 @@ export struct PersonPage {
     });
   }
 
+  @Builder
+  swipeDeleteBuilder() {
+    Button('删除')
+      .height('100%')
+      .fontSize($r('app.float.ts_font_body'))
+      .fontColor(Color.White)
+      .backgroundColor(Color.Red)
+      .borderRadius(0)
+      .padding({ left: 16, right: 16 })
+      .onClick((): void => {
+        const p = this.getSwipedPerson();
+        if (p !== null) {
+          this.confirmDeletePerson(p);
+        }
+      })
+  }
+
+  private getSwipedPerson(): PersonModel | null {
+    for (const p of this.persons) {
+      if (p.id === this.swipedPersonId) {
+        return p;
+      }
+    }
+    return null;
+  }
+
   build() {
     Column({ space: 0 }) {
       Column({ space: 0 }) {
         Row({ space: 10 }) {
-          Button('返回')
-            .height(36)
-            .fontSize($r('app.float.ts_font_support'))
-            .backgroundColor($r('app.color.ts_surface_container_high'))
-            .fontColor($r('app.color.ts_text_secondary'))
-            .onClick((): void => {
-              dismissSoftKeyboard();
-              router.replaceUrl({ url: 'pages/shell/ShellPage' });
-            })
           Text('人物')
             .fontSize($r('app.float.ts_font_title'))
             .fontColor($r('app.color.ts_text_primary'))
             .fontWeight(FontWeight.Bold)
             .layoutWeight(1)
+
           Button('人脸建议')
             .fontSize($r('app.float.ts_font_support'))
             .height(36)
@@ -103,40 +224,20 @@ export struct PersonPage {
               dismissSoftKeyboard();
               router.pushUrl({ url: 'pages/suggest/SuggestPage' });
             })
+
+          Button('+ 创建')
+            .fontSize($r('app.float.ts_font_support'))
+            .height(36)
+            .padding({ left: 14, right: 14 })
+            .backgroundColor($r('app.color.ts_brand_primary'))
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
+            .onClick((): void => {
+              this.openCreateSheet();
+            })
         }
         .width('100%')
         .alignItems(VerticalAlign.Center)
         .padding({ left: 16, right: 16, top: 12, bottom: 10 })
-
-        Column({ space: 14 }) {
-          Text('新建人物')
-            .fontSize($r('app.float.ts_font_label'))
-            .fontColor($r('app.color.ts_text_secondary'))
-            .fontWeight(FontWeight.Medium)
-            .width('100%')
-          TextInputWithKeyboard({
-            placeholder: '显示名（必填）',
-            value: this.newDisplayName,
-            onChange: (v: string): void => { this.newDisplayName = v; },
-            onSubmit: (): void => { this.createPerson(); }
-          })
-          Button('创建人物')
-            .width('100%')
-            .height(48)
-            .fontSize($r('app.float.ts_font_body'))
-            .fontWeight(FontWeight.Medium)
-            .backgroundColor($r('app.color.ts_brand_primary'))
-            .fontColor($r('app.color.ts_import_bar_on_bg'))
-            .onClick((): void => {
-              this.createPerson();
-            })
-        }
-        .width('100%')
-        .padding(16)
-        .margin({ left: 16, right: 16, bottom: 12 })
-        .backgroundColor($r('app.color.ts_surface_container'))
-        .borderRadius(12)
-        .border({ width: 1, color: $r('app.color.ts_outline') })
 
         Divider().color($r('app.color.ts_outline')).margin({ left: 16, right: 16 })
 
@@ -145,7 +246,7 @@ export struct PersonPage {
             Text('还没有人物档案')
               .fontSize($r('app.float.ts_font_headline'))
               .fontColor($r('app.color.ts_text_secondary'))
-            Text('创建后会在下方列表显示；也可从详情页导入相册。')
+            Text('点击右上角 [+ 创建] 来添加人物；也可从详情页导入相册。')
               .fontSize($r('app.float.ts_font_caption'))
               .fontColor($r('app.color.ts_text_tertiary'))
               .lineHeight(18)
@@ -158,43 +259,47 @@ export struct PersonPage {
           List({ space: 10 }) {
             ForEach(this.persons, (p: PersonModel) => {
               ListItem() {
-                Column({ space: 6 }) {
-                  Row() {
+                Row({ space: 12 }) {
+                  Stack() {
+                    Circle()
+                      .width(48)
+                      .height(48)
+                      .fill($r('app.color.ts_surface_container_high'))
+                    Text(p.displayName.charAt(0))
+                      .fontSize(18)
+                      .fontColor($r('app.color.ts_text_muted'))
+                  }
+                  .width(48)
+                  .height(48)
+
+                  Column({ space: 2 }) {
                     Text(p.displayName)
-                      .fontSize($r('app.float.ts_font_headline'))
+                      .fontSize(18)
                       .fontColor($r('app.color.ts_text_primary'))
                       .fontWeight(FontWeight.Medium)
-                      .layoutWeight(1)
-                    Text(typeLabel(p.personType))
-                      .fontSize($r('app.float.ts_font_overline'))
-                      .fontColor($r('app.color.ts_text_muted'))
-                      .backgroundColor($r('app.color.ts_surface_container_high'))
-                      .borderRadius(8)
-                      .padding({ left: 8, right: 8, top: 2, bottom: 2 })
-                  }
-                  .width('100%')
-                  Row({ space: 8 }) {
-                    Text('档案、故事与照片')
-                      .fontSize($r('app.float.ts_font_overline'))
+                      .lineHeight(26)
+
+                    Text(this.typeGenderSummary(p))
+                      .fontSize(13)
                       .fontColor($r('app.color.ts_text_tertiary'))
-                      .layoutWeight(1)
-                    Button('删除')
-                      .height(28)
-                      .fontSize($r('app.float.ts_font_overline'))
-                      .backgroundColor($r('app.color.ts_surface_container_high'))
-                      .fontColor('#CC0000')
-                      .onClick((): void => {
-                        this.confirmDeletePerson(p);
-                      })
+                      .lineHeight(18)
+
+                    Row({ space: 4 }) {
+                      Text(this.photoCountSummary(p))
+                        .fontSize(12)
+                        .fontColor($r('app.color.ts_text_caption'))
+                      Text('更新于 ' + formatRelativeTime(p.updatedAt))
+                        .fontSize(12)
+                        .fontColor($r('app.color.ts_text_muted'))
+                    }
+                    .width('100%')
                   }
-                  .width('100%')
+                  .layoutWeight(1)
+                  .alignItems(HorizontalAlign.Start)
                 }
                 .width('100%')
-                .alignItems(HorizontalAlign.Start)
-                .padding({ left: 16, right: 16, top: 14, bottom: 14 })
-                .backgroundColor($r('app.color.ts_surface_container'))
-                .borderRadius(12)
-                .border({ width: 1, color: $r('app.color.ts_outline') })
+                .alignItems(VerticalAlign.Center)
+                .padding({ left: 16, right: 16, top: 12, bottom: 12 })
                 .onClick((): void => {
                   dismissSoftKeyboard();
                   router.pushUrl({
@@ -203,6 +308,21 @@ export struct PersonPage {
                   });
                 })
               }
+              .swipeAction({
+                end: {
+                  builder: (): void => {
+                    this.swipeDeleteBuilder();
+                  },
+                  onAction: (): void => {
+                    this.confirmDeletePerson(p);
+                  },
+                  actionAreaDistance: 56
+                },
+                edgeEffect: SwipeEdgeEffect.Spring,
+                onOffsetChange: (_offset: number): void => {
+                  this.swipedPersonId = p.id;
+                }
+              })
             }, (p: PersonModel): string => `person-${p.id}`)
           }
           .width('100%')
@@ -212,11 +332,25 @@ export struct PersonPage {
       }
       .layoutWeight(1)
       .width('100%')
-
-      MainTabBar({ currentTab: 'person' })
     }
     .width('100%')
     .height('100%')
     .backgroundColor($r('app.color.ts_surface'))
+  }
+
+  private typeGenderSummary(p: PersonModel): string {
+    const tl = typeLabel(p.personType);
+    const gl = genderLabel(p.gender);
+    if (gl !== '') {
+      return `${tl} · ${gl}`;
+    }
+    return tl;
+  }
+
+  private photoCountSummary(p: PersonModel): string {
+    const svc = getPersonService();
+    const photoCount = svc.listPersonPhotos(p.id).length;
+    const storyCount = svc.listLinkedStories(p.id).length;
+    return `${photoCount} 张 · ${storyCount} 个故事`;
   }
 }

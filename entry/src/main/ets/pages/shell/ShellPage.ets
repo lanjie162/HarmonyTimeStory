@@ -1,32 +1,12 @@
 import router from '@ohos.router';
-
-type ViewState = 'empty' | 'loading' | 'error';
+import { PersonPage } from '../person/PersonPage';
+import { StoryPage } from '../story/StoryPage';
 
 @Entry
 @Component
 export struct ShellPage {
-  @State shellState: ViewState = 'empty';
+  @State currentIndex: number = 0;
   @State isMoreMenuVisible: boolean = false;
-
-  private nextState(): void {
-    if (this.shellState === 'empty') {
-      this.shellState = 'loading';
-      return;
-    }
-    if (this.shellState === 'loading') {
-      this.shellState = 'error';
-      return;
-    }
-    this.shellState = 'empty';
-  }
-
-  private goPerson(): void {
-    router.replaceUrl({ url: 'pages/person/PersonPage' });
-  }
-
-  private goStory(): void {
-    router.replaceUrl({ url: 'pages/story/StoryPage' });
-  }
 
   private goPrivacy(): void {
     this.isMoreMenuVisible = false;
@@ -38,149 +18,108 @@ export struct ShellPage {
     // T-38: 人脸开关设置页，暂为占位
   }
 
+  @Builder
+  TabBuilder(title: string, targetIndex: number) {
+    Column() {
+      Text(title)
+        .fontSize($r('app.float.ts_font_support'))
+        .fontColor(this.currentIndex === targetIndex
+          ? $r('app.color.ts_brand_primary')
+          : $r('app.color.ts_text_tertiary'))
+        .fontWeight(this.currentIndex === targetIndex
+          ? FontWeight.Medium : FontWeight.Regular)
+      if (this.currentIndex === targetIndex) {
+        Divider()
+          .margin({ top: 6 })
+          .width(28)
+          .strokeWidth(3)
+          .color($r('app.color.ts_brand_primary'))
+      } else {
+        Blank().height(9).margin({ top: 6 })
+      }
+    }
+    .layoutWeight(1)
+    .height(52)
+    .justifyContent(FlexAlign.Center)
+    .onClick((): void => {
+      this.currentIndex = targetIndex;
+    })
+  }
+
   build() {
-    Stack() {
-      Column({ space: 0 }) {
-        Column({ space: 8 }) {
-          Row() {
-            Text('时光故事')
-              .fontSize($r('app.float.ts_font_display'))
-              .fontColor($r('app.color.ts_text_primary'))
-              .fontWeight(FontWeight.Bold)
-            Blank()
-            Text('⋮')
-              .fontSize(24)
-              .fontColor($r('app.color.ts_text_secondary'))
-              .fontWeight(FontWeight.Bold)
-              .onClick((): void => {
-                this.isMoreMenuVisible = !this.isMoreMenuVisible;
-              })
-          }
-          .width('100%')
-          Text('照片留在本机，故事与人物在本地串联。')
-            .fontSize($r('app.float.ts_font_caption'))
-            .fontColor($r('app.color.ts_text_tertiary'))
-            .lineHeight(20)
-        }
-        .width('100%')
-        .alignItems(HorizontalAlign.Start)
-        .padding({ left: 20, right: 20, top: 28, bottom: 22 })
-        .backgroundColor($r('app.color.ts_brand_primary_container'))
-        .borderRadius({ bottomLeft: 20, bottomRight: 20 })
-
-        Column({ space: 12 }) {
-          Column({ space: 6 }) {
-            Text('人物')
-              .fontSize($r('app.float.ts_font_headline'))
-              .fontColor($r('app.color.ts_text_primary'))
-              .fontWeight(FontWeight.Medium)
-            Text('档案、照片与从相册导入（形态二）')
-              .fontSize($r('app.float.ts_font_caption'))
-              .fontColor($r('app.color.ts_text_tertiary'))
-              .maxLines(2)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-          }
-          .width('100%')
-          .padding({ top: 20, bottom: 20, left: 16, right: 16 })
-          .backgroundColor($r('app.color.ts_surface_container'))
-          .borderRadius(12)
-          .border({ width: 1, color: $r('app.color.ts_outline') })
+    Column({ space: 0 }) {
+      // 顶部 ⋮ 按钮栏 — 固定高度，不浮动，不遮挡列表
+      Row() {
+        Blank()
+        Text('⋮')
+          .fontSize(24)
+          .fontColor($r('app.color.ts_text_secondary'))
+          .fontWeight(FontWeight.Bold)
           .onClick((): void => {
-            this.goPerson();
+            this.isMoreMenuVisible = !this.isMoreMenuVisible;
           })
-
-          Column({ space: 6 }) {
-            Text('故事')
-              .fontSize($r('app.float.ts_font_headline'))
-              .fontColor($r('app.color.ts_text_primary'))
-              .fontWeight(FontWeight.Medium)
-            Text('时间线、关联人物与相册导入（形态一）')
-              .fontSize($r('app.float.ts_font_caption'))
-              .fontColor($r('app.color.ts_text_tertiary'))
-              .maxLines(2)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-          }
-          .width('100%')
-          .padding({ top: 20, bottom: 20, left: 16, right: 16 })
-          .backgroundColor($r('app.color.ts_surface_container'))
-          .borderRadius(12)
-          .border({ width: 1, color: $r('app.color.ts_outline') })
-          .onClick((): void => {
-            this.goStory();
-          })
-        }
-        .width('100%')
-        .padding({ left: 20, right: 20 })
-        .layoutWeight(1)
-
-        Column({ space: 6 }) {
-          if (this.shellState === 'empty') {
-            Text('从上方任选入口开始')
-              .fontSize($r('app.float.ts_font_caption'))
-              .fontColor($r('app.color.ts_text_tertiary'))
-          } else if (this.shellState === 'loading') {
-            Text('正在准备…')
-              .fontSize($r('app.float.ts_font_caption'))
-              .fontColor($r('app.color.ts_color_info'))
-          } else {
-            Text('导航未就绪，可稍后重试')
-              .fontSize($r('app.float.ts_font_caption'))
-              .fontColor($r('app.color.ts_color_warning'))
-          }
-          Button('调试：切换占位状态')
-            .fontSize($r('app.float.ts_font_overline'))
-            .height(36)
-            .backgroundColor($r('app.color.ts_surface_container_high'))
-            .fontColor($r('app.color.ts_text_muted'))
-            .onClick((): void => {
-              this.nextState();
-            })
-        }
-        .width('100%')
-        .padding({ left: 20, right: 20, top: 12, bottom: 24 })
-        .alignItems(HorizontalAlign.Start)
       }
       .width('100%')
-      .height('100%')
-      .backgroundColor($r('app.color.ts_surface'))
+      .height(44)
+      .padding({ right: 16, left: 16 })
 
-      // ⋮ 更多菜单
-      if (this.isMoreMenuVisible) {
-        Column() {
-          Column() {
-            Text('隐私说明')
-              .fontSize($r('app.float.ts_font_label'))
-              .fontColor($r('app.color.ts_text_primary'))
-              .width('100%')
-              .padding({ left: 16, right: 16, top: 14, bottom: 14 })
-              .onClick((): void => {
-                this.goPrivacy();
-              })
-            Divider()
-              .width('100%')
-              .color($r('app.color.ts_outline'))
-            Text('人脸与索引设置')
-              .fontSize($r('app.float.ts_font_label'))
-              .fontColor($r('app.color.ts_text_tertiary'))
-              .width('100%')
-              .padding({ left: 16, right: 16, top: 14, bottom: 14 })
-              .onClick((): void => {
-                this.goSettings();
-              })
+      // Tabs 区域 + 菜单浮层（内层 Stack，菜单仅出现在右上角）
+      Stack({ alignContent: Alignment.TopEnd }) {
+        Tabs({ index: this.currentIndex, barPosition: BarPosition.End }) {
+          TabContent() {
+            PersonPage()
           }
-          .width(180)
-          .borderRadius(12)
-          .backgroundColor($r('app.color.ts_surface'))
-          .border({ width: 1, color: $r('app.color.ts_outline') })
-          .shadow({ radius: 8, color: '#33000000', offsetY: 4 })
+          .tabBar(this.TabBuilder('人物', 0))
+
+          TabContent() {
+            StoryPage()
+          }
+          .tabBar(this.TabBuilder('故事', 1))
         }
-        .width('100%')
-        .alignItems(HorizontalAlign.End)
-        .padding({ top: 78, right: 16 })
-        .onClick((): void => {
-          this.isMoreMenuVisible = false;
+        .barMode(BarMode.Fixed)
+        .onChange((index: number): void => {
+          this.currentIndex = index;
         })
+        .backgroundColor($r('app.color.ts_surface'))
+
+        // ⋮ 更多菜单浮层（仅显示时叠加在 Tabs 右上角）
+        if (this.isMoreMenuVisible) {
+          Column() {
+            Column() {
+              Text('隐私说明')
+                .fontSize($r('app.float.ts_font_label'))
+                .fontColor($r('app.color.ts_text_primary'))
+                .width('100%')
+                .padding({ left: 16, right: 16, top: 14, bottom: 14 })
+                .onClick((): void => {
+                  this.goPrivacy();
+                })
+              Divider()
+                .width('100%')
+                .color($r('app.color.ts_outline'))
+              Text('人脸与索引设置')
+                .fontSize($r('app.float.ts_font_label'))
+                .fontColor($r('app.color.ts_text_tertiary'))
+                .width('100%')
+                .padding({ left: 16, right: 16, top: 14, bottom: 14 })
+                .onClick((): void => {
+                  this.goSettings();
+                })
+            }
+            .width(180)
+            .borderRadius(12)
+            .backgroundColor($r('app.color.ts_surface'))
+            .border({ width: 1, color: $r('app.color.ts_outline') })
+            .shadow({ radius: 8, color: '#33000000', offsetY: 4 })
+          }
+          .margin({ top: 4, right: 16 })
+          .onClick((): void => {
+            this.isMoreMenuVisible = false;
+          })
+        }
       }
+      .layoutWeight(1)
+      .width('100%')
     }
     .width('100%')
     .height('100%')
