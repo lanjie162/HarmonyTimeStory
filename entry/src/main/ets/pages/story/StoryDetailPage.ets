@@ -218,18 +218,6 @@ export struct StoryDetailPage {
     this.draftTags = [...this.draftTags];
   }
 
-  private onTimeStartChange(year: number, month: number, day: number): void {
-    const d = new Date(year, month, day);
-    this.draftTimeStart = d.getTime();
-    this.draftTimeStartText = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-  }
-
-  private onTimeEndChange(year: number, month: number, day: number): void {
-    const d = new Date(year, month, day);
-    this.draftTimeEnd = d.getTime();
-    this.draftTimeEndText = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-  }
-
   private createPersonQuick(): void {
     dismissSoftKeyboard();
     const pid = getPersonService().createPerson(this.newPersonName);
@@ -415,21 +403,15 @@ export struct StoryDetailPage {
                   .fontColor($r('app.color.ts_text_primary'))
               }
               .width('100%')
-              DatePicker({
-                start: new Date(1900, 0, 1),
-                end: new Date(2099, 11, 31),
+              CalendarPicker({
+                hintRadius: 16,
                 selected: buildPickerDate(this.draftTimeStart > 0 ? this.draftTimeStart : null)
               })
                 .width('100%')
-                .onChange((res: DatePickerResult): void => {
-                  const yr = res.year as number;
-                  const mo = res.month as number;
-                  const dy = res.day as number;
-                  this.onTimeStartChange(yr, mo, dy);
+                .onChange((value: Date): void => {
+                  this.draftTimeStart = value.getTime();
+                  this.draftTimeStartText = formatDate(this.draftTimeStart);
                 })
-                .disappearTextStyle({ color: $r('app.color.ts_text_tertiary') })
-                .textStyle({ color: $r('app.color.ts_text_primary') })
-                .selectedTextStyle({ color: $r('app.color.ts_brand_primary') })
 
               // 时间范围 - 结束日期
               Row({ space: 8 }) {
@@ -441,21 +423,16 @@ export struct StoryDetailPage {
                   .fontColor($r('app.color.ts_text_primary'))
               }
               .width('100%')
-              DatePicker({
-                start: new Date(1900, 0, 1),
-                end: new Date(2099, 11, 31),
-                selected: buildPickerDate(this.draftTimeEnd > 0 ? this.draftTimeEnd : null)
+              CalendarPicker({
+                hintRadius: 16,
+                selected: buildPickerDate(this.draftTimeEnd > 0 ? this.draftTimeEnd : null),
+                start: this.draftTimeStart > 0 ? new Date(this.draftTimeStart) : new Date(1900, 0, 1)
               })
                 .width('100%')
-                .onChange((res: DatePickerResult): void => {
-                  const yr = res.year as number;
-                  const mo = res.month as number;
-                  const dy = res.day as number;
-                  this.onTimeEndChange(yr, mo, dy);
+                .onChange((value: Date): void => {
+                  this.draftTimeEnd = value.getTime();
+                  this.draftTimeEndText = formatDate(this.draftTimeEnd);
                 })
-                .disappearTextStyle({ color: $r('app.color.ts_text_tertiary') })
-                .textStyle({ color: $r('app.color.ts_text_primary') })
-                .selectedTextStyle({ color: $r('app.color.ts_brand_primary') })
 
               // 标签
               Column({ space: 6 }) {

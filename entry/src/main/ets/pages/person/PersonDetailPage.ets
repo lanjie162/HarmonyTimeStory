@@ -274,13 +274,6 @@ export struct PersonDetailPage {
     this.hasAvatar = false;
   }
 
-  private onBirthdayChange(year: number, month: number, day: number): void {
-    // month from DatePicker is 0-based
-    const d = new Date(year, month, day);
-    this.draftBirthday = d.getTime();
-    this.draftBirthdayText = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-  }
-
   private createStoryQuick(): void {
     dismissSoftKeyboard();
     const sid = getStoryService().createStory(this.newStoryTitle);
@@ -500,7 +493,7 @@ export struct PersonDetailPage {
               }
               .width('100%')
 
-              // 生日 - DatePicker
+              // 生日 — CalendarPicker
               Row({ space: 8 }) {
                 Text('生日')
                   .fontSize($r('app.float.ts_font_support'))
@@ -510,21 +503,15 @@ export struct PersonDetailPage {
                   .fontColor($r('app.color.ts_text_primary'))
               }
               .width('100%')
-              DatePicker({
-                start: new Date(1900, 0, 1),
-                end: new Date(2099, 11, 31),
+              CalendarPicker({
+                hintRadius: 16,
                 selected: buildDatePickerDate(this.draftBirthday > 0 ? this.draftBirthday : null)
               })
                 .width('100%')
-                .onChange((res: DatePickerResult): void => {
-                  const yr = res.year as number;
-                  const mo = res.month as number;
-                  const dy = res.day as number;
-                  this.onBirthdayChange(yr, mo, dy);
+                .onChange((value: Date): void => {
+                  this.draftBirthday = value.getTime();
+                  this.draftBirthdayText = formatBirthday(this.draftBirthday);
                 })
-                .disappearTextStyle({ color: $r('app.color.ts_text_tertiary') })
-                .textStyle({ color: $r('app.color.ts_text_primary') })
-                .selectedTextStyle({ color: $r('app.color.ts_brand_primary') })
 
               // 备注
               Column() {
