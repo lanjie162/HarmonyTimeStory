@@ -26,10 +26,73 @@ function formatDate(ts: number | null): string {
   return `${y}-${m}-${day}`;
 }
 
+@CustomDialog
+export struct CreateStoryBottomSheet {
+  controller: CustomDialogController;
+  @State title: string = '';
+  onCreated?: () => void;
+
+  build() {
+    Column({ space: 16 }) {
+      Text('新建故事')
+        .fontSize($r('app.float.ts_font_title'))
+        .fontColor($r('app.color.ts_text_primary'))
+        .fontWeight(FontWeight.Bold)
+        .width('100%')
+
+      TextInputWithKeyboard({
+        placeholder: '标题（必填）',
+        value: this.title,
+        onChange: (v: string): void => {
+          this.title = v;
+        },
+        onSubmit: (): void => {
+          this.doCreate();
+        }
+      })
+
+      Button('创建')
+        .width('100%')
+        .height(48)
+        .fontSize($r('app.float.ts_font_body'))
+        .fontWeight(FontWeight.Medium)
+        .backgroundColor($r('app.color.ts_brand_primary'))
+        .fontColor($r('app.color.ts_import_bar_on_bg'))
+        .onClick((): void => {
+          this.doCreate();
+        })
+    }
+    .width('100%')
+    .padding(24)
+    .backgroundColor($r('app.color.ts_surface'))
+    .borderRadius({ topLeft: 16, topRight: 16 })
+  }
+
+  private doCreate(): void {
+    const svc = getStoryService();
+    const id = svc.createStory(this.title);
+    if (id < 0) {
+      promptAction.showToast({ message: '请输入非空标题' });
+      return;
+    }
+    this.title = '';
+    promptAction.showToast({ message: `已创建故事 #${id}` });
+    this.controller.close();
+    this.onCreated?.();
+  }
+}
+
 @Component
 export struct StoryPage {
   @State private stories: StoryModel[] = [];
-  @State private newTitle: string = '';
+  @State private swipedStoryId: number = -1;
+  createDialogController: CustomDialogController | null = new CustomDialogController({
+    builder: CreateStoryBottomSheet({ onCreated: (): void => this.reload() }),
+    alignment: DialogAlignment.Bottom,
+    customStyle: true,
+    autoCancel: true,
+    cornerRadius: { topLeft: 16, topRight: 16 }
+  });
 
   aboutToAppear(): void {
     this.reload();
@@ -39,17 +102,9 @@ export struct StoryPage {
     this.stories = getStoryService().listStories();
   }
 
-  private createStory(): void {
+  private openCreateSheet(): void {
     dismissSoftKeyboard();
-    const svc = getStoryService();
-    const id = svc.createStory(this.newTitle);
-    if (id < 0) {
-      promptAction.showToast({ message: '请输入非空标题' });
-      return;
-    }
-    this.newTitle = '';
-    promptAction.showToast({ message: `已创建故事 #${id}` });
-    this.reload();
+    this.createDialogController?.open();
   }
 
   private confirmDeleteStory(s: StoryModel): void {
@@ -80,6 +135,55 @@ export struct StoryPage {
     });
   }
 
+  @Builder
+  swipeDeleteBuilder() {
+    Button('删除')
+      .height('100%')
+      .fontSize($r('app.float.ts_font_body'))
+      .fontColor(Color.White)
+      .backgroundColor(Color.Red)
+      .borderRadius(0)
+      .padding({ left: 16, right: 16 })
+      .onClick((): void => {
+        const s = this.getSwipedStory();
+        if (s !== null) {
+          this.confirmDeleteStory(s);
+        }
+      })
+  }
+
+  private getSwipedStory(): StoryModel | null {
+    for (const s of this.stories) {
+      if (s.id === this.swipedStoryId) {
+        return s;
+      }
+    }
+    return null;
+  }
+
+  private photoCount(story: StoryModel): number {
+    return getStoryService().listStoryPhotos(story.id).length;
+  }
+
+  private tagSummary(tags: string[]): string {
+    if (tags.length === 0) {
+      return '';
+    }
+    return tags.slice(0, 2).map((t: string): string => `#${t}`).join(' ');
+  }
+
+  private locationTagLine(story: StoryModel): string {
+    const parts: string[] = [];
+    if (story.location.length > 0) {
+      parts.push(story.location);
+    }
+    const tagStr = this.tagSummary(story.tags);
+    if (tagStr.length > 0) {
+      parts.push(tagStr);
+    }
+    return parts.join(' · ');
+  }
+
   build() {
     Column({ space: 0 }) {
       Column({ space: 0 }) {
@@ -89,40 +193,20 @@ export struct StoryPage {
             .fontColor($r('app.color.ts_text_primary'))
             .fontWeight(FontWeight.Bold)
             .layoutWeight(1)
+
+          Button('+ 创建')
+            .fontSize($r('app.float.ts_font_support'))
+            .height(36)
+            .padding({ left: 14, right: 14 })
+            .backgroundColor($r('app.color.ts_brand_primary'))
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
+            .onClick((): void => {
+              this.openCreateSheet();
+            })
         }
         .width('100%')
         .alignItems(VerticalAlign.Center)
         .padding({ left: 16, right: 16, top: 12, bottom: 10 })
-
-        Column({ space: 14 }) {
-          Text('新建故事')
-            .fontSize($r('app.float.ts_font_label'))
-            .fontColor($r('app.color.ts_text_secondary'))
-            .fontWeight(FontWeight.Medium)
-            .width('100%')
-          TextInputWithKeyboard({
-            placeholder: '标题（必填）',
-            value: this.newTitle,
-            onChange: (v: string): void => { this.newTitle = v; },
-            onSubmit: (): void => { this.createStory(); }
-          })
-          Button('创建故事')
-            .width('100%')
-            .height(48)
-            .fontSize($r('app.float.ts_font_body'))
-            .fontWeight(FontWeight.Medium)
-            .backgroundColor($r('app.color.ts_brand_primary'))
-            .fontColor($r('app.color.ts_import_bar_on_bg'))
-            .onClick((): void => {
-              this.createStory();
-            })
-        }
-        .width('100%')
-        .padding(16)
-        .margin({ left: 16, right: 16, bottom: 12 })
-        .backgroundColor($r('app.color.ts_surface_container'))
-        .borderRadius(12)
-        .border({ width: 1, color: $r('app.color.ts_outline') })
 
         Divider().color($r('app.color.ts_outline')).margin({ left: 16, right: 16 })
 
@@ -131,7 +215,7 @@ export struct StoryPage {
             Text('还没有故事')
               .fontSize($r('app.float.ts_font_headline'))
               .fontColor($r('app.color.ts_text_secondary'))
-            Text('用故事串起一段时间与地点；创建后可在详情里加照片或导入相册。')
+            Text('点击右上角 [+ 创建] 来新建故事；创建后可在详情里加照片或导入相册。')
               .fontSize($r('app.float.ts_font_caption'))
               .fontColor($r('app.color.ts_text_tertiary'))
               .lineHeight(18)
@@ -144,56 +228,57 @@ export struct StoryPage {
           List({ space: 10 }) {
             ForEach(this.stories, (s: StoryModel) => {
               ListItem() {
-                Column({ space: 6 }) {
-                  Row() {
+                Row({ space: 12 }) {
+                  Stack() {
+                    if (s.coverUri.length > 0) {
+                      Image(s.coverUri)
+                        .width(48)
+                        .height(48)
+                        .borderRadius(8)
+                        .objectFit(ImageFit.Cover)
+                    } else {
+                      Row()
+                        .width(48)
+                        .height(48)
+                        .borderRadius(8)
+                        .backgroundColor($r('app.color.ts_surface_container_high'))
+                    }
+                  }
+                  .width(48)
+                  .height(48)
+
+                  Column({ space: 2 }) {
                     Text(s.title)
-                      .fontSize($r('app.float.ts_font_headline'))
+                      .fontSize(18)
                       .fontColor($r('app.color.ts_text_primary'))
                       .fontWeight(FontWeight.Medium)
-                      .layoutWeight(1)
-                    Text(`#${s.id}`)
-                      .fontSize($r('app.float.ts_font_caption'))
+                      .lineHeight(26)
+                      .maxLines(1)
+                      .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+                    Text(timeRangeLabel(s))
+                      .fontSize(13)
+                      .fontColor($r('app.color.ts_text_tertiary'))
+                      .lineHeight(18)
+
+                    Text(this.locationTagLine(s))
+                      .fontSize(13)
+                      .fontColor($r('app.color.ts_text_caption'))
+                      .lineHeight(18)
+                      .maxLines(1)
+                      .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+                    Text(`${this.photoCount(s)} 张照片`)
+                      .fontSize(12)
                       .fontColor($r('app.color.ts_text_muted'))
+                      .lineHeight(16)
                   }
-                  .width('100%')
-                  Row({ space: 12 }) {
-                    if (s.location.length > 0) {
-                      Text(s.location)
-                        .fontSize($r('app.float.ts_font_overline'))
-                        .fontColor($r('app.color.ts_text_tertiary'))
-                    }
-                    if (s.timeStart !== null && s.timeStart > 0) {
-                      Text(timeRangeLabel(s))
-                        .fontSize($r('app.float.ts_font_overline'))
-                        .fontColor($r('app.color.ts_text_tertiary'))
-                    }
-                    if (s.tags.length > 0) {
-                      Text(s.tags.slice(0, 3).join(', '))
-                        .fontSize($r('app.float.ts_font_overline'))
-                        .fontColor($r('app.color.ts_brand_primary'))
-                    }
-                  }
-                  .width('100%')
-                  Row() {
-                    Row()
-                      .layoutWeight(1)
-                    Button('删除')
-                      .height(28)
-                      .fontSize($r('app.float.ts_font_overline'))
-                      .backgroundColor($r('app.color.ts_surface_container_high'))
-                      .fontColor('#CC0000')
-                      .onClick((): void => {
-                        this.confirmDeleteStory(s);
-                      })
-                  }
-                  .width('100%')
+                  .layoutWeight(1)
+                  .alignItems(HorizontalAlign.Start)
                 }
                 .width('100%')
-                .alignItems(HorizontalAlign.Start)
-                .padding({ left: 16, right: 16, top: 14, bottom: 14 })
-                .backgroundColor($r('app.color.ts_surface_container'))
-                .borderRadius(12)
-                .border({ width: 1, color: $r('app.color.ts_outline') })
+                .alignItems(VerticalAlign.Center)
+                .padding({ left: 16, right: 16, top: 12, bottom: 12 })
                 .onClick((): void => {
                   dismissSoftKeyboard();
                   router.pushUrl({
@@ -202,6 +287,21 @@ export struct StoryPage {
                   });
                 })
               }
+              .swipeAction({
+                end: {
+                  builder: (): void => {
+                    this.swipeDeleteBuilder();
+                  },
+                  onAction: (): void => {
+                    this.confirmDeleteStory(s);
+                  },
+                  actionAreaDistance: 56
+                },
+                edgeEffect: SwipeEdgeEffect.Spring,
+                onOffsetChange: (_offset: number): void => {
+                  this.swipedStoryId = s.id;
+                }
+              })
             }, (s: StoryModel): string => `story-${s.id}`)
           }
           .width('100%')
