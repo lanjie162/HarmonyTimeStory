@@ -3,7 +3,7 @@ import promptAction from '@ohos.promptAction';
 import photoAccessHelper from '@ohos.file.photoAccessHelper';
 import { fileIo } from '@kit.CoreFileKit';
 import BuildProfile from 'BuildProfile';
-import type { GenderEnum, PersonModel, PersonTypeEnum, PhotoRefModel, StoryModel } from '../../domain/model/Models';
+import type { GenderEnum, PersonModel, PersonTypeEnum, PhotoMetadata, PhotoRefModel, StoryModel } from '../../domain/model/Models';
 import { PersonTypeEnum as PT } from '../../domain/model/Models';
 import { GenderEnum as GE } from '../../domain/model/Models';
 import { getPersonService } from '../../features/person/PersonFeature';
@@ -12,7 +12,7 @@ import { getPhotoLibraryService } from '../../features/photolibrary/PhotoLibrary
 import { PhotoGridItem } from '../../common/ui/PhotoGridItem';
 import { UriHealthChecker } from '../../infrastructure/media/UriHealthChecker';
 import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
-import { TextInputWithKeyboard, TextAreaWithKeyboard } from '../../common/ui/KeyboardAwareInput';
+import { PhotoSwiper } from '../../common/ui/PhotoSwiper';
 
 function parsePersonId(params: Record<string, Object>): number {
   const raw = params['personId'];
@@ -53,52 +53,48 @@ function formatBirthday(ts: number | null): string {
   if (ts === null || ts <= 0) {
     return '未设置';
   }
-  const d = new Date(ts);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
+  const date = new Date(ts);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
-function buildDatePickerDate(ts: number | null): Date {
-  if (ts !== null && ts > 0) {
-    return new Date(ts);
-  }
-  return new Date(2000, 0, 1);
+function formatMonthLabel(year: number, month: number): string {
+  return `${year}年${month + 1}月`;
 }
 
-interface GenderOption {
-  label: string;
-  value: GenderEnum | null;
+type TimelineItemKind = 'photo' | 'story';
+
+interface TimelineItem {
+  kind: TimelineItemKind;
+  photo?: PhotoRefModel;
+  story?: StoryModel;
+  coverPhoto?: PhotoRefModel;
 }
 
-const TYPE_OPTIONS: PersonTypeEnum[] = [PT.BABY, PT.ADULT, PT.ELDER, PT.OTHER];
-const GENDER_OPTIONS: GenderOption[] = [
-  { label: '男', value: GE.MALE },
-  { label: '女', value: GE.FEMALE },
-  { label: '未填', value: GE.UNSPECIFIED }
-];
+interface StoryStat {
+  title: string;
+  count: number;
+}
+
+interface MonthGroup {
+  year: number;
+  month: number;
+  items: TimelineItem[];
+  storyStats: Map<number, StoryStat>;
+}
 
 @Entry
 @Component
 export struct PersonDetailPage {
   @State personId: number = 0;
-  private person: PersonModel | null = null;
-  @State draftName: string = '';
-  @State draftType: PersonTypeEnum = PT.OTHER;
-  @State draftGender: GenderEnum | null = null;
-  @State draftBirthday: number = 0;
-  @State draftBirthdayText: string = '选择日期';
-  @State draftRemark: string = '';
-  private draftAvatarBlob: Uint8Array | null = null;
-  @State avatarImageUri: string = '';
-  @State hasAvatar: boolean = false;
-  @State storiesAll: StoryModel[] = [];
-  @State linkedStoryIds: number[] = [];
+  @State person: PersonModel | null = null;
+  @State linkedStories: StoryModel[] = [];
   @State photos: PhotoRefModel[] = [];
-  @State newStoryTitle: string = '';
-  /** Hypium：仅 DEBUG 展示，便于断言加图结果（不依赖 Toast）。 */
-  @State debugLastAlbumInject: string = '';
+  @State monthGroups: MonthGroup[] = [];
+  @State showSwiper: boolean = false;
+  @State swiperIndex: number = 0;
 
   aboutToAppear(): void {
     const params = router.getParams() as Record<string, Object>;
@@ -116,36 +112,100 @@ export struct PersonDetailPage {
     const pSvc = getPersonService();
     this.person = pSvc.getPerson(this.personId);
     if (this.person !== null) {
-      this.draftName = this.person.displayName;
-      this.draftType = this.person.personType;
-      this.draftGender = this.person.gender;
-      this.draftBirthday = this.person.birthday ?? 0;
-      this.draftBirthdayText = formatBirthday(this.person.birthday);
-      this.draftRemark = this.person.remark;
-      this.draftAvatarBlob = this.person.avatarBlob;
-      if (this.person.avatarBlob !== null && this.person.avatarBlob.byteLength > 0) {
-        // Reconstruct temp file URI for Image display
-        this.avatarImageUri = 'data:image/png;base64,' + this.blobToBase64(this.person.avatarBlob);
-      } else {
-        this.avatarImageUri = '';
-      }
-    this.hasAvatar = this.person.avatarBlob !== null && this.person.avatarBlob.byteLength > 0;
+      this.linkedStories = pSvc.listLinkedStories(this.personId);
+      this.photos = pSvc.listPersonPhotos(this.personId);
+      this.buildMonthGroups();
     } else {
-      this.hasAvatar = false;
+      this.linkedStories = [];
+      this.photos = [];
+      this.monthGroups = [];
     }
-    this.storiesAll = getStoryService().listStories();
-    this.linkedStoryIds = pSvc.listLinkedStories(this.personId).map((s): number => s.id);
-    this.photos = pSvc.listPersonPhotos(this.personId);
   }
 
-  /** T-31 UriHealthChecker：进一步区分本地已删 vs 云端不可访问，并更新 DB 状态。 */
-  private async checkPhotoHealthAndUpdate(photoRefId: number, uri: string): Promise<void> {
-    const health = await UriHealthChecker.check(uri);
-    if (health > 1) {
-      getPhotoLibraryService().markPhotoAsFailed(photoRefId, health);
-      // 刷新 UI 展示状态文案
-      this.refresh();
+  private buildMonthGroups(): void {
+    const groups: MonthGroup[] = [];
+    const map = new Map<string, MonthGroup>();
+
+    // 添加人物照片
+    for (const ph of this.photos) {
+      const ts = ph.metadata?.takenAt ?? 0;
+      const d = new Date(ts);
+      const y = d.getFullYear();
+      const m = d.getMonth();
+      const key = `${y}-${m}`;
+      let g = map.get(key);
+      if (!g) {
+        g = { year: y, month: m, items: [], storyStats: new Map() };
+        map.set(key, g);
+        groups.push(g);
+      }
+      g.items.push({ kind: 'photo', photo: ph });
     }
+
+    // 添加关联故事封面
+    for (const s of this.linkedStories) {
+      const ts = s.timeStart ?? 0;
+      if (ts <= 0) {
+        continue;
+      }
+      const d = new Date(ts);
+      const y = d.getFullYear();
+      const m = d.getMonth();
+      const key = `${y}-${m}`;
+      let g = map.get(key);
+      if (!g) {
+        g = { year: y, month: m, items: [], storyStats: new Map() };
+        map.set(key, g);
+        groups.push(g);
+      }
+
+      // 获取故事封面
+      let coverPhoto: PhotoRefModel | undefined;
+      
+      // 优先用 coverUri，在人物照片中查找
+      if (s.coverUri && s.coverUri.length > 0) {
+        coverPhoto = this.photos.find(ph => ph.uri === s.coverUri);
+      }
+      
+      // 如果 coverUri 没找到，或者没有 coverUri，去故事照片中取第一张
+      if (!coverPhoto && s.photoCount > 0) {
+        const storyPhotos = getStoryService().listStoryPhotos(s.id);
+        if (storyPhotos.length > 0) {
+          coverPhoto = storyPhotos[0];
+        }
+      }
+
+      g.items.push({ kind: 'story', story: s, coverPhoto: coverPhoto });
+
+      // 直接用 story.photoCount
+      g.storyStats.set(s.id, { title: s.title, count: s.photoCount });
+    }
+
+    for (const g of groups) {
+      g.items.sort((a, b) => {
+        const tsA = a.kind === 'photo' ? (a.photo?.metadata?.takenAt ?? 0) : (a.story?.timeStart ?? 0);
+        const tsB = b.kind === 'photo' ? (b.photo?.metadata?.takenAt ?? 0) : (b.story?.timeStart ?? 0);
+        return tsB - tsA;
+      });
+    }
+
+    groups.sort((a, b) => {
+      if (a.year !== b.year) {
+        return b.year - a.year;
+      }
+      return b.month - a.month;
+    });
+
+    this.monthGroups = groups;
+  }
+
+  private findPhotoIndexInAll(photoId: number): number {
+    for (let i = 0; i < this.photos.length; i++) {
+      if (this.photos[i].id === photoId) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   private blobToBase64(blob: Uint8Array): string {
@@ -164,145 +224,6 @@ export struct PersonDetailPage {
     return result;
   }
 
-  private savePerson(): void {
-    dismissSoftKeyboard();
-    const svc = getPersonService();
-    const ok = svc.updatePerson(this.personId, this.draftName,
-      this.draftAvatarBlob,
-      this.draftBirthday > 0 ? this.draftBirthday : undefined,
-      this.draftGender,
-      this.draftRemark,
-      this.draftType
-    );
-    if (!ok) {
-      promptAction.showToast({ message: '保存失败：人物不存在或名称异常' });
-      return;
-    }
-    promptAction.showToast({ message: '已保存全部字段' });
-    this.refresh();
-  }
-
-  private confirmDeleteCurrentPerson(): void {
-    AlertDialog.show({
-      title: '确认删除',
-      message: `确定要删除"${this.person?.displayName ?? ''}"吗？此操作不可撤销。`,
-      primaryButton: {
-        value: '取消',
-        action: (): void => {
-          // do nothing
-        }
-      },
-      secondaryButton: {
-        value: '删除',
-        fontColor: '#CC0000',
-        action: (): void => {
-          dismissSoftKeyboard();
-          const svc = getPersonService();
-          const ok = svc.deletePerson(this.personId);
-          if (ok) {
-            promptAction.showToast({ message: '已删除' });
-            router.back();
-          } else {
-            promptAction.showToast({ message: '删除失败：人物不存在' });
-          }
-        }
-      }
-    });
-  }
-
-  private confirmRemovePhoto(photoRefId: number): void {
-    AlertDialog.show({
-      title: '确认移除',
-      message: `确定移除该照片（ref#${photoRefId}）？仅解除关联，不删系统原图。`,
-      primaryButton: {
-        value: '取消',
-        action: (): void => {
-          // do nothing
-        }
-      },
-      secondaryButton: {
-        value: '移除',
-        fontColor: '#CC0000',
-        action: (): void => {
-          dismissSoftKeyboard();
-          const svc = getPersonService();
-          const ok = svc.removePhotoFromPerson(this.personId, photoRefId);
-          if (ok) {
-            promptAction.showToast({ message: '已移除照片' });
-          } else {
-            promptAction.showToast({ message: '移除失败' });
-          }
-          this.refresh();
-        }
-      }
-    });
-  }
-
-  private async pickAvatar(): Promise<void> {
-    dismissSoftKeyboard();
-    try {
-      const options = new photoAccessHelper.PhotoSelectOptions();
-      options.maxSelectNumber = 1;
-      options.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
-      const picker = new photoAccessHelper.PhotoViewPicker();
-      const result = await picker.select(options);
-      const uris = result.photoUris;
-      if (!uris || uris.length === 0) {
-        return;
-      }
-      const uri = uris[0];
-      try {
-        const file = fileIo.openSync(uri, fileIo.OpenMode.READ_ONLY);
-        const stat = fileIo.statSync(uri);
-        const buf = new ArrayBuffer(stat.size);
-        fileIo.readSync(file.fd, buf);
-        fileIo.closeSync(file);
-        this.draftAvatarBlob = new Uint8Array(buf);
-        this.avatarImageUri = 'data:image/png;base64,' + this.blobToBase64(this.draftAvatarBlob);
-        this.hasAvatar = true;
-      } catch (_e) {
-        promptAction.showToast({ message: '读取头像文件失败' });
-      }
-    } catch (_e) {
-      // user cancelled
-    }
-  }
-
-  private removeAvatar(): void {
-    this.draftAvatarBlob = null;
-    this.avatarImageUri = '';
-    this.hasAvatar = false;
-  }
-
-  private createStoryQuick(): void {
-    dismissSoftKeyboard();
-    const sid = getStoryService().createStory(this.newStoryTitle);
-    if (sid < 0) {
-      promptAction.showToast({ message: '故事标题不能为空' });
-      return;
-    }
-    this.newStoryTitle = '';
-    promptAction.showToast({ message: `已创建故事 #${sid}，可选择「关联」` });
-    this.refresh();
-  }
-
-  /** 相册等价路径：与 pickPhotosFromAlbum 成功分支同一 Service，不打开系统相册。 */
-  private injectDebugAlbumEquivUri(uri: string): void {
-    if (this.personId <= 0) {
-      this.debugLastAlbumInject = '【E2E】inject skip：无 personId';
-      return;
-    }
-    const res = getPersonService().addPhotoToPerson(this.personId, uri);
-    if (res.duplicate) {
-      this.debugLastAlbumInject = '【E2E】上次加图：重复跳过（PH-01）';
-    } else if (res.success) {
-      this.debugLastAlbumInject = '【E2E】上次加图：成功 file://e2e/album-equiv-1';
-    } else {
-      this.debugLastAlbumInject = '【E2E】上次加图：失败（人物不存在或 URI 为空）';
-    }
-    this.refresh();
-  }
-
   private async pickPhotosFromAlbum(): Promise<void> {
     dismissSoftKeyboard();
     try {
@@ -317,479 +238,339 @@ export struct PersonDetailPage {
       }
       const svc = getPersonService();
       for (const uri of uris) {
-        const res = svc.addPhotoToPerson(this.personId, uri);
+        const metadata: PhotoMetadata = {};
+        const res = svc.addPhotoToPerson(this.personId, uri, metadata);
         if (res.duplicate) {
-          promptAction.showToast({ message: '检测到重复 URI，已跳过（PH-01）' });
+          promptAction.showToast({ message: '检测到重复 URI，已跳过' });
         }
       }
       promptAction.showToast({ message: '已处理相册选择' });
       this.refresh();
     } catch (_e) {
-      promptAction.showToast({ message: '选图取消或不可用，可稍后重试' });
+      promptAction.showToast({ message: '选图取消或不可用' });
     }
   }
 
-  private toggleStoryLink(s: StoryModel): void {
-    dismissSoftKeyboard();
-    const svc = getPersonService();
-    if (this.linkedStoryIds.indexOf(s.id) >= 0) {
-      svc.unlinkPersonFromStory(this.personId, s.id);
+  private removePhoto(photo: PhotoRefModel): void {
+    const ok = getPersonService().removePhotoFromPerson(this.personId, photo.id);
+    if (ok) {
+      promptAction.showToast({ message: '已移除照片' });
+      this.refresh();
     } else {
-      svc.linkPersonToStory(this.personId, s.id);
+      promptAction.showToast({ message: '移除失败' });
     }
-    this.refresh();
   }
 
   build() {
-    Column({ space: 0 }) {
-      Row({ space: 10 }) {
-        Button('返回列表')
-          .height(36)
-          .fontSize($r('app.float.ts_font_support'))
-          .backgroundColor($r('app.color.ts_surface_container_high'))
-          .fontColor($r('app.color.ts_text_secondary'))
-          .onClick((): void => {
-            dismissSoftKeyboard();
-            router.back();
-          })
-        Text('人物详情')
-          .fontSize($r('app.float.ts_font_title'))
-          .fontColor($r('app.color.ts_text_primary'))
-          .fontWeight(FontWeight.Bold)
-          .layoutWeight(1)
-      }
-      .width('100%')
-      .padding({ left: 16, right: 16, top: 12, bottom: 8 })
-      .alignItems(VerticalAlign.Center)
+    Stack({ alignContent: Alignment.TopStart }) {
+      Column({ space: 0 }) {
+        Row({ space: 10 }) {
+          Button('←')
+            .height(36)
+            .fontSize(24)
+            .backgroundColor(Color.Transparent)
+            .fontColor('#FFFFFF')
+            .onClick((): void => {
+              dismissSoftKeyboard();
+              router.back();
+            })
+          Text(this.person?.displayName ?? '人物')
+            .fontSize(20)
+            .fontColor('#FFFFFF')
+            .fontWeight(FontWeight.Bold)
+            .layoutWeight(1)
+          Button('编辑')
+            .height(36)
+            .fontSize(16)
+            .backgroundColor('#67C31F')
+            .fontColor('#FFFFFF')
+            .onClick((): void => {
+              router.pushUrl({
+                url: 'pages/person/PersonDetailEditPage',
+                params: { personId: this.personId }
+              });
+            })
+        }
+        .width('100%')
+        .height(56)
+        .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+        .backgroundColor('#333333')
+        .alignItems(VerticalAlign.Center)
 
-      if (this.person !== null && this.personId > 0) {
-        Scroll() {
-          Column({ space: 14 }) {
-            // ====== 头像 + 档案摘要 ======
-            Column({ space: 8 }) {
-              Row({ space: 12 }) {
-                // 头像
-                if (this.avatarImageUri.length > 0) {
-                  Image(this.avatarImageUri)
-                    .width(64).height(64)
-                    .borderRadius(32)
-                    .objectFit(ImageFit.Cover)
-                } else {
-                  Circle({ width: 64, height: 64 })
-                    .fill($r('app.color.ts_surface_container_high'))
-                }
-                Column({ space: 4 }) {
-                  Text(this.person.displayName)
-                    .fontSize($r('app.float.ts_font_headline'))
-                    .fontColor($r('app.color.ts_text_primary'))
-                    .fontWeight(FontWeight.Medium)
-                    .width('100%')
-                  Text(`${typeLabel(this.person.personType)} · ${formatBirthday(this.person.birthday)} · ${genderLabel(this.person.gender)}`)
-                    .fontSize($r('app.float.ts_font_caption'))
-                    .fontColor($r('app.color.ts_text_tertiary'))
-                    .width('100%')
-                }
-                .layoutWeight(1)
-                .alignItems(HorizontalAlign.Start)
-              }
-              .width('100%')
-            }
-            .width('100%')
-            .padding(16)
-            .backgroundColor($r('app.color.ts_surface_container'))
-            .borderRadius(12)
-            .border({ width: 1, color: $r('app.color.ts_outline') })
-
-            // ====== 编辑（全部字段） ======
-            Column({ space: 12 }) {
-              Text('编辑')
-                .fontSize($r('app.float.ts_font_label'))
-                .fontColor($r('app.color.ts_text_primary'))
-                .fontWeight(FontWeight.Medium)
-                .width('100%')
-
-              // 头像操作
-              Row({ space: 8 }) {
-                Button('更换头像')
-                  .height(36)
-                  .fontSize($r('app.float.ts_font_overline'))
-                  .backgroundColor($r('app.color.ts_color_info_container'))
-                  .fontColor($r('app.color.ts_color_info'))
-                  .onClick((): void => {
-                    this.pickAvatar();
-                  })
-                if (this.hasAvatar) {
-                  Button('移除头像')
-                    .height(36)
-                    .fontSize($r('app.float.ts_font_overline'))
-                    .backgroundColor($r('app.color.ts_surface_container_high'))
-                    .fontColor($r('app.color.ts_color_warning'))
-                    .onClick((): void => {
-                      this.removeAvatar();
-                    })
-                }
-              }
-              .width('100%')
-
-              // 显示名
-              TextInputWithKeyboard({
-                placeholder: '显示名',
-                value: this.draftName,
-                onChange: (v: string): void => { this.draftName = v; }
-              })
-
-              // 类型
-              Row({ space: 8 }) {
-                Text('类型')
-                  .fontSize($r('app.float.ts_font_support'))
-                  .fontColor($r('app.color.ts_text_secondary'))
-                Text(typeLabel(this.draftType))
-                  .fontSize($r('app.float.ts_font_support'))
-                  .fontColor($r('app.color.ts_text_primary'))
-                Row({ space: 4 }) {
-                  ForEach(TYPE_OPTIONS, (t: PersonTypeEnum) => {
-                    Button(typeLabel(t))
-                      .height(32)
-                      .fontSize($r('app.float.ts_font_overline'))
-                      .backgroundColor(this.draftType === t
-                        ? $r('app.color.ts_brand_primary')
-                        : $r('app.color.ts_surface_container_high'))
-                      .fontColor(this.draftType === t
-                        ? $r('app.color.ts_import_bar_on_bg')
-                        : $r('app.color.ts_text_secondary'))
-                      .onClick((): void => {
-                        this.draftType = t;
-                      })
-                  })
-                }
-                .layoutWeight(1)
-                .justifyContent(FlexAlign.End)
-              }
-              .width('100%')
-
-              // 性别
-              Row({ space: 8 }) {
-                Text('性别')
-                  .fontSize($r('app.float.ts_font_support'))
-                  .fontColor($r('app.color.ts_text_secondary'))
-                Row({ space: 4 }) {
-                  ForEach(GENDER_OPTIONS, (opt: GenderOption) => {
-                    Button(opt.label)
-                      .height(32)
-                      .fontSize($r('app.float.ts_font_overline'))
-                      .backgroundColor(this.draftGender === opt.value
-                        ? $r('app.color.ts_brand_primary')
-                        : $r('app.color.ts_surface_container_high'))
-                      .fontColor(this.draftGender === opt.value
-                        ? $r('app.color.ts_import_bar_on_bg')
-                        : $r('app.color.ts_text_secondary'))
-                      .onClick((): void => {
-                        this.draftGender = opt.value;
-                      })
-                  })
-                }
-                .layoutWeight(1)
-                .justifyContent(FlexAlign.End)
-              }
-              .width('100%')
-
-              // 生日 — CalendarPicker
-              Row({ space: 8 }) {
-                Text('生日')
-                  .fontSize($r('app.float.ts_font_support'))
-                  .fontColor($r('app.color.ts_text_secondary'))
-                Text(this.draftBirthdayText)
-                  .fontSize($r('app.float.ts_font_support'))
-                  .fontColor($r('app.color.ts_text_primary'))
-              }
-              .width('100%')
-              CalendarPicker({
-                hintRadius: 16,
-                selected: buildDatePickerDate(this.draftBirthday > 0 ? this.draftBirthday : null)
-              })
-                .width('100%')
-                .onChange((value: Date): void => {
-                  this.draftBirthday = value.getTime();
-                  this.draftBirthdayText = formatBirthday(this.draftBirthday);
-                })
-
-              // 备注
-              Column() {
-                TextAreaWithKeyboard({
-                  placeholder: '备注',
-                  value: this.draftRemark,
-                  onChange: (v: string): void => { this.draftRemark = v; }
-                })
-              }
-              .width('100%')
-              .onClick((): void => {
-                dismissSoftKeyboard();
-              })
-
-              // 保存按钮
-              Button('保存')
-                .width('100%')
-                .height(44)
-                .fontSize($r('app.float.ts_font_support'))
-                .fontWeight(FontWeight.Medium)
-                .backgroundColor($r('app.color.ts_brand_primary'))
-                .fontColor($r('app.color.ts_import_bar_on_bg'))
-                .onClick((): void => {
-                  this.savePerson();
-                })
-            }
-            .width('100%')
-            .padding(16)
-            .backgroundColor($r('app.color.ts_surface_container'))
-            .borderRadius(12)
-            .border({ width: 1, color: $r('app.color.ts_outline') })
-
-            // ====== 危险操作：删除人物 ======
-            Column({ space: 10 }) {
-              Button('删除人物')
-                .width('100%')
-                .height(44)
-                .fontSize($r('app.float.ts_font_support'))
-                .fontWeight(FontWeight.Medium)
-                .backgroundColor('#CC0000')
-                .fontColor($r('app.color.ts_import_bar_on_bg'))
-                .onClick((): void => {
-                  this.confirmDeleteCurrentPerson();
-                })
-              Text('删除后将同时移除该人物的所有关联与照片挂载，不可撤销。')
-                .fontSize($r('app.float.ts_font_overline'))
-                .fontColor($r('app.color.ts_text_caption'))
-                .width('100%')
-            }
-            .width('100%')
-            .padding(16)
-            .backgroundColor($r('app.color.ts_surface_container'))
-            .borderRadius(12)
-            .border({ width: 1, color: $r('app.color.ts_outline') })
-
-            // ====== 关联故事（保持原样） ======
-            Column({ space: 12 }) {
-              Text('关联故事')
-                .fontSize($r('app.float.ts_font_label'))
-                .fontColor($r('app.color.ts_text_primary'))
-                .fontWeight(FontWeight.Medium)
-                .width('100%')
-              Text('可新建故事后点「关联 / 解除关联」写入 PersonStory（内存）。')
-                .fontSize($r('app.float.ts_font_caption'))
-                .fontColor($r('app.color.ts_text_tertiary'))
-                .width('100%')
-              Row({ space: 8 }) {
-                TextInputWithKeyboard({
-                  placeholder: '新故事标题',
-                  value: this.newStoryTitle,
-                  onChange: (v: string): void => { this.newStoryTitle = v; },
-                  onSubmit: (): void => { this.createStoryQuick(); },
-                  layoutWeight: 1
-                })
-                Button('创建')
-                  .height(48)
-                  .fontSize($r('app.float.ts_font_support'))
-                  .backgroundColor($r('app.color.ts_color_info_container'))
-                  .fontColor($r('app.color.ts_color_info'))
-                  .onClick((): void => {
-                    this.createStoryQuick();
-                  })
-              }
-              .width('100%')
-
-              if (this.storiesAll.length === 0) {
-                Text('暂无故事，可先创建或与故事主线并行补充。')
-                  .fontSize($r('app.float.ts_font_caption'))
-                  .fontColor($r('app.color.ts_text_tertiary'))
-                  .width('100%')
-              }
+        if (this.person !== null && this.personId > 0) {
+          Scroll() {
+            Column({ space: 14 }) {
               Column({ space: 8 }) {
-                ForEach(this.storiesAll, (s: StoryModel) => {
-                  Row({ space: 8 }) {
-                    Text(s.title)
-                      .layoutWeight(1)
-                      .fontSize($r('app.float.ts_font_support'))
-                      .fontColor($r('app.color.ts_text_primary'))
-                    Button(this.linkedStoryIds.indexOf(s.id) >= 0 ? '解除关联' : '关联')
-                      .height(36)
-                      .fontSize($r('app.float.ts_font_overline'))
-                      .backgroundColor($r('app.color.ts_surface_container_high'))
-                      .fontColor($r('app.color.ts_brand_primary'))
-                      .onClick((): void => {
-                        this.toggleStoryLink(s);
-                      })
+                Row({ space: 12 }) {
+                  this.buildAvatar(this.person.avatarBlob)
+                  Column({ space: 4 }) {
+                    Text(this.person.displayName)
+                      .fontSize(20)
+                      .fontColor('#FFFFFF')
+                      .fontWeight(FontWeight.Medium)
+                      .width('100%')
+                    Text(`${typeLabel(this.person.personType)} · ${formatBirthday(this.person.birthday)} · ${genderLabel(this.person.gender)}`)
+                      .fontSize(12)
+                      .fontColor('#AAAAAA')
+                      .width('100%')
+                    Text(`${this.photos.length} 张照片 · ${this.linkedStories.length} 个故事`)
+                      .fontSize(12)
+                      .fontColor('#AAAAAA')
+                      .width('100%')
                   }
-                  .padding(12)
-                  .width('100%')
-                  .backgroundColor($r('app.color.ts_surface_container_high'))
-                  .borderRadius(10)
-                  .border({ width: 1, color: $r('app.color.ts_outline') })
-                }, (s: StoryModel): string => `story-row-${s.id}`)
-              }
-              .width('100%')
-            }
-            .width('100%')
-            .padding(16)
-            .backgroundColor($r('app.color.ts_surface_container'))
-            .borderRadius(12)
-            .border({ width: 1, color: $r('app.color.ts_outline') })
-
-            // ====== 照片（保持原样） ======
-            Column({ space: 12 }) {
-              Text('照片（PhotoOwnerLink）')
-                .fontSize($r('app.float.ts_font_label'))
-                .fontColor($r('app.color.ts_text_primary'))
-                .fontWeight(FontWeight.Medium)
+                  .layoutWeight(1)
+                  .alignItems(HorizontalAlign.Start)
+                }
                 .width('100%')
-              Button('从相册选择照片（可多选）')
-                .width('100%')
-                .height(44)
-                .fontSize($r('app.float.ts_font_support'))
-                .fontWeight(FontWeight.Medium)
-                .backgroundColor($r('app.color.ts_color_info_container'))
-                .fontColor($r('app.color.ts_color_info'))
-                .onClick((): void => {
-                  this.pickPhotosFromAlbum();
-                })
 
-              if (BuildProfile.DEBUG) {
-                Text(this.debugLastAlbumInject.length > 0 ? this.debugLastAlbumInject : '【E2E】尚未注入 mock URI')
-                  .fontSize($r('app.float.ts_font_overline'))
-                  .fontColor($r('app.color.ts_debug_banner'))
-                  .width('100%')
                 Row({ space: 8 }) {
-                  Button('【DEBUG】注入相册等价 URI')
-                    .fontSize($r('app.float.ts_font_overline'))
+                  Button('+ 添加照片')
+                    .height(40)
+                    .fontSize(14)
+                    .backgroundColor('#1E88E5')
+                    .fontColor('#FFFFFF')
                     .layoutWeight(1)
-                    .height(36)
-                    .backgroundColor($r('app.color.ts_surface_container_high'))
-                    .fontColor($r('app.color.ts_text_secondary'))
                     .onClick((): void => {
-                      this.injectDebugAlbumEquivUri('file://e2e/album-equiv-1');
+                      this.pickPhotosFromAlbum();
                     })
-                  Button('【DEBUG】再注相同 URI')
-                    .fontSize($r('app.float.ts_font_overline'))
+                  Button('导入相册…')
+                    .height(40)
+                    .fontSize(14)
+                    .backgroundColor('#444444')
+                    .fontColor('#AAAAAA')
                     .layoutWeight(1)
-                    .height(36)
-                    .backgroundColor($r('app.color.ts_surface_container_high'))
-                    .fontColor($r('app.color.ts_text_secondary'))
                     .onClick((): void => {
-                      this.injectDebugAlbumEquivUri('file://e2e/album-equiv-1');
+                      router.pushUrl({
+                        url: 'pages/import/ImportPage',
+                        params: { ctx: 'person', ownerId: `${this.personId}` }
+                      });
                     })
                 }
                 .width('100%')
               }
+              .width('100%')
+              .padding(16)
+              .backgroundColor('#222222')
+              .borderRadius(12)
+              .border({ width: 1, color: '#444444' })
 
-              if (BuildProfile.DEBUG) {
-                Text(`【E2E】照片数=${this.photos.length}`)
-                  .fontSize($r('app.float.ts_font_overline'))
-                  .fontColor($r('app.color.ts_debug_banner'))
-                  .width('100%')
-                Button('【DEBUG】GC 孤儿 PhotoRef')
-                  .fontSize($r('app.float.ts_font_overline'))
-                  .backgroundColor($r('app.color.ts_surface_container_high'))
-                  .fontColor($r('app.color.ts_text_secondary'))
-                  .width('100%')
-                  .height(36)
-                  .onClick((): void => {
-                    const n = getPersonService().gcOrphanPhotoRefs();
-                    promptAction.showToast({ message: `GC 完成：清理 ${n} 个孤儿 PhotoRef` });
-                    this.refresh();
-                  })
-              }
-              if (this.photos.length === 0) {
-                Text('暂无挂载照片')
-                  .fontColor($r('app.color.ts_text_tertiary'))
-                  .fontSize($r('app.float.ts_font_caption'))
-                  .width('100%')
-              } else {
-                Grid() {
-                  ForEach(this.photos, (ph: PhotoRefModel) => {
-                    GridItem() {
-                      PhotoGridItem({
-                        ph: ph,
-                        onRemove: (photoRefId: number): void => {
-                          this.confirmRemovePhoto(photoRefId);
-                        },
-                        onStatusChanged: (photoRefId: number, status: number): void => {
-                          getPhotoLibraryService().markPhotoAsFailed(photoRefId, status);
-                          // T-31：当 Image 加载失败时，用 UriHealthChecker 进⼀步区分本地已删 vs 云端不可访问
-                          this.checkPhotoHealthAndUpdate(photoRefId, ph.uri);
+              if (this.monthGroups.length > 0) {
+                List() {
+                  ForEach(this.monthGroups, (g: MonthGroup) => {
+                    ListItemGroup({ header: this.buildMonthHeader(g) }) {
+                      ForEach(g.items, (item: TimelineItem, index: number) => {
+                        if (item.kind === 'photo' && item.photo) {
+                          this.buildPhotoGridItem(item.photo, index)
+                        } else if (item.kind === 'story' && item.story) {
+                          this.buildStoryGridItem(item.story, item.coverPhoto, g.storyStats.get(item.story.id))
                         }
+                      }, (item: TimelineItem): string => {
+                        if (item.kind === 'photo' && item.photo) {
+                          return `photo-${item.photo.id}`;
+                        } else if (item.kind === 'story' && item.story) {
+                          return `story-${item.story.id}`;
+                        }
+                        return `item-${Math.random()}`;
                       })
                     }
-                  }, (ph: PhotoRefModel): string => `ph-${ph.id}`)
+                  }, (g: MonthGroup): string => `group-${g.year}-${g.month}`)
                 }
-                .columnsTemplate('1fr 1fr 1fr')
-                .columnsGap(8)
-                .rowsGap(8)
+                .sticky(StickyStyle.Header)
                 .width('100%')
-                .scrollBar(BarState.Off)
+                .padding(16)
+                .backgroundColor('#222222')
+                .borderRadius(12)
+                .border({ width: 1, color: '#444444' })
+              } else {
+                Column({ space: 10 }) {
+                  Text('🖼️ 还没有照片')
+                    .fontSize(16)
+                    .fontColor('#AAAAAA')
+                  Button('+ 添加照片')
+                    .height(40)
+                    .fontSize(14)
+                    .backgroundColor('#1E88E5')
+                    .fontColor('#FFFFFF')
+                    .onClick((): void => {
+                      this.pickPhotosFromAlbum();
+                    })
+                }
+                .width('100%')
+                .padding(24)
+                .backgroundColor('#222222')
+                .borderRadius(12)
+                .border({ width: 1, color: '#444444' })
               }
             }
             .width('100%')
-            .padding(16)
-            .backgroundColor($r('app.color.ts_surface_container'))
-            .borderRadius(12)
-            .border({ width: 1, color: $r('app.color.ts_outline') })
-
-            // ====== 批量导入入口 ======
-            Column({ space: 10 }) {
-              Text('批量导入')
-                .fontSize($r('app.float.ts_font_label'))
-                .fontColor($r('app.color.ts_text_primary'))
-                .fontWeight(FontWeight.Medium)
-                .width('100%')
-              Text('走相册向导：选图 → 准备 → 条件 → 扫描 → 确认写入（形态二）。')
-                .fontSize($r('app.float.ts_font_caption'))
-                .fontColor($r('app.color.ts_text_tertiary'))
-                .width('100%')
-              Button('进入导入向导壳页')
-                .width('100%')
-                .height(48)
-                .fontSize($r('app.float.ts_font_body'))
-                .fontWeight(FontWeight.Medium)
-                .backgroundColor($r('app.color.ts_brand_primary'))
-                .fontColor($r('app.color.ts_import_bar_on_bg'))
-                .onClick((): void => {
-                  dismissSoftKeyboard();
-                  router.pushUrl({
-                    url: 'pages/import/ImportPage',
-                    params: { ctx: 'person', ownerId: `${this.personId}` }
-                  });
-                })
-            }
-            .width('100%')
-            .padding(16)
-            .backgroundColor($r('app.color.ts_brand_primary_container'))
-            .borderRadius(12)
-            .border({ width: 1, color: $r('app.color.ts_outline') })
+            .padding({ left: 16, right: 16, top: 8, bottom: 28 })
           }
+          .layoutWeight(1)
           .width('100%')
-          .padding({ left: 16, right: 16, top: 8, bottom: 28 })
+          .align(Alignment.Top)
+          .scrollBar(BarState.Auto)
+          .edgeEffect(EdgeEffect.Spring)
+        } else {
+          this.buildErrorState()
         }
-        .layoutWeight(1)
-        .width('100%')
-        .align(Alignment.Top)
-        .scrollBar(BarState.Auto)
-        .edgeEffect(EdgeEffect.Spring)
-      } else {
-        Column({ space: 8 }) {
-          Text('未找到人物或路由参数缺失（需要 personId）。')
-            .fontSize($r('app.float.ts_font_body'))
-            .fontColor($r('app.color.ts_color_warning'))
-            .width('100%')
-        }
-        .width('100%')
-        .padding(16)
-        .margin({ left: 16, right: 16 })
-        .backgroundColor($r('app.color.ts_surface_container'))
-        .borderRadius(12)
-        .border({ width: 1, color: $r('app.color.ts_outline') })
+      }
+      .width('100%')
+      .height('100%')
+      .backgroundColor('#111111')
+
+      if (this.showSwiper) {
+        PhotoSwiper({
+          photos: this.photos,
+          initialIndex: this.swiperIndex,
+          removeLabel: '从人物移除',
+          onRemove: (photo: PhotoRefModel): void => {
+            this.removePhoto(photo);
+          },
+          onClose: (): void => {
+            this.showSwiper = false;
+          }
+        })
       }
     }
     .width('100%')
     .height('100%')
-    .backgroundColor($r('app.color.ts_surface'))
+  }
+
+  @Builder
+  buildPhotoGridItem(photo: PhotoRefModel, index: number) {
+    ListItem() {
+      Stack() {
+        Image(photo.uri)
+          .width('100%')
+          .aspectRatio(1)
+          .objectFit(ImageFit.Cover)
+          .borderRadius(8)
+          .onClick((): void => {
+            this.swiperIndex = index;
+            this.showSwiper = true;
+          })
+      }
+      .width('100%')
+      .aspectRatio(1)
+    }
+  }
+
+  @Builder
+  buildStoryGridItem(story: StoryModel, coverPhoto?: PhotoRefModel, stats?: StoryStat) {
+    ListItem() {
+      Column({ space: 4 }) {
+        Stack({ alignContent: Alignment.BottomStart }) {
+          if (coverPhoto && coverPhoto.uri) {
+            Image(coverPhoto.uri)
+              .width('100%')
+              .aspectRatio(1)
+              .objectFit(ImageFit.Cover)
+              .borderRadius(16)
+              .onClick((): void => {
+                router.pushUrl({
+                  url: 'pages/story/StoryDetailPage',
+                  params: { storyId: story.id }
+                });
+              })
+            Column() {
+              Text(`📖 ${stats?.title ?? story.title}`)
+                .fontSize(11)
+                .fontColor('#FFFFFF')
+                .maxLines(1)
+            }
+            .width('100%')
+            .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+            .backgroundColor('#9967C31F')
+            .borderRadius({ bottomLeft: 16, bottomRight: 16 })
+          } else {
+            Column() {
+              Text('📖')
+                .fontSize(24)
+                .fontColor('#67C31F')
+            }
+            .width('100%')
+            .aspectRatio(1)
+            .backgroundColor('#1A67C31F')
+            .borderRadius(16)
+            .justifyContent(FlexAlign.Center)
+            .alignItems(HorizontalAlign.Center)
+            .onClick((): void => {
+              router.pushUrl({
+                url: 'pages/story/StoryDetailPage',
+                params: { storyId: story.id }
+              });
+            })
+          }
+        }
+        .width('100%')
+
+        Row({ space: 4 }) {
+          Text(`📖 ${stats?.title ?? story.title} · ${stats?.count ?? 0} 张  →`)
+            .fontSize(11)
+            .fontColor('#67C31F')
+            .layoutWeight(1)
+        }
+        .width('100%')
+        .padding({ top: 4 })
+        .onClick((): void => {
+          router.pushUrl({
+            url: 'pages/story/StoryDetailPage',
+            params: { storyId: story.id }
+          });
+        })
+      }
+      .width('100%')
+    }
+  }
+
+  @Builder
+  buildMonthHeader(g: MonthGroup) {
+    Row() {
+      Text(formatMonthLabel(g.year, g.month))
+        .fontSize(16)
+        .fontColor('#FFFFFF')
+        .fontWeight(FontWeight.Medium)
+    }
+    .width('100%')
+    .padding({ left: 0, right: 0, top: 8, bottom: 8 })
+    .backgroundColor('#222222')
+  }
+
+  @Builder
+  buildAvatar(blob: Uint8Array | null) {
+    if (blob !== null && blob.byteLength > 0) {
+      Image('data:image/png;base64,' + this.blobToBase64(blob))
+        .width(64).height(64)
+        .borderRadius(32)
+        .objectFit(ImageFit.Cover)
+    } else {
+      Circle({ width: 64, height: 64 })
+        .fill('#444444')
+    }
+  }
+
+  @Builder
+  buildErrorState() {
+    Column({ space: 16 }) {
+      Text('⛔')
+        .fontSize(48)
+        .fontColor('#FF5555')
+      Text('人物不存在或已被删除')
+        .fontSize(16)
+        .fontColor('#FFFFFF')
+      Button('返回人物列表')
+        .height(44)
+        .fontSize(14)
+        .backgroundColor('#444444')
+        .fontColor('#FFFFFF')
+        .width('100%')
+        .onClick((): void => {
+          router.back();
+        })
+    }
+    .width('100%')
+    .padding(32)
+    .alignItems(HorizontalAlign.Center)
+    .justifyContent(FlexAlign.Center)
   }
 }

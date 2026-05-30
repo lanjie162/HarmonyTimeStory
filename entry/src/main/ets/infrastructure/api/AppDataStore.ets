@@ -1,4 +1,4 @@
-import type { GenderEnum, PersonModel, PersonTypeEnum, PhotoAddResult, PhotoRefModel, StoryModel } from '../../domain/model/Models';
+import type { GenderEnum, PersonModel, PersonTypeEnum, PhotoAddResult, PhotoMetadata, PhotoRefModel, StoryModel } from '../../domain/model/Models';
 
 /** 创建人物时传递的全部可选字段。 */
 export interface CreatePersonParams {
@@ -51,9 +51,9 @@ export interface IAppDataStore {
   linkedStoriesForPerson(personId: number): StoryModel[];
   isPersonStoryLinked(personId: number, storyId: number): boolean;
   photosForPerson(personId: number): PhotoRefModel[];
-  addPhotoForPerson(personId: number, uri: string): PhotoAddResult;
+  addPhotoForPerson(personId: number, uri: string, metadata?: PhotoMetadata): PhotoAddResult;
   photosForStory(storyId: number): PhotoRefModel[];
-  addPhotoForStory(storyId: number, uri: string): PhotoAddResult;
+  addPhotoForStory(storyId: number, uri: string, metadata?: PhotoMetadata): PhotoAddResult;
   /** 删除人物：级联清理 person_story + person 侧 photo_owner_link，递减 photo_ref.reference_count（§6.3）。 */
   deletePerson(id: number): boolean;
   /** 删除故事：级联清理 story 侧 photo_owner_link + person_story，递减 photo_ref.reference_count（§6.3）。 */

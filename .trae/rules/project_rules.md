@@ -1,5 +1,60 @@
 # 项目规则
 
+## 方案与计划优先原则
+
+任何开发或修改任务必须遵循以下流程：
+
+1. **先做方案，再动代码** - 接到需求或任务后，首先制定详细的方案和计划，包括但不限于：
+   - 需求理解与澄清
+   - 技术方案设计
+   - 实现步骤拆解
+   - 风险点与注意事项
+   - 验收标准
+2. **方案需用户确认** - 方案制定后，必须等待用户明确表达「方案确认」或「可以开始执行」的指示
+3. **禁止随意编码** - 未获得用户明确确认前，不得修改任何代码、创建或删除文件
+4. **方案修改需重新确认** - 执行过程中如需调整方案，需先与用户沟通并获得新的确认
+
+---
+
+## 分层 TDD 测试规范
+
+所有 Feature 开发必须遵循分层测试驱动开发（TDD）流程。详见 [QA]测试能力升级方案_分层TDD架构.md。
+
+### 测试分层要求
+
+| 层级 | 测试内容 | 运行位置 | 触发时机 |
+|------|----------|----------|----------|
+| **L1 Unit** | domain/model/、Rules、Utils 纯函数 | `src/test/` 本地 | 新增/修改纯函数时 |
+| **L2 Component** | 页面纯逻辑方法（buildXxx, formatXxx 等） | `src/test/` 本地 | 新增/修改页面逻辑时 |
+| **L3 Integration** | features/Service + 真实 RDB | `ohosTest/` 设备 | 新增/修改 Service 方法时 |
+| **L4 E2E** | 核心用户旅程（冒烟级别） | `ohosTest/` 设备 | 关键流程变更时 |
+
+### TDD 开发流程
+
+每个 Feature 必须遵循：Red（写失败的测试）→ Green（写最小实现）→ Refactor（保持测试绿色）→ Commit（测试+代码一起提交）。
+
+### 测试先行检查清单（Code Review 必查）
+
+- [ ] 新增的 `domain/model/` 类型是否有对应的 L1 单元测试？
+- [ ] 新增的 `features/` Service 方法是否有对应的 L3 集成测试？
+- [ ] 新增的页面逻辑（buildXxx, formatXxx）是否有对应的 L2 组件测试？
+- [ ] 涉及数据变更的操作是否有回归测试覆盖？
+- [ ] 测试用例命名是否清晰（格式：`{层级前缀}_{领域}_{场景描述}`）？
+
+### 测试用例命名规范
+
+```
+{层级前缀}_{领域}_{场景描述}
+
+示例：
+- L1_model_photoMetadata_default_values
+- L2_personDetail_buildMonthGroups_empty_photos
+- L3_personService_updatePerson_empty_params_returns_true
+- L4_e2e_personDetail_photoSwiper_open_and_close
+```
+
+---
+
 ## 输入组件键盘收起规范
 
 所有 `TextInput` / `TextArea` 必须使用 `common/ui/KeyboardAwareInput` 中导出的 `TextInputWithKeyboard` / `TextAreaWithKeyboard` Builder 声明。

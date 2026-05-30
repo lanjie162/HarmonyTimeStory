@@ -1,5 +1,5 @@
 import type { IStoryService } from '../api/Services';
-import type { PersonModel, PhotoAddResult, PhotoRefModel, StoryModel } from '../../domain/model/Models';
+import type { PersonModel, PhotoAddResult, PhotoMetadata, PhotoRefModel, StoryModel } from '../../domain/model/Models';
 import type { IAppDataStore } from '../../infrastructure/api/AppDataStore';
 
 export class StoryService implements IStoryService {
@@ -57,8 +57,8 @@ export class StoryService implements IStoryService {
     return this.store.photosForStory(storyId);
   }
 
-  addPhotoToStory(storyId: number, uri: string): PhotoAddResult {
-    return this.store.addPhotoForStory(storyId, uri);
+  addPhotoToStory(storyId: number, uri: string, metadata?: PhotoMetadata): PhotoAddResult {
+    return this.store.addPhotoForStory(storyId, uri, metadata);
   }
 
   removePhotoFromStory(storyId: number, photoRefId: number): boolean {

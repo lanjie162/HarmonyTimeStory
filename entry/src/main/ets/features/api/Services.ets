@@ -1,4 +1,4 @@
-import type { GenderEnum, PersonModel, PersonTypeEnum, PhotoAddResult, PhotoRefModel, StoryModel } from '../../domain/model/Models';
+import type { GenderEnum, PersonModel, PersonTypeEnum, PhotoAddResult, PhotoMetadata, PhotoRefModel, StoryModel } from '../../domain/model/Models';
 
 /** 人物领域服务（RDB 真相经 IAppDataStore，见 PersonFeature + RepositoryImpl）。 */
 export interface IPersonService {
@@ -12,7 +12,7 @@ export interface IPersonService {
   unlinkPersonFromStory(personId: number, storyId: number): void;
   isLinked(personId: number, storyId: number): boolean;
   listPersonPhotos(personId: number): PhotoRefModel[];
-  addPhotoToPerson(personId: number, uri: string): PhotoAddResult;
+  addPhotoToPerson(personId: number, uri: string, metadata?: PhotoMetadata): PhotoAddResult;
   removePhotoFromPerson(personId: number, photoRefId: number): boolean;
   gcOrphanPhotoRefs(): number;
 }
@@ -29,7 +29,7 @@ export interface IStoryService {
   linkStoryToPerson(storyId: number, personId: number): void;
   unlinkStoryFromPerson(storyId: number, personId: number): void;
   listStoryPhotos(storyId: number): PhotoRefModel[];
-  addPhotoToStory(storyId: number, uri: string): PhotoAddResult;
+  addPhotoToStory(storyId: number, uri: string, metadata?: PhotoMetadata): PhotoAddResult;
   removePhotoFromStory(storyId: number, photoRefId: number): boolean;
   gcOrphanPhotoRefs(): number;
 }

@@ -2,7 +2,9 @@
   "src": [
     "pages/shell/ShellPage",
     "pages/person/PersonDetailPage",
+    "pages/person/PersonDetailEditPage",
     "pages/story/StoryDetailPage",
+    "pages/story/StoryDetailEditPage",
     "pages/import/ImportPage",
     "pages/suggest/SuggestPage",
     "pages/privacy/PrivacyPage"

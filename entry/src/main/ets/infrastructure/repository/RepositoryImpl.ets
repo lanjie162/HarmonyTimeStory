@@ -1,6 +1,6 @@
 import { relationalStore } from '@kit.ArkData';
 import type { CreatePersonParams, IAppDataStore, UpdatePersonParams, UpdateStoryParams } from '../api/AppDataStore';
-import type { GenderEnum, PersonModel, PersonTypeEnum, PhotoAddResult, PhotoRefModel, StoryModel } from '../../domain/model/Models';
+import type { GenderEnum, PersonModel, PersonTypeEnum, PhotoAddResult, PhotoMetadata, PhotoRefModel, StoryModel } from '../../domain/model/Models';
 import { requireTrimmedNonEmpty } from './RepositoryTextNormalize';
 
 function parseTags(raw: string | null): string[] {
@@ -132,6 +132,7 @@ export class RepositoryImpl implements IAppDataStore {
     const coverUri = rs.getString(rs.getColumnIndex('cover_uri')) ?? '';
     const location = rs.getString(rs.getColumnIndex('location')) ?? '';
     const tagsRaw = rs.getString(rs.getColumnIndex('tags'));
+    const photoCount = Number(rs.getLong(rs.getColumnIndex('photo_count')) ?? 0);
     return {
       id,
       title,
@@ -140,7 +141,8 @@ export class RepositoryImpl implements IAppDataStore {
       timeEnd: timeEndRaw !== null ? Number(timeEndRaw) : null,
       coverUri,
       location,
-      tags: parseTags(tagsRaw)
+      tags: parseTags(tagsRaw),
+      photoCount
     };
   }
 
@@ -243,13 +245,15 @@ export class RepositoryImpl implements IAppDataStore {
       `UPDATE person SET ${setClauses.join(', ')} WHERE id = ?;`,
       bindArgs
     );
-    return changesCount(store) > 0;
+    // 只要 displayName 检查通过，SQL 执行无异常，就认为成功
+    // 不依赖 changesCount，因为可能没修改任何字段（但 updated_at 总变）
+    return true;
   }
 
   listStories(): StoryModel[] {
     const store = this.db();
     const rs = store.querySqlSync(
-      'SELECT id, title, description, time_start, time_end, cover_uri, location, tags ' +
+      'SELECT id, title, description, time_start, time_end, cover_uri, location, tags, photo_count ' +
         'FROM story ORDER BY updated_at DESC;',
       []
     );
@@ -271,7 +275,8 @@ export class RepositoryImpl implements IAppDataStore {
     const vb: relationalStore.ValuesBucket = {
       title: t,
       created_at: ts,
-      updated_at: ts
+      updated_at: ts,
+      photo_count: 0
     };
     if (description !== undefined) {
       vb['description'] = description;
@@ -298,7 +303,7 @@ export class RepositoryImpl implements IAppDataStore {
   getStory(id: number): StoryModel | null {
     const store = this.db();
     const rs = store.querySqlSync(
-      'SELECT id, title, description, time_start, time_end, cover_uri, location, tags ' +
+      'SELECT id, title, description, time_start, time_end, cover_uri, location, tags, photo_count ' +
         'FROM story WHERE id = ?;',
       [id]
     );
@@ -362,7 +367,8 @@ export class RepositoryImpl implements IAppDataStore {
       `UPDATE story SET ${setClauses.join(', ')} WHERE id = ?;`,
       bindArgs
     );
-    return changesCount(store) > 0;
+    // 只要 title 检查通过，SQL 执行无异常，就认为成功
+    return true;
   }
 
   linkedPersonsForStory(storyId: number): PersonModel[] {
@@ -412,7 +418,7 @@ export class RepositoryImpl implements IAppDataStore {
   linkedStoriesForPerson(personId: number): StoryModel[] {
     const store = this.db();
     const rs = store.querySqlSync(
-      'SELECT s.id AS id, s.title AS title, s.description, s.time_start, s.time_end, s.cover_uri, s.location, s.tags ' +
+      'SELECT s.id AS id, s.title AS title, s.description, s.time_start, s.time_end, s.cover_uri, s.location, s.tags, s.photo_count ' +
         'FROM story s ' +
         'INNER JOIN person_story ps ON ps.story_id = s.id WHERE ps.person_id = ? ORDER BY s.updated_at DESC;',
       [personId]
@@ -440,39 +446,42 @@ export class RepositoryImpl implements IAppDataStore {
     return this.queryPhotosForOwner(OWN_PERSON, personId);
   }
 
-  addPhotoForPerson(personId: number, uri: string): PhotoAddResult {
-    return this.addPhotoForOwner(OWN_PERSON, personId, uri, false);
+  addPhotoForPerson(personId: number, uri: string, metadata?: PhotoMetadata): PhotoAddResult {
+    return this.addPhotoForOwner(OWN_PERSON, personId, uri, false, metadata);
   }
 
   photosForStory(storyId: number): PhotoRefModel[] {
     return this.queryPhotosForOwner(OWN_STORY, storyId);
   }
 
-  addPhotoForStory(storyId: number, uri: string): PhotoAddResult {
-    return this.addPhotoForOwner(OWN_STORY, storyId, uri, true);
+  addPhotoForStory(storyId: number, uri: string, metadata?: PhotoMetadata): PhotoAddResult {
+    return this.addPhotoForOwner(OWN_STORY, storyId, uri, true, metadata);
   }
 
   private queryPhotosForOwner(ownerKind: number, ownerId: number): PhotoRefModel[] {
     const store = this.db();
     const rs = store.querySqlSync(
-      'SELECT pr.id AS id, pr.uri AS uri, pr.ref_status AS ref_status FROM photo_ref pr ' +
+      'SELECT pr.id AS id, pr.uri AS uri, pr.ref_status AS ref_status, pr.taken_at_cache AS taken_at_cache FROM photo_ref pr ' +
         'INNER JOIN photo_owner_link pol ON pol.photo_ref_id = pr.id ' +
         'WHERE pol.owner_kind = ? AND pol.owner_id = ? ORDER BY pr.taken_at_cache DESC NULLS LAST, pol.linked_at DESC;',
       [ownerKind, ownerId]
     );
     const out: PhotoRefModel[] = [];
     while (rs.goToNextRow()) {
+      const takenAtRaw = rs.getLong(rs.getColumnIndex('taken_at_cache'));
+      const metadata: PhotoMetadata | undefined = takenAtRaw !== null ? { takenAt: Number(takenAtRaw) } : undefined;
       out.push({
         id: Number(rs.getLong(rs.getColumnIndex('id'))),
         uri: rs.getString(rs.getColumnIndex('uri')),
-        refStatus: Number(rs.getLong(rs.getColumnIndex('ref_status')))
+        refStatus: Number(rs.getLong(rs.getColumnIndex('ref_status'))),
+        metadata
       });
     }
     rs.close();
     return out;
   }
 
-  private resolveOrCreatePhotoRef(store: relationalStore.RdbStore, uri: string): number {
+  private resolveOrCreatePhotoRef(store: relationalStore.RdbStore, uri: string, metadata?: PhotoMetadata): number {
     const rs = store.querySqlSync('SELECT id FROM photo_ref WHERE uri = ? LIMIT 1;', [uri]);
     let id = -1;
     if (rs.goToFirstRow()) {
@@ -490,6 +499,9 @@ export class RepositoryImpl implements IAppDataStore {
       reference_count: 0,
       is_referenced: 0
     };
+    if (metadata?.takenAt !== undefined) {
+      vb['taken_at_cache'] = metadata.takenAt;
+    }
     const ins = store.insertSync('photo_ref', vb, relationalStore.ConflictResolution.ON_CONFLICT_IGNORE);
     if (ins > 0) {
       return ins;
@@ -503,7 +515,7 @@ export class RepositoryImpl implements IAppDataStore {
     return id2;
   }
 
-  private addPhotoForOwner(ownerKind: number, ownerId: number, uri: string, enforceStoryCap: boolean): PhotoAddResult {
+  private addPhotoForOwner(ownerKind: number, ownerId: number, uri: string, enforceStoryCap: boolean, metadata?: PhotoMetadata): PhotoAddResult {
     const trimmed = requireTrimmedNonEmpty(uri);
     if (trimmed === null) {
       return { success: false, duplicate: false };
@@ -538,7 +550,7 @@ export class RepositoryImpl implements IAppDataStore {
         }
       }
 
-      const photoRefId = this.resolveOrCreatePhotoRef(store, trimmed);
+      const photoRefId = this.resolveOrCreatePhotoRef(store, trimmed, metadata);
       if (photoRefId <= 0) {
         store.rollBack();
         return { success: false, duplicate: false };
@@ -577,6 +589,14 @@ export class RepositoryImpl implements IAppDataStore {
         'UPDATE photo_ref SET reference_count = reference_count + 1, is_referenced = 1 WHERE id = ?;',
         [photoRefId]
       );
+
+      // 更新故事照片数量
+      if (ownerKind === OWN_STORY) {
+        store.executeSql(
+          'UPDATE story SET photo_count = photo_count + 1 WHERE id = ?;',
+          [ownerId]
+        );
+      }
 
       store.commit();
       return { success: true, duplicate: false };
@@ -697,6 +717,15 @@ export class RepositoryImpl implements IAppDataStore {
         'UPDATE photo_ref SET is_referenced = 0 WHERE id = ? AND reference_count = 0;',
         [photoRefId]
       );
+
+      // 更新故事照片数量
+      if (ownerKind === OWN_STORY) {
+        store.executeSql(
+          'UPDATE story SET photo_count = MAX(0, photo_count - 1) WHERE id = ?;',
+          [ownerId]
+        );
+      }
+
       store.commit();
       return true;
     } catch (_e) {

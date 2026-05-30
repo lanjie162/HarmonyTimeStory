@@ -53,6 +53,8 @@ export interface StoryModel {
   location: string;
   /** 自定义标签（JSON 数组，序列化为 string[]，默认空数组） */
   tags: string[];
+  /** 故事内照片数量，添加/删除照片时同步更新 */
+  photoCount: number;
 }
 
 /** URI 健康状态枚举：与 photo_ref.ref_status 列对齐。 */
@@ -67,12 +69,32 @@ export enum UriHealthStatus {
   CLOUD_INACCESSIBLE = 3
 }
 
+/** 照片元数据结构体，便于未来扩展。 */
+export interface PhotoMetadata {
+  /** 拍摄时间戳（毫秒），可选 */
+  takenAt?: number;
+  /** GPS 纬度，可选 */
+  latitude?: number;
+  /** GPS 经度，可选 */
+  longitude?: number;
+  /** 图片宽度（像素），可选 */
+  width?: number;
+  /** 图片高度（像素），可选 */
+  height?: number;
+  /** 文件大小（字节），可选 */
+  fileSize?: number;
+  /** 相机型号，可选 */
+  cameraModel?: string;
+}
+
 /** 人物挂载的照片引用最小字段（PH-01 去重用 uri）。 */
 export interface PhotoRefModel {
   id: number;
   uri: string;
   /** URI 健康状态，默认 UNKNOWN(0)；写入时由 resolveOrCreatePhotoRef 设为 HEALTHY(1)。 */
   refStatus: number;
+  /** 照片元数据，可选 */
+  metadata?: PhotoMetadata;
 }
 
 export interface PhotoAddResult {

@@ -1,4 +1,4 @@
-import type { PersonModel, PhotoRefModel, PhotoAddResult, StoryModel } from '../../domain/model/Models';
+import type { PersonModel, PhotoRefModel, PhotoAddResult, PhotoMetadata, StoryModel } from '../../domain/model/Models';
 import { PersonTypeEnum as PT } from '../../domain/model/Models';
 
 interface PersonStoryTuple {
@@ -214,13 +214,13 @@ export class LocalMemoryStore {
     const out: PhotoRefModel[] = [];
     for (const pr of this.photoRefs) {
       if (refIds.has(pr.id)) {
-        out.push({ id: pr.id, uri: pr.uri, refStatus: pr.refStatus ?? 1 });
+        out.push({ id: pr.id, uri: pr.uri, refStatus: pr.refStatus ?? 1, metadata: pr.metadata });
       }
     }
     return out;
   }
 
-  addPhotoForPerson(personId: number, uri: string): PhotoAddResult {
+  addPhotoForPerson(personId: number, uri: string, metadata?: PhotoMetadata): PhotoAddResult {
     if (!this.persons.some((p): boolean => p.id === personId)) {
       return { success: false, duplicate: false };
     }
@@ -233,7 +233,7 @@ export class LocalMemoryStore {
       return { success: false, duplicate: true };
     }
     const prId = this.nextPhotoId++;
-    this.photoRefs.push({ id: prId, uri: trimmed, refStatus: 1 });
+    this.photoRefs.push({ id: prId, uri: trimmed, refStatus: 1, metadata });
     this.ownerLinks.push({
       id: this.nextLinkId++,
       ownerKind: 'person',
@@ -253,13 +253,13 @@ export class LocalMemoryStore {
     const out: PhotoRefModel[] = [];
     for (const pr of this.photoRefs) {
       if (refIds.has(pr.id)) {
-        out.push({ id: pr.id, uri: pr.uri, refStatus: pr.refStatus ?? 1 });
+        out.push({ id: pr.id, uri: pr.uri, refStatus: pr.refStatus ?? 1, metadata: pr.metadata });
       }
     }
     return out;
   }
 
-  addPhotoForStory(storyId: number, uri: string): PhotoAddResult {
+  addPhotoForStory(storyId: number, uri: string, metadata?: PhotoMetadata): PhotoAddResult {
     if (!this.stories.some((s): boolean => s.id === storyId)) {
       return { success: false, duplicate: false };
     }
@@ -272,7 +272,7 @@ export class LocalMemoryStore {
       return { success: false, duplicate: true };
     }
     const prId = this.nextPhotoId++;
-    this.photoRefs.push({ id: prId, uri: trimmed, refStatus: 1 });
+    this.photoRefs.push({ id: prId, uri: trimmed, refStatus: 1, metadata });
     this.ownerLinks.push({
       id: this.nextLinkId++,
       ownerKind: 'story',

@@ -141,6 +141,10 @@ export struct PersonPage {
     this.reload();
   }
 
+  onPageShow(): void {
+    this.reload();
+  }
+
   private reload(): void {
     this.persons = getPersonService().listPersons();
   }

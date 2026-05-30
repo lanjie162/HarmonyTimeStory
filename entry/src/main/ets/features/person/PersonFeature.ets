@@ -1,5 +1,5 @@
 import type { IPersonService } from '../api/Services';
-import type { GenderEnum, PersonModel, PersonTypeEnum, PhotoAddResult, PhotoRefModel, StoryModel } from '../../domain/model/Models';
+import type { GenderEnum, PersonModel, PersonTypeEnum, PhotoAddResult, PhotoMetadata, PhotoRefModel, StoryModel } from '../../domain/model/Models';
 import type { CreatePersonParams, IAppDataStore, UpdatePersonParams } from '../../infrastructure/api/AppDataStore';
 
 export class PersonService implements IPersonService {
@@ -81,8 +81,8 @@ export class PersonService implements IPersonService {
     return this.store.photosForPerson(personId);
   }
 
-  addPhotoToPerson(personId: number, uri: string): PhotoAddResult {
-    return this.store.addPhotoForPerson(personId, uri);
+  addPhotoToPerson(personId: number, uri: string, metadata?: PhotoMetadata): PhotoAddResult {
+    return this.store.addPhotoForPerson(personId, uri, metadata);
   }
 
   removePhotoFromPerson(personId: number, photoRefId: number): boolean {
