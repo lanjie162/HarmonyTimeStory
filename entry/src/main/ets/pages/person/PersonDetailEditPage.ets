@@ -182,7 +182,7 @@ export struct PersonDetailEditPage {
       },
       secondaryButton: {
         value: '删除',
-        fontColor: '#CC0000',
+        fontColor: $r('app.color.ts_color_error'),
         action: (): void => {
           dismissSoftKeyboard();
           const svc = getPersonService();
@@ -209,7 +209,7 @@ export struct PersonDetailEditPage {
       },
       secondaryButton: {
         value: '移除',
-        fontColor: '#CC0000',
+        fontColor: $r('app.color.ts_color_error'),
         action: (): void => {
           dismissSoftKeyboard();
           const svc = getPersonService();
@@ -336,21 +336,21 @@ export struct PersonDetailEditPage {
           .height(36)
           .fontSize(24)
           .backgroundColor(Color.Transparent)
-          .fontColor('#FFFFFF')
+          .fontColor($r('app.color.ts_import_bar_on_bg'))
           .onClick((): void => {
             dismissSoftKeyboard();
             router.back();
           })
         Text('编辑人物')
           .fontSize(20)
-          .fontColor('#FFFFFF')
+          .fontColor($r('app.color.ts_import_bar_on_bg'))
           .fontWeight(FontWeight.Bold)
           .layoutWeight(1)
         Button('保存')
           .height(36)
           .fontSize(16)
-          .backgroundColor('#67C31F')
-          .fontColor('#FFFFFF')
+          .backgroundColor($r('app.color.ts_brand_primary'))
+          .fontColor($r('app.color.ts_import_bar_on_bg'))
           .onClick((): void => {
             this.savePerson();
           })
@@ -358,7 +358,7 @@ export struct PersonDetailEditPage {
       .width('100%')
       .height(56)
       .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor('#333333')
+      .backgroundColor($r('app.color.ts_surface_container_high'))
       .alignItems(VerticalAlign.Center)
 
       if (this.person !== null && this.personId > 0) {
@@ -367,7 +367,7 @@ export struct PersonDetailEditPage {
             Column({ space: 12 }) {
               Text('编辑')
                 .fontSize(16)
-                .fontColor('#FFFFFF')
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
 
@@ -375,8 +375,8 @@ export struct PersonDetailEditPage {
                 Button('更换头像')
                   .height(36)
                   .fontSize(14)
-                  .backgroundColor('#1E88E5')
-                  .fontColor('#FFFFFF')
+                  .backgroundColor($r('app.color.ts_color_info'))
+                  .fontColor($r('app.color.ts_import_bar_on_bg'))
                   .onClick((): void => {
                     this.pickAvatar();
                   })
@@ -384,8 +384,8 @@ export struct PersonDetailEditPage {
                   Button('移除头像')
                     .height(36)
                     .fontSize(14)
-                    .backgroundColor('#444444')
-                    .fontColor('#FF5555')
+                    .backgroundColor($r('app.color.ts_surface_container_high'))
+                    .fontColor($r('app.color.ts_color_error'))
                     .onClick((): void => {
                       this.removeAvatar();
                     })
@@ -402,21 +402,21 @@ export struct PersonDetailEditPage {
               Row({ space: 8 }) {
                 Text('类型')
                   .fontSize(14)
-                  .fontColor('#AAAAAA')
+                  .fontColor($r('app.color.ts_text_tertiary'))
                 Text(typeLabel(this.draftType))
                   .fontSize(14)
-                  .fontColor('#FFFFFF')
+                  .fontColor($r('app.color.ts_import_bar_on_bg'))
                 Row({ space: 4 }) {
                   ForEach(TYPE_OPTIONS, (t: PersonTypeEnum) => {
                     Button(typeLabel(t))
                       .height(32)
                       .fontSize(12)
                       .backgroundColor(this.draftType === t
-                        ? '#67C31F'
-                        : '#444444')
+                        ? $r('app.color.ts_brand_primary')
+                        : $r('app.color.ts_surface_container_high'))
                       .fontColor(this.draftType === t
-                        ? '#FFFFFF'
-                        : '#AAAAAA')
+                        ? $r('app.color.ts_import_bar_on_bg')
+                        : $r('app.color.ts_text_tertiary'))
                       .onClick((): void => {
                         this.draftType = t;
                       })
@@ -430,18 +430,18 @@ export struct PersonDetailEditPage {
               Row({ space: 8 }) {
                 Text('性别')
                   .fontSize(14)
-                  .fontColor('#AAAAAA')
+                  .fontColor($r('app.color.ts_text_tertiary'))
                 Row({ space: 4 }) {
                   ForEach(GENDER_OPTIONS, (opt: GenderOption) => {
                     Button(opt.label)
                       .height(32)
                       .fontSize(12)
                       .backgroundColor(this.draftGender === opt.value
-                        ? '#67C31F'
-                        : '#444444')
+                        ? $r('app.color.ts_brand_primary')
+                        : $r('app.color.ts_surface_container_high'))
                       .fontColor(this.draftGender === opt.value
-                        ? '#FFFFFF'
-                        : '#AAAAAA')
+                        ? $r('app.color.ts_import_bar_on_bg')
+                        : $r('app.color.ts_text_tertiary'))
                       .onClick((): void => {
                         this.draftGender = opt.value;
                       })
@@ -455,21 +455,24 @@ export struct PersonDetailEditPage {
               Row({ space: 8 }) {
                 Text('生日')
                   .fontSize(14)
-                  .fontColor('#AAAAAA')
+                  .fontColor($r('app.color.ts_text_tertiary'))
                 Text(this.draftBirthdayText)
                   .fontSize(14)
-                  .fontColor('#FFFFFF')
+                  .fontColor($r('app.color.ts_import_bar_on_bg'))
+                Text(' 📅')
+                  .fontSize(14)
+                  .fontColor($r('app.color.ts_brand_primary'))
               }
               .width('100%')
-              CalendarPicker({
-                hintRadius: 16,
-                selected: buildDatePickerDate(this.draftBirthday > 0 ? this.draftBirthday : null)
-              })
-                .width('100%')
-                .onChange((value: Date): void => {
-                  this.draftBirthday = value.getTime();
-                  this.draftBirthdayText = formatBirthday(this.draftBirthday);
+              .onClick((): void => {
+                CalendarPickerDialog.show({
+                  selected: buildDatePickerDate(this.draftBirthday),
+                  onAccept: (value: Date): void => {
+                    this.draftBirthday = value.getTime();
+                    this.draftBirthdayText = formatBirthday(this.draftBirthday);
+                  }
                 })
+              })
 
               Column() {
                 TextAreaWithKeyboard({
@@ -485,9 +488,9 @@ export struct PersonDetailEditPage {
             }
             .width('100%')
             .padding(16)
-            .backgroundColor('#222222')
+            .backgroundColor($r('app.color.ts_surface_container'))
             .borderRadius(12)
-            .border({ width: 1, color: '#444444' })
+            .border({ width: 1, color: $r('app.color.ts_outline') })
 
             Column({ space: 10 }) {
               Button('删除人物')
@@ -495,31 +498,31 @@ export struct PersonDetailEditPage {
                 .height(44)
                 .fontSize(14)
                 .fontWeight(FontWeight.Medium)
-                .backgroundColor('#CC0000')
-                .fontColor('#FFFFFF')
+                .backgroundColor($r('app.color.ts_color_error'))
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .onClick((): void => {
                   this.confirmDeleteCurrentPerson();
                 })
               Text('删除后将同时移除该人物的所有关联与照片挂载，不可撤销。')
                 .fontSize(12)
-                .fontColor('#AAAAAA')
+                .fontColor($r('app.color.ts_text_tertiary'))
                 .width('100%')
             }
             .width('100%')
             .padding(16)
-            .backgroundColor('#222222')
+            .backgroundColor($r('app.color.ts_surface_container'))
             .borderRadius(12)
-            .border({ width: 1, color: '#444444' })
+            .border({ width: 1, color: $r('app.color.ts_outline') })
 
             Column({ space: 12 }) {
               Text('关联故事')
                 .fontSize(16)
-                .fontColor('#FFFFFF')
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
               Text('可新建故事后点「关联/解除关联」写入PersonStory（内存）。')
                 .fontSize(12)
-                .fontColor('#AAAAAA')
+                .fontColor($r('app.color.ts_text_tertiary'))
                 .width('100%')
               Row({ space: 8 }) {
                 TextInputWithKeyboard({
@@ -532,8 +535,8 @@ export struct PersonDetailEditPage {
                 Button('创建')
                   .height(48)
                   .fontSize(14)
-                  .backgroundColor('#1E88E5')
-                  .fontColor('#FFFFFF')
+                  .backgroundColor($r('app.color.ts_color_info'))
+                  .fontColor($r('app.color.ts_import_bar_on_bg'))
                   .onClick((): void => {
                     this.createStoryQuick();
                   })
@@ -543,7 +546,7 @@ export struct PersonDetailEditPage {
               if (this.storiesAll.length === 0) {
                 Text('暂无故事，可先创建或与故事主线并行补充。')
                   .fontSize(12)
-                  .fontColor('#AAAAAA')
+                  .fontColor($r('app.color.ts_text_tertiary'))
                   .width('100%')
               }
               Column({ space: 8 }) {
@@ -552,35 +555,35 @@ export struct PersonDetailEditPage {
                     Text(s.title)
                       .layoutWeight(1)
                       .fontSize(14)
-                      .fontColor('#FFFFFF')
+                      .fontColor($r('app.color.ts_import_bar_on_bg'))
                     Button(this.linkedStoryIds.indexOf(s.id) >= 0 ? '解除关联' : '关联')
                       .height(36)
                       .fontSize(12)
-                      .backgroundColor('#444444')
-                      .fontColor('#67C31F')
+                      .backgroundColor($r('app.color.ts_surface_container_high'))
+                      .fontColor($r('app.color.ts_brand_primary'))
                       .onClick((): void => {
                         this.toggleStoryLink(s);
                       })
                   }
                   .padding(12)
                   .width('100%')
-                  .backgroundColor('#444444')
+                  .backgroundColor($r('app.color.ts_surface_container_high'))
                   .borderRadius(10)
-                  .border({ width: 1, color: '#555555' })
+                  .border({ width: 1, color: $r('app.color.ts_outline') })
                 }, (s: StoryModel): string => `story-row-${s.id}`)
               }
               .width('100%')
             }
             .width('100%')
             .padding(16)
-            .backgroundColor('#222222')
+            .backgroundColor($r('app.color.ts_surface_container'))
             .borderRadius(12)
-            .border({ width: 1, color: '#444444' })
+            .border({ width: 1, color: $r('app.color.ts_outline') })
 
             Column({ space: 12 }) {
               Text('照片')
                 .fontSize(16)
-                .fontColor('#FFFFFF')
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
               Button('从相册选择照片（可多选）')
@@ -588,8 +591,8 @@ export struct PersonDetailEditPage {
                 .height(44)
                 .fontSize(14)
                 .fontWeight(FontWeight.Medium)
-                .backgroundColor('#1E88E5')
-                .fontColor('#FFFFFF')
+                .backgroundColor($r('app.color.ts_color_info'))
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .onClick((): void => {
                   this.pickPhotosFromAlbum();
                 })
@@ -597,15 +600,15 @@ export struct PersonDetailEditPage {
               if (BuildProfile.DEBUG) {
                 Text(this.debugLastAlbumInject.length > 0 ? this.debugLastAlbumInject : '【E2E】尚未注入mock URI')
                   .fontSize(12)
-                  .fontColor('#FFFF00')
+                  .fontColor($r('app.color.ts_debug_banner'))
                   .width('100%')
                 Row({ space: 8 }) {
                   Button('【DEBUG】注入相册等价URI')
                     .fontSize(12)
                     .layoutWeight(1)
                     .height(36)
-                    .backgroundColor('#444444')
-                    .fontColor('#AAAAAA')
+                    .backgroundColor($r('app.color.ts_surface_container_high'))
+                    .fontColor($r('app.color.ts_text_tertiary'))
                     .onClick((): void => {
                       this.injectDebugAlbumEquivUri('file://e2e/album-equiv-1');
                     })
@@ -613,8 +616,8 @@ export struct PersonDetailEditPage {
                     .fontSize(12)
                     .layoutWeight(1)
                     .height(36)
-                    .backgroundColor('#444444')
-                    .fontColor('#AAAAAA')
+                    .backgroundColor($r('app.color.ts_surface_container_high'))
+                    .fontColor($r('app.color.ts_text_tertiary'))
                     .onClick((): void => {
                       this.injectDebugAlbumEquivUri('file://e2e/album-equiv-1');
                     })
@@ -625,12 +628,12 @@ export struct PersonDetailEditPage {
               if (BuildProfile.DEBUG) {
                 Text(`【E2E】照片数=${this.photos.length}`)
                   .fontSize(12)
-                  .fontColor('#FFFF00')
+                  .fontColor($r('app.color.ts_debug_banner'))
                   .width('100%')
                 Button('【DEBUG】GC孤儿PhotoRef')
                   .fontSize(12)
-                  .backgroundColor('#444444')
-                  .fontColor('#AAAAAA')
+                  .backgroundColor($r('app.color.ts_surface_container_high'))
+                  .fontColor($r('app.color.ts_text_tertiary'))
                   .width('100%')
                   .height(36)
                   .onClick((): void => {
@@ -641,7 +644,7 @@ export struct PersonDetailEditPage {
               }
               if (this.photos.length === 0) {
                 Text('暂无挂载照片')
-                  .fontColor('#AAAAAA')
+                  .fontColor($r('app.color.ts_text_tertiary'))
                   .fontSize(12)
                   .width('100%')
               } else {
@@ -670,9 +673,9 @@ export struct PersonDetailEditPage {
             }
             .width('100%')
             .padding(16)
-            .backgroundColor('#222222')
+            .backgroundColor($r('app.color.ts_surface_container'))
             .borderRadius(12)
-            .border({ width: 1, color: '#444444' })
+            .border({ width: 1, color: $r('app.color.ts_outline') })
           }
           .width('100%')
           .padding({ left: 16, right: 16, top: 8, bottom: 28 })
@@ -686,19 +689,19 @@ export struct PersonDetailEditPage {
         Column({ space: 8 }) {
           Text('未找到人物或路由参数缺失（需要personId）。')
             .fontSize(16)
-            .fontColor('#FF5555')
+            .fontColor($r('app.color.ts_color_error'))
             .width('100%')
         }
         .width('100%')
         .padding(16)
         .margin({ left: 16, right: 16 })
-        .backgroundColor('#222222')
+        .backgroundColor($r('app.color.ts_surface_container'))
         .borderRadius(12)
-        .border({ width: 1, color: '#444444' })
+        .border({ width: 1, color: $r('app.color.ts_outline') })
       }
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#111111')
+    .backgroundColor($r('app.color.ts_surface'))
   }
 }

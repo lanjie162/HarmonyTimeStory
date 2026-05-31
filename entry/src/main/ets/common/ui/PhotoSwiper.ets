@@ -61,7 +61,7 @@ export struct PhotoSwiper {
       },
       secondaryButton: {
         value: '移除',
-        fontColor: '#CC0000',
+        fontColor: $r('app.color.ts_color_error'),
         action: (): void => {
           if (this.onRemove) {
             this.onRemove(photo);
@@ -81,12 +81,12 @@ export struct PhotoSwiper {
             .fontSize(48)
           Text('图片已不可访问')
             .fontSize(16)
-            .fontColor('#AAAAAA')
+            .fontColor($r('app.color.ts_text_tertiary'))
         }
         .width('100%')
         .height('100%')
         .justifyContent(FlexAlign.Center)
-        .backgroundColor('#222222')
+        .backgroundColor($r('app.color.ts_surface_container'))
       } else {
         Stack() {
           Image(photo.uri)
@@ -101,7 +101,7 @@ export struct PhotoSwiper {
             })
           if (this.loadingIndices.has(index)) {
             LoadingProgress()
-              .color('#FFFFFF')
+              .color($r('app.color.ts_import_bar_on_bg'))
               .width(48)
               .height(48)
           }
@@ -119,7 +119,7 @@ export struct PhotoSwiper {
     Row({ space: 8 }) {
       Button('←')
         .fontSize(24)
-        .fontColor('#FFFFFF')
+        .fontColor($r('app.color.ts_import_bar_on_bg'))
         .backgroundColor(Color.Transparent)
         .height(44)
         .onClick(() => {
@@ -128,7 +128,7 @@ export struct PhotoSwiper {
       if (this.photos.length > 0 && this.photos[this.currentIndex]?.metadata?.takenAt) {
         Text(formatDate(this.photos[this.currentIndex]?.metadata?.takenAt))
           .fontSize(16)
-          .fontColor('#FFFFFF')
+          .fontColor($r('app.color.ts_import_bar_on_bg'))
       }
     }
   }
@@ -152,7 +152,7 @@ export struct PhotoSwiper {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor('#000000')
+      .backgroundColor(Color.Black)
       .opacity(Math.max(1 - this.swipeOffsetY / 500, 0.3))
       .gesture(
         PanGesture({ direction: PanDirection.Down, distance: 30 })
@@ -176,10 +176,10 @@ export struct PhotoSwiper {
             this.buildTopLeftRow()
             Text(`${this.currentIndex + 1}/${this.photos.length}`)
               .fontSize(14)
-              .fontColor('#FFFFFF')
+              .fontColor($r('app.color.ts_import_bar_on_bg'))
             Button('⋮')
               .fontSize(24)
-              .fontColor('#FFFFFF')
+              .fontColor($r('app.color.ts_import_bar_on_bg'))
               .backgroundColor(Color.Transparent)
               .height(44)
               .onClick(() => {
@@ -216,14 +216,14 @@ export struct PhotoSwiper {
             Column() {
               Text('照片选项')
                 .fontSize(16)
-                .fontColor('#FFFFFF')
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .width('100%')
                 .padding({ top: 16, bottom: 12, left: 16, right: 16 })
               Divider()
-                .color('#333333')
+                .color($r('app.color.ts_surface_container_high'))
               Button(this.removeLabel)
                 .fontSize(16)
-                .fontColor('#FF5555')
+                .fontColor($r('app.color.ts_color_error'))
                 .backgroundColor(Color.Transparent)
                 .width('100%')
                 .height(56)
@@ -232,7 +232,7 @@ export struct PhotoSwiper {
                 })
             }
             .width('100%')
-            .backgroundColor('#1E1E1E')
+            .backgroundColor($r('app.color.ts_surface_container_high'))
             .borderRadius({ topLeft: 16, topRight: 16 })
           }
           .width('100%')

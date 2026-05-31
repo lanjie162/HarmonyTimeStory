@@ -269,21 +269,21 @@ export struct PersonDetailPage {
             .height(36)
             .fontSize(24)
             .backgroundColor(Color.Transparent)
-            .fontColor('#FFFFFF')
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
             .onClick((): void => {
               dismissSoftKeyboard();
               router.back();
             })
           Text(this.person?.displayName ?? '人物')
             .fontSize(20)
-            .fontColor('#FFFFFF')
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
             .fontWeight(FontWeight.Bold)
             .layoutWeight(1)
           Button('编辑')
             .height(36)
             .fontSize(16)
-            .backgroundColor('#67C31F')
-            .fontColor('#FFFFFF')
+            .backgroundColor($r('app.color.ts_brand_primary'))
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
             .onClick((): void => {
               router.pushUrl({
                 url: 'pages/person/PersonDetailEditPage',
@@ -294,7 +294,7 @@ export struct PersonDetailPage {
         .width('100%')
         .height(56)
         .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-        .backgroundColor('#333333')
+        .backgroundColor($r('app.color.ts_surface_container_high'))
         .alignItems(VerticalAlign.Center)
 
         if (this.person !== null && this.personId > 0) {
@@ -306,16 +306,16 @@ export struct PersonDetailPage {
                   Column({ space: 4 }) {
                     Text(this.person.displayName)
                       .fontSize(20)
-                      .fontColor('#FFFFFF')
+                      .fontColor($r('app.color.ts_import_bar_on_bg'))
                       .fontWeight(FontWeight.Medium)
                       .width('100%')
                     Text(`${typeLabel(this.person.personType)} · ${formatBirthday(this.person.birthday)} · ${genderLabel(this.person.gender)}`)
                       .fontSize(12)
-                      .fontColor('#AAAAAA')
+                      .fontColor($r('app.color.ts_text_tertiary'))
                       .width('100%')
                     Text(`${this.photos.length} 张照片 · ${this.linkedStories.length} 个故事`)
                       .fontSize(12)
-                      .fontColor('#AAAAAA')
+                      .fontColor($r('app.color.ts_text_tertiary'))
                       .width('100%')
                   }
                   .layoutWeight(1)
@@ -327,8 +327,8 @@ export struct PersonDetailPage {
                   Button('+ 添加照片')
                     .height(40)
                     .fontSize(14)
-                    .backgroundColor('#1E88E5')
-                    .fontColor('#FFFFFF')
+                    .backgroundColor($r('app.color.ts_color_info'))
+                    .fontColor($r('app.color.ts_import_bar_on_bg'))
                     .layoutWeight(1)
                     .onClick((): void => {
                       this.pickPhotosFromAlbum();
@@ -336,8 +336,8 @@ export struct PersonDetailPage {
                   Button('导入相册…')
                     .height(40)
                     .fontSize(14)
-                    .backgroundColor('#444444')
-                    .fontColor('#AAAAAA')
+                    .backgroundColor($r('app.color.ts_surface_container_high'))
+                    .fontColor($r('app.color.ts_text_tertiary'))
                     .layoutWeight(1)
                     .onClick((): void => {
                       router.pushUrl({
@@ -350,9 +350,9 @@ export struct PersonDetailPage {
               }
               .width('100%')
               .padding(16)
-              .backgroundColor('#222222')
+              .backgroundColor($r('app.color.ts_surface_container'))
               .borderRadius(12)
-              .border({ width: 1, color: '#444444' })
+              .border({ width: 1, color: $r('app.color.ts_outline') })
 
               if (this.monthGroups.length > 0) {
                 List() {
@@ -378,28 +378,28 @@ export struct PersonDetailPage {
                 .sticky(StickyStyle.Header)
                 .width('100%')
                 .padding(16)
-                .backgroundColor('#222222')
+                .backgroundColor($r('app.color.ts_surface_container'))
                 .borderRadius(12)
-                .border({ width: 1, color: '#444444' })
+                .border({ width: 1, color: $r('app.color.ts_outline') })
               } else {
                 Column({ space: 10 }) {
                   Text('🖼️ 还没有照片')
                     .fontSize(16)
-                    .fontColor('#AAAAAA')
+                    .fontColor($r('app.color.ts_text_tertiary'))
                   Button('+ 添加照片')
                     .height(40)
                     .fontSize(14)
-                    .backgroundColor('#1E88E5')
-                    .fontColor('#FFFFFF')
+                    .backgroundColor($r('app.color.ts_color_info'))
+                    .fontColor($r('app.color.ts_import_bar_on_bg'))
                     .onClick((): void => {
                       this.pickPhotosFromAlbum();
                     })
                 }
                 .width('100%')
                 .padding(24)
-                .backgroundColor('#222222')
+                .backgroundColor($r('app.color.ts_surface_container'))
                 .borderRadius(12)
-                .border({ width: 1, color: '#444444' })
+                .border({ width: 1, color: $r('app.color.ts_outline') })
               }
             }
             .width('100%')
@@ -416,7 +416,7 @@ export struct PersonDetailPage {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor('#111111')
+      .backgroundColor($r('app.color.ts_surface'))
 
       if (this.showSwiper) {
         PhotoSwiper({
@@ -437,7 +437,7 @@ export struct PersonDetailPage {
   }
 
   @Builder
-  buildPhotoGridItem(photo: PhotoRefModel, index: number) {
+  buildPhotoGridItem(photo: PhotoRefModel, _index: number) {
     ListItem() {
       Stack() {
         Image(photo.uri)
@@ -446,7 +446,7 @@ export struct PersonDetailPage {
           .objectFit(ImageFit.Cover)
           .borderRadius(8)
           .onClick((): void => {
-            this.swiperIndex = index;
+            this.swiperIndex = this.findPhotoIndexInAll(photo.id);
             this.showSwiper = true;
           })
       }
@@ -475,22 +475,22 @@ export struct PersonDetailPage {
             Column() {
               Text(`📖 ${stats?.title ?? story.title}`)
                 .fontSize(11)
-                .fontColor('#FFFFFF')
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .maxLines(1)
             }
             .width('100%')
             .padding({ left: 8, right: 8, top: 4, bottom: 4 })
-            .backgroundColor('#9967C31F')
+            .backgroundColor('#99B85C38')
             .borderRadius({ bottomLeft: 16, bottomRight: 16 })
           } else {
             Column() {
               Text('📖')
                 .fontSize(24)
-                .fontColor('#67C31F')
+                .fontColor($r('app.color.ts_brand_primary'))
             }
             .width('100%')
             .aspectRatio(1)
-            .backgroundColor('#1A67C31F')
+            .backgroundColor('#1AB85C38')
             .borderRadius(16)
             .justifyContent(FlexAlign.Center)
             .alignItems(HorizontalAlign.Center)
@@ -507,7 +507,7 @@ export struct PersonDetailPage {
         Row({ space: 4 }) {
           Text(`📖 ${stats?.title ?? story.title} · ${stats?.count ?? 0} 张  →`)
             .fontSize(11)
-            .fontColor('#67C31F')
+            .fontColor($r('app.color.ts_brand_primary'))
             .layoutWeight(1)
         }
         .width('100%')
@@ -528,12 +528,12 @@ export struct PersonDetailPage {
     Row() {
       Text(formatMonthLabel(g.year, g.month))
         .fontSize(16)
-        .fontColor('#FFFFFF')
+        .fontColor($r('app.color.ts_import_bar_on_bg'))
         .fontWeight(FontWeight.Medium)
     }
     .width('100%')
     .padding({ left: 0, right: 0, top: 8, bottom: 8 })
-    .backgroundColor('#222222')
+    .backgroundColor($r('app.color.ts_surface_container'))
   }
 
   @Builder
@@ -545,7 +545,7 @@ export struct PersonDetailPage {
         .objectFit(ImageFit.Cover)
     } else {
       Circle({ width: 64, height: 64 })
-        .fill('#444444')
+        .fill($r('app.color.ts_surface_container_high'))
     }
   }
 
@@ -554,15 +554,15 @@ export struct PersonDetailPage {
     Column({ space: 16 }) {
       Text('⛔')
         .fontSize(48)
-        .fontColor('#FF5555')
+        .fontColor($r('app.color.ts_color_error'))
       Text('人物不存在或已被删除')
         .fontSize(16)
-        .fontColor('#FFFFFF')
+        .fontColor($r('app.color.ts_import_bar_on_bg'))
       Button('返回人物列表')
         .height(44)
         .fontSize(14)
-        .backgroundColor('#444444')
-        .fontColor('#FFFFFF')
+        .backgroundColor($r('app.color.ts_surface_container_high'))
+        .fontColor($r('app.color.ts_import_bar_on_bg'))
         .width('100%')
         .onClick((): void => {
           router.back();

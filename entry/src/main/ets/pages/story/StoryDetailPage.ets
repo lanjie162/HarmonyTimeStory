@@ -139,21 +139,21 @@ export struct StoryDetailPage {
             .height(36)
             .fontSize(24)
             .backgroundColor(Color.Transparent)
-            .fontColor('#FFFFFF')
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
             .onClick((): void => {
               dismissSoftKeyboard();
               router.back();
             })
           Text(this.story?.title ?? '故事')
             .fontSize(20)
-            .fontColor('#FFFFFF')
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
             .fontWeight(FontWeight.Bold)
             .layoutWeight(1)
           Button('编辑')
             .height(36)
             .fontSize(16)
-            .backgroundColor('#67C31F')
-            .fontColor('#FFFFFF')
+            .backgroundColor($r('app.color.ts_brand_primary'))
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
             .onClick((): void => {
               router.pushUrl({
                 url: 'pages/story/StoryDetailEditPage',
@@ -164,7 +164,7 @@ export struct StoryDetailPage {
         .width('100%')
         .height(56)
         .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-        .backgroundColor('#333333')
+        .backgroundColor($r('app.color.ts_surface_container_high'))
         .alignItems(VerticalAlign.Center)
 
         if (this.story !== null && this.storyId > 0) {
@@ -200,7 +200,7 @@ export struct StoryDetailPage {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor('#111111')
+      .backgroundColor($r('app.color.ts_surface'))
 
       if (this.showSwiper) {
         PhotoSwiper({
@@ -233,15 +233,15 @@ export struct StoryDetailPage {
         Column() {
           Text('🖼️')
             .fontSize(48)
-            .fontColor('#555555')
+            .fontColor($r('app.color.ts_text_muted'))
           Text('暂无封面')
             .fontSize(14)
-            .fontColor('#888888')
+            .fontColor($r('app.color.ts_text_muted'))
             .margin({ top: 8 })
         }
         .width('100%')
         .aspectRatio(16 / 9)
-        .backgroundColor('#222222')
+        .backgroundColor($r('app.color.ts_surface_container'))
         .borderRadius(12)
         .justifyContent(FlexAlign.Center)
         .alignItems(HorizontalAlign.Center)
@@ -256,7 +256,7 @@ export struct StoryDetailPage {
     Column() {
       Text(this.buildMetaInfoText())
         .fontSize(14)
-        .fontColor('#AAAAAA')
+        .fontColor($r('app.color.ts_text_tertiary'))
         .width('100%')
     }
     .width('100%')
@@ -270,18 +270,18 @@ export struct StoryDetailPage {
         ForEach(this.getDisplayTags(), (tag: string) => {
           Text(`#${tag}`)
             .fontSize(12)
-            .fontColor('#67C31F')
+            .fontColor($r('app.color.ts_brand_primary'))
             .padding({ left: 10, right: 10, top: 4, bottom: 4 })
-            .backgroundColor('#1A67C31F')
+            .backgroundColor('#1A' + 'B85C38')
             .borderRadius(14)
             .margin({ right: 8, bottom: 8 })
         }, (tag: string): string => `tag-${tag}`)
         if (this.getExtraTagCount() > 0) {
           Text(`+${this.getExtraTagCount()}`)
             .fontSize(12)
-            .fontColor('#67C31F')
+            .fontColor($r('app.color.ts_brand_primary'))
             .padding({ left: 10, right: 10, top: 4, bottom: 4 })
-            .backgroundColor('#1A67C31F')
+            .backgroundColor('#1A' + 'B85C38')
             .borderRadius(14)
             .margin({ bottom: 8 })
         }
@@ -307,11 +307,11 @@ export struct StoryDetailPage {
                   .objectFit(ImageFit.Cover)
               } else {
                 Circle({ width: 40, height: 40 })
-                  .fill('#444444')
+                  .fill($r('app.color.ts_surface_container_high'))
               }
               Text(p.displayName)
                 .fontSize(10)
-                .fontColor('#AAAAAA')
+                .fontColor($r('app.color.ts_text_tertiary'))
                 .maxLines(1)
             }
             .onClick((): void => {
@@ -338,22 +338,22 @@ export struct StoryDetailPage {
       Row({ space: 8 }) {
         Text(`${this.photos.length} 张照片`)
           .fontSize(16)
-          .fontColor('#FFFFFF')
+          .fontColor($r('app.color.ts_import_bar_on_bg'))
           .fontWeight(FontWeight.Medium)
         Row({ space: 8 }) {
           Button('+ 添加')
             .height(32)
             .fontSize(12)
-            .backgroundColor('#1E88E5')
-            .fontColor('#FFFFFF')
+            .backgroundColor($r('app.color.ts_color_info'))
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
             .onClick((): void => {
               this.pickPhotosFromAlbum();
             })
           Button('导入')
             .height(32)
             .fontSize(12)
-            .backgroundColor('#444444')
-            .fontColor('#FFFFFF')
+            .backgroundColor($r('app.color.ts_surface_container_high'))
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
             .onClick((): void => {
               router.pushUrl({
                 url: 'pages/import/ImportPage',
@@ -391,19 +391,19 @@ export struct StoryDetailPage {
         Column({ space: 10 }) {
           Text('🖼️')
             .fontSize(32)
-            .fontColor('#555555')
+            .fontColor($r('app.color.ts_text_muted'))
           Text('这个事件还没有照片')
             .fontSize(14)
-            .fontColor('#888888')
+            .fontColor($r('app.color.ts_text_muted'))
           Text('添加照片或导入相册来记录吧')
             .fontSize(12)
-            .fontColor('#666666')
+            .fontColor($r('app.color.ts_text_tertiary'))
             .margin({ top: 4 })
           Button('+ 添加照片')
             .height(40)
             .fontSize(14)
-            .backgroundColor('#1E88E5')
-            .fontColor('#FFFFFF')
+            .backgroundColor($r('app.color.ts_color_info'))
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
             .margin({ top: 12 })
             .onClick((): void => {
               this.pickPhotosFromAlbum();
@@ -411,7 +411,7 @@ export struct StoryDetailPage {
         }
         .width('100%')
         .padding(24)
-        .backgroundColor('#1A222222')
+        .backgroundColor('#1A' + 'B85C38')
         .borderRadius(12)
         .alignItems(HorizontalAlign.Center)
       }
@@ -425,15 +425,15 @@ export struct StoryDetailPage {
     Column({ space: 16 }) {
       Text('⛔')
         .fontSize(48)
-        .fontColor('#FF5555')
+        .fontColor($r('app.color.ts_color_error'))
       Text('故事不存在或已被删除')
         .fontSize(16)
-        .fontColor('#FFFFFF')
+        .fontColor($r('app.color.ts_import_bar_on_bg'))
       Button('返回故事列表')
         .height(44)
         .fontSize(14)
-        .backgroundColor('#444444')
-        .fontColor('#FFFFFF')
+        .backgroundColor($r('app.color.ts_surface_container_high'))
+        .fontColor($r('app.color.ts_import_bar_on_bg'))
         .width('100%')
         .onClick((): void => {
           router.back();

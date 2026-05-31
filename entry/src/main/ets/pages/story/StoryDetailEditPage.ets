@@ -125,7 +125,7 @@ export struct StoryDetailEditPage {
       },
       secondaryButton: {
         value: '删除',
-        fontColor: '#CC0000',
+        fontColor: $r('app.color.ts_color_error'),
         action: (): void => {
           dismissSoftKeyboard();
           const svc = getStoryService();
@@ -152,7 +152,7 @@ export struct StoryDetailEditPage {
       },
       secondaryButton: {
         value: '移除',
-        fontColor: '#CC0000',
+        fontColor: $r('app.color.ts_color_error'),
         action: (): void => {
           dismissSoftKeyboard();
           const svc = getStoryService();
@@ -284,21 +284,21 @@ export struct StoryDetailEditPage {
           .height(36)
           .fontSize(24)
           .backgroundColor(Color.Transparent)
-          .fontColor('#FFFFFF')
+          .fontColor($r('app.color.ts_import_bar_on_bg'))
           .onClick((): void => {
             dismissSoftKeyboard();
             router.back();
           })
         Text('编辑故事')
           .fontSize(20)
-          .fontColor('#FFFFFF')
+          .fontColor($r('app.color.ts_import_bar_on_bg'))
           .fontWeight(FontWeight.Bold)
           .layoutWeight(1)
         Button('保存')
           .height(36)
           .fontSize(16)
-          .backgroundColor('#67C31F')
-          .fontColor('#FFFFFF')
+          .backgroundColor($r('app.color.ts_brand_primary'))
+          .fontColor($r('app.color.ts_import_bar_on_bg'))
           .onClick((): void => {
             this.saveAll();
           })
@@ -306,7 +306,7 @@ export struct StoryDetailEditPage {
       .width('100%')
       .height(56)
       .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor('#333333')
+      .backgroundColor($r('app.color.ts_surface_container_high'))
       .alignItems(VerticalAlign.Center)
 
       if (this.story !== null && this.storyId > 0) {
@@ -315,7 +315,7 @@ export struct StoryDetailEditPage {
             Column({ space: 12 }) {
               Text('编辑')
                 .fontSize(16)
-                .fontColor('#FFFFFF')
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
 
@@ -340,18 +340,18 @@ export struct StoryDetailEditPage {
               Row({ space: 8 }) {
                 Text('封面')
                   .fontSize(14)
-                  .fontColor('#AAAAAA')
+                  .fontColor($r('app.color.ts_text_tertiary'))
                 if (this.draftCoverUri.length > 0) {
                   Text(this.draftCoverUri.length > 30 ? this.draftCoverUri.substring(0, 30) + '...' : this.draftCoverUri)
                     .fontSize(12)
-                    .fontColor('#FFFFFF')
+                    .fontColor($r('app.color.ts_import_bar_on_bg'))
                     .layoutWeight(1)
                     .maxLines(1)
                   Button('移除')
                     .height(32)
                     .fontSize(12)
-                    .backgroundColor('#444444')
-                    .fontColor('#FF5555')
+                    .backgroundColor($r('app.color.ts_surface_container_high'))
+                    .fontColor($r('app.color.ts_color_error'))
                     .onClick((): void => {
                       this.removeCover();
                     })
@@ -359,8 +359,8 @@ export struct StoryDetailEditPage {
                   Button('选择封面')
                     .height(32)
                     .fontSize(12)
-                    .backgroundColor('#1E88E5')
-                    .fontColor('#FFFFFF')
+                    .backgroundColor($r('app.color.ts_color_info'))
+                    .fontColor($r('app.color.ts_import_bar_on_bg'))
                     .onClick((): void => {
                       this.pickCoverFromAlbum();
                     })
@@ -377,46 +377,55 @@ export struct StoryDetailEditPage {
               Row({ space: 8 }) {
                 Text('开始日期')
                   .fontSize(14)
-                  .fontColor('#AAAAAA')
+                  .fontColor($r('app.color.ts_text_tertiary'))
                 Text(this.draftTimeStartText)
                   .fontSize(14)
-                  .fontColor('#FFFFFF')
+                  .fontColor($r('app.color.ts_import_bar_on_bg'))
+                Text(' 📅')
+                  .fontSize(14)
+                  .fontColor($r('app.color.ts_brand_primary'))
               }
               .width('100%')
-              CalendarPicker({
-                hintRadius: 16,
-                selected: buildPickerDate(this.draftTimeStart > 0 ? this.draftTimeStart : null)
-              })
-                .width('100%')
-                .onChange((value: Date): void => {
-                  this.draftTimeStart = value.getTime();
-                  this.draftTimeStartText = formatDate(this.draftTimeStart);
+              .onClick((): void => {
+                CalendarPickerDialog.show({
+                  selected: buildPickerDate(this.draftTimeStart),
+                  onAccept: (value: Date): void => {
+                    this.draftTimeStart = value.getTime();
+                    this.draftTimeStartText = formatDate(this.draftTimeStart);
+                  }
                 })
+              })
 
               Row({ space: 8 }) {
                 Text('结束日期')
                   .fontSize(14)
-                  .fontColor('#AAAAAA')
+                  .fontColor($r('app.color.ts_text_tertiary'))
                 Text(this.draftTimeEndText)
                   .fontSize(14)
-                  .fontColor('#FFFFFF')
+                  .fontColor($r('app.color.ts_import_bar_on_bg'))
+                Text(' 📅')
+                  .fontSize(14)
+                  .fontColor($r('app.color.ts_brand_primary'))
               }
               .width('100%')
-              CalendarPicker({
-                hintRadius: 16,
-                selected: buildPickerDate(this.draftTimeEnd > 0 ? this.draftTimeEnd : null),
-                start: this.draftTimeStart > 0 ? new Date(this.draftTimeStart) : new Date(1900, 0, 1)
-              })
-                .width('100%')
-                .onChange((value: Date): void => {
-                  this.draftTimeEnd = value.getTime();
-                  this.draftTimeEndText = formatDate(this.draftTimeEnd);
+              .onClick((): void => {
+                CalendarPickerDialog.show({
+                  selected: buildPickerDate(this.draftTimeEnd),
+                  onAccept: (value: Date): void => {
+                    if (value.getTime() < this.draftTimeStart) {
+                      promptAction.showToast({ message: '结束日期不能早于开始日期' });
+                      return;
+                    }
+                    this.draftTimeEnd = value.getTime();
+                    this.draftTimeEndText = formatDate(this.draftTimeEnd);
+                  }
                 })
+              })
 
               Column({ space: 6 }) {
                 Text('自定义标签')
                   .fontSize(14)
-                  .fontColor('#AAAAAA')
+                  .fontColor($r('app.color.ts_text_tertiary'))
                   .width('100%')
                 Row({ space: 8 }) {
                   TextInputWithKeyboard({
@@ -430,8 +439,8 @@ export struct StoryDetailEditPage {
                   Button('添加')
                     .height(40)
                     .fontSize(12)
-                    .backgroundColor('#1E88E5')
-                    .fontColor('#FFFFFF')
+                    .backgroundColor($r('app.color.ts_color_info'))
+                    .fontColor($r('app.color.ts_import_bar_on_bg'))
                     .onClick((): void => {
                       this.addTag();
                     })
@@ -444,19 +453,19 @@ export struct StoryDetailEditPage {
                       Row({ space: 4 }) {
                         Text(tag)
                           .fontSize(12)
-                          .fontColor('#67C31F')
+                          .fontColor($r('app.color.ts_brand_primary'))
                         Button('x')
                           .height('20vp')
                           .width('20vp')
                           .fontSize('10fp')
-                          .backgroundColor('#444444')
-                          .fontColor('#FF5555')
+                          .backgroundColor($r('app.color.ts_surface_container_high'))
+                          .fontColor($r('app.color.ts_color_error'))
                           .onClick((): void => {
                             this.removeTag(idx);
                           })
                       }
                       .padding({ left: 8, right: 4, top: 2, bottom: 2 })
-                      .backgroundColor('#333333')
+                      .backgroundColor($r('app.color.ts_surface_container_high'))
                       .borderRadius(14)
                     })
                   }
@@ -467,9 +476,9 @@ export struct StoryDetailEditPage {
             }
             .width('100%')
             .padding(16)
-            .backgroundColor('#222222')
+            .backgroundColor($r('app.color.ts_surface_container'))
             .borderRadius(12)
-            .border({ width: 1, color: '#444444' })
+            .border({ width: 1, color: $r('app.color.ts_outline') })
 
             Column({ space: 10 }) {
               Button('删除故事')
@@ -477,26 +486,26 @@ export struct StoryDetailEditPage {
                 .height(44)
                 .fontSize(14)
                 .fontWeight(FontWeight.Medium)
-                .backgroundColor('#CC0000')
-                .fontColor('#FFFFFF')
+                .backgroundColor($r('app.color.ts_color_error'))
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .onClick((): void => {
                   this.confirmDeleteCurrentStory();
                 })
               Text('删除后将同时移除该故事的所有关联与照片挂载，不可撤销。')
                 .fontSize(12)
-                .fontColor('#AAAAAA')
+                .fontColor($r('app.color.ts_text_tertiary'))
                 .width('100%')
             }
             .width('100%')
             .padding(16)
-            .backgroundColor('#222222')
+            .backgroundColor($r('app.color.ts_surface_container'))
             .borderRadius(12)
-            .border({ width: 1, color: '#444444' })
+            .border({ width: 1, color: $r('app.color.ts_outline') })
 
             Column({ space: 12 }) {
               Text('关联人物')
                 .fontSize(16)
-                .fontColor('#FFFFFF')
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
               Row({ space: 8 }) {
@@ -510,8 +519,8 @@ export struct StoryDetailEditPage {
                 Button('创建人物')
                   .height(48)
                   .fontSize(14)
-                  .backgroundColor('#1E88E5')
-                  .fontColor('#FFFFFF')
+                  .backgroundColor($r('app.color.ts_color_info'))
+                  .fontColor($r('app.color.ts_import_bar_on_bg'))
                   .onClick((): void => {
                     this.createPersonQuick();
                   })
@@ -521,7 +530,7 @@ export struct StoryDetailEditPage {
               if (this.personsAll.length === 0) {
                 Text('暂无人物，可先创建后与故事关联。')
                   .fontSize(12)
-                  .fontColor('#AAAAAA')
+                  .fontColor($r('app.color.ts_text_tertiary'))
                   .width('100%')
               }
               Column({ space: 8 }) {
@@ -530,35 +539,35 @@ export struct StoryDetailEditPage {
                     Text(p.displayName)
                       .layoutWeight(1)
                       .fontSize(14)
-                      .fontColor('#FFFFFF')
+                      .fontColor($r('app.color.ts_import_bar_on_bg'))
                     Button(this.linkedPersonIds.indexOf(p.id) >= 0 ? '解除关联' : '关联')
                       .height(36)
                       .fontSize(12)
-                      .backgroundColor('#444444')
-                      .fontColor('#67C31F')
+                      .backgroundColor($r('app.color.ts_surface_container_high'))
+                      .fontColor($r('app.color.ts_brand_primary'))
                       .onClick((): void => {
                         this.togglePersonLink(p);
                       })
                   }
                   .padding(12)
                   .width('100%')
-                  .backgroundColor('#444444')
+                  .backgroundColor($r('app.color.ts_surface_container_high'))
                   .borderRadius(10)
-                  .border({ width: 1, color: '#555555' })
+                  .border({ width: 1, color: $r('app.color.ts_outline') })
                 }, (p: PersonModel): string => `person-row-${p.id}`)
               }
               .width('100%')
             }
             .width('100%')
             .padding(16)
-            .backgroundColor('#222222')
+            .backgroundColor($r('app.color.ts_surface_container'))
             .borderRadius(12)
-            .border({ width: 1, color: '#444444' })
+            .border({ width: 1, color: $r('app.color.ts_outline') })
 
             Column({ space: 12 }) {
               Text('照片')
                 .fontSize(16)
-                .fontColor('#FFFFFF')
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
               Button('从相册选择照片（可多选）')
@@ -566,8 +575,8 @@ export struct StoryDetailEditPage {
                 .height(44)
                 .fontSize(14)
                 .fontWeight(FontWeight.Medium)
-                .backgroundColor('#1E88E5')
-                .fontColor('#FFFFFF')
+                .backgroundColor($r('app.color.ts_color_info'))
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .onClick((): void => {
                   this.pickPhotosFromAlbum();
                 })
@@ -575,15 +584,15 @@ export struct StoryDetailEditPage {
               if (BuildProfile.DEBUG) {
                 Text(this.debugLastAlbumInject.length > 0 ? this.debugLastAlbumInject : '【E2E】尚未注入 mock URI')
                   .fontSize(12)
-                  .fontColor('#FFFF00')
+                  .fontColor($r('app.color.ts_debug_banner'))
                   .width('100%')
                 Row({ space: 8 }) {
                   Button('【DEBUG】注入相册等价 URI')
                     .fontSize(12)
                     .layoutWeight(1)
                     .height(36)
-                    .backgroundColor('#444444')
-                    .fontColor('#AAAAAA')
+                    .backgroundColor($r('app.color.ts_surface_container_high'))
+                    .fontColor($r('app.color.ts_text_tertiary'))
                     .onClick((): void => {
                       this.injectDebugAlbumEquivUri('file://e2e/album-equiv-story-1');
                     })
@@ -591,8 +600,8 @@ export struct StoryDetailEditPage {
                     .fontSize(12)
                     .layoutWeight(1)
                     .height(36)
-                    .backgroundColor('#444444')
-                    .fontColor('#AAAAAA')
+                    .backgroundColor($r('app.color.ts_surface_container_high'))
+                    .fontColor($r('app.color.ts_text_tertiary'))
                     .onClick((): void => {
                       this.injectDebugAlbumEquivUri('file://e2e/album-equiv-story-1');
                     })
@@ -600,8 +609,8 @@ export struct StoryDetailEditPage {
                 .width('100%')
                 Button('【DEBUG】GC 孤儿 PhotoRef')
                   .fontSize(12)
-                  .backgroundColor('#444444')
-                  .fontColor('#AAAAAA')
+                  .backgroundColor($r('app.color.ts_surface_container_high'))
+                  .fontColor($r('app.color.ts_text_tertiary'))
                   .width('100%')
                   .height(36)
                   .onClick((): void => {
@@ -613,7 +622,7 @@ export struct StoryDetailEditPage {
 
               if (this.photos.length === 0) {
                 Text('暂无挂载照片')
-                  .fontColor('#AAAAAA')
+                  .fontColor($r('app.color.ts_text_tertiary'))
                   .fontSize(12)
                   .width('100%')
               } else {
@@ -642,27 +651,27 @@ export struct StoryDetailEditPage {
             }
             .width('100%')
             .padding(16)
-            .backgroundColor('#222222')
+            .backgroundColor($r('app.color.ts_surface_container'))
             .borderRadius(12)
-            .border({ width: 1, color: '#444444' })
+            .border({ width: 1, color: $r('app.color.ts_outline') })
 
             Column({ space: 10 }) {
               Text('批量导入')
                 .fontSize(16)
-                .fontColor('#FFFFFF')
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
               Text('走相册向导：选图 → 准备 → 条件 → 扫描 → 确认写入。')
                 .fontSize(12)
-                .fontColor('#AAAAAA')
+                .fontColor($r('app.color.ts_text_tertiary'))
                 .width('100%')
               Button('进入导入向导壳页')
                 .width('100%')
                 .height(48)
                 .fontSize(14)
                 .fontWeight(FontWeight.Medium)
-                .backgroundColor('#67C31F')
-                .fontColor('#FFFFFF')
+                .backgroundColor($r('app.color.ts_brand_primary'))
+                .fontColor($r('app.color.ts_import_bar_on_bg'))
                 .onClick((): void => {
                   dismissSoftKeyboard();
                   router.pushUrl({
@@ -673,9 +682,9 @@ export struct StoryDetailEditPage {
             }
             .width('100%')
             .padding(16)
-            .backgroundColor('#333333')
+            .backgroundColor($r('app.color.ts_surface_container_high'))
             .borderRadius(12)
-            .border({ width: 1, color: '#444444' })
+            .border({ width: 1, color: $r('app.color.ts_outline') })
           }
           .width('100%')
           .padding({ left: 16, right: 16, top: 8, bottom: 28 })
@@ -689,19 +698,19 @@ export struct StoryDetailEditPage {
         Column({ space: 8 }) {
           Text('未找到故事或路由参数缺失（需要 storyId）。')
             .fontSize(16)
-            .fontColor('#FF5555')
+            .fontColor($r('app.color.ts_color_error'))
             .width('100%')
         }
         .width('100%')
         .padding(16)
         .margin({ left: 16, right: 16 })
-        .backgroundColor('#222222')
+        .backgroundColor($r('app.color.ts_surface_container'))
         .borderRadius(12)
-        .border({ width: 1, color: '#444444' })
+        .border({ width: 1, color: $r('app.color.ts_outline') })
       }
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#111111')
+    .backgroundColor($r('app.color.ts_surface'))
   }
 }
