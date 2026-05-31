@@ -338,7 +338,7 @@ export struct StoryDetailPage {
       Row({ space: 8 }) {
         Text(`${this.photos.length} 张照片`)
           .fontSize(16)
-          .fontColor($r('app.color.ts_import_bar_on_bg'))
+          .fontColor($r('app.color.ts_text_primary'))
           .fontWeight(FontWeight.Medium)
         Row({ space: 8 }) {
           Button('+ 添加')

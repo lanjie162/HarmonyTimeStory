@@ -315,7 +315,7 @@ export struct StoryDetailEditPage {
             Column({ space: 12 }) {
               Text('编辑')
                 .fontSize(16)
-                .fontColor($r('app.color.ts_import_bar_on_bg'))
+                .fontColor($r('app.color.ts_text_primary'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
 
@@ -344,7 +344,7 @@ export struct StoryDetailEditPage {
                 if (this.draftCoverUri.length > 0) {
                   Text(this.draftCoverUri.length > 30 ? this.draftCoverUri.substring(0, 30) + '...' : this.draftCoverUri)
                     .fontSize(12)
-                    .fontColor($r('app.color.ts_import_bar_on_bg'))
+                    .fontColor($r('app.color.ts_text_primary'))
                     .layoutWeight(1)
                     .maxLines(1)
                   Button('移除')
@@ -380,7 +380,7 @@ export struct StoryDetailEditPage {
                   .fontColor($r('app.color.ts_text_tertiary'))
                 Text(this.draftTimeStartText)
                   .fontSize(14)
-                  .fontColor($r('app.color.ts_import_bar_on_bg'))
+                  .fontColor($r('app.color.ts_text_primary'))
                 Text(' 📅')
                   .fontSize(14)
                   .fontColor($r('app.color.ts_brand_primary'))
@@ -402,7 +402,7 @@ export struct StoryDetailEditPage {
                   .fontColor($r('app.color.ts_text_tertiary'))
                 Text(this.draftTimeEndText)
                   .fontSize(14)
-                  .fontColor($r('app.color.ts_import_bar_on_bg'))
+                  .fontColor($r('app.color.ts_text_primary'))
                 Text(' 📅')
                   .fontSize(14)
                   .fontColor($r('app.color.ts_brand_primary'))
@@ -505,7 +505,7 @@ export struct StoryDetailEditPage {
             Column({ space: 12 }) {
               Text('关联人物')
                 .fontSize(16)
-                .fontColor($r('app.color.ts_import_bar_on_bg'))
+                .fontColor($r('app.color.ts_text_primary'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
               Row({ space: 8 }) {
@@ -539,7 +539,7 @@ export struct StoryDetailEditPage {
                     Text(p.displayName)
                       .layoutWeight(1)
                       .fontSize(14)
-                      .fontColor($r('app.color.ts_import_bar_on_bg'))
+                      .fontColor($r('app.color.ts_text_primary'))
                     Button(this.linkedPersonIds.indexOf(p.id) >= 0 ? '解除关联' : '关联')
                       .height(36)
                       .fontSize(12)
@@ -567,7 +567,7 @@ export struct StoryDetailEditPage {
             Column({ space: 12 }) {
               Text('照片')
                 .fontSize(16)
-                .fontColor($r('app.color.ts_import_bar_on_bg'))
+                .fontColor($r('app.color.ts_text_primary'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
               Button('从相册选择照片（可多选）')
@@ -658,7 +658,7 @@ export struct StoryDetailEditPage {
             Column({ space: 10 }) {
               Text('批量导入')
                 .fontSize(16)
-                .fontColor($r('app.color.ts_import_bar_on_bg'))
+                .fontColor($r('app.color.ts_text_primary'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
               Text('走相册向导：选图 → 准备 → 条件 → 扫描 → 确认写入。')
