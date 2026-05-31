@@ -367,7 +367,7 @@ export struct PersonDetailEditPage {
             Column({ space: 12 }) {
               Text('编辑')
                 .fontSize(16)
-                .fontColor($r('app.color.ts_import_bar_on_bg'))
+                .fontColor($r('app.color.ts_text_primary'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
 
@@ -517,7 +517,7 @@ export struct PersonDetailEditPage {
             Column({ space: 12 }) {
               Text('关联故事')
                 .fontSize(16)
-                .fontColor($r('app.color.ts_import_bar_on_bg'))
+                .fontColor($r('app.color.ts_text_primary'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
               Text('可新建故事后点「关联/解除关联」写入PersonStory（内存）。')
@@ -555,7 +555,7 @@ export struct PersonDetailEditPage {
                     Text(s.title)
                       .layoutWeight(1)
                       .fontSize(14)
-                      .fontColor($r('app.color.ts_import_bar_on_bg'))
+                      .fontColor($r('app.color.ts_text_primary'))
                     Button(this.linkedStoryIds.indexOf(s.id) >= 0 ? '解除关联' : '关联')
                       .height(36)
                       .fontSize(12)
@@ -583,7 +583,7 @@ export struct PersonDetailEditPage {
             Column({ space: 12 }) {
               Text('照片')
                 .fontSize(16)
-                .fontColor($r('app.color.ts_import_bar_on_bg'))
+                .fontColor($r('app.color.ts_text_primary'))
                 .fontWeight(FontWeight.Medium)
                 .width('100%')
               Button('从相册选择照片（可多选）')

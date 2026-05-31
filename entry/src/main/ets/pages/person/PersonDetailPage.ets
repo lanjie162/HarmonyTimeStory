@@ -306,7 +306,7 @@ export struct PersonDetailPage {
                   Column({ space: 4 }) {
                     Text(this.person.displayName)
                       .fontSize(20)
-                      .fontColor($r('app.color.ts_import_bar_on_bg'))
+                      .fontColor($r('app.color.ts_text_primary'))
                       .fontWeight(FontWeight.Medium)
                       .width('100%')
                     Text(`${typeLabel(this.person.personType)} · ${formatBirthday(this.person.birthday)} · ${genderLabel(this.person.gender)}`)
@@ -528,7 +528,7 @@ export struct PersonDetailPage {
     Row() {
       Text(formatMonthLabel(g.year, g.month))
         .fontSize(16)
-        .fontColor($r('app.color.ts_import_bar_on_bg'))
+        .fontColor($r('app.color.ts_text_primary'))
         .fontWeight(FontWeight.Medium)
     }
     .width('100%')
