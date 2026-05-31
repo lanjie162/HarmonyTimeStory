@@ -63,13 +63,13 @@ export default class EntryAbility extends UIAbility {
 
       const repo = RepositoryImpl.getInstance();
       repo.attachRdb(store);
+      installAppDataStore(repo);
       windowStage.loadContent('pages/shell/ShellPage', (err) => {
         if (err.code) {
           hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
           return;
         }
         hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
-        installAppDataStore(repo);
         CrashReporter.getInstance().register();
       });
     }).catch((e: object) => {
