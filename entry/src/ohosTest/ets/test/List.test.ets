@@ -7,6 +7,9 @@ import v2RegressionStory from './V2RegressionStory.test';
 import v2RegressionSuggestImport from './V2RegressionSuggestImport.test';
 import v2RegressionShell from './V2RegressionShell.test';
 import v2RegressionImportFull from './V2RegressionImportFull.test';
+import l3PersonService from './L3PersonService.test';
+import l3StoryService from './L3StoryService.test';
+import l3LinkPhotoService from './L3LinkPhotoService.test';
 
 export default function testsuite() {
   abilityTest();
@@ -18,4 +21,7 @@ export default function testsuite() {
   v2RegressionB2();
   v2RegressionShell();
   v2RegressionImportFull();
+  l3PersonService();
+  l3StoryService();
+  l3LinkPhotoService();
 }
