@@ -1,35 +1,22 @@
 import router from '@ohos.router';
-import promptAction from '@ohos.promptAction';
 import photoAccessHelper from '@ohos.file.photoAccessHelper';
 import BuildProfile from 'BuildProfile';
-import type { PersonModel, PhotoRefModel, StoryModel } from '../../domain/model/Models';
+import type { PersonModel, PhotoMetadata, PhotoRefModel, StoryModel } from '../../domain/model/Models';
 import { getPersonService } from '../../features/person/PersonFeature';
 import { getStoryService } from '../../features/story/StoryFeature';
+import { PhotoSwiper } from '../../common/ui/PhotoSwiper';
 import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
-
-function parseStoryId(params: Record<string, Object>): number {
-  const raw = params['storyId'];
-  if (typeof raw === 'number') {
-    return raw as number;
-  }
-  if (typeof raw === 'string') {
-    const n = Number.parseInt(raw as string, 10);
-    return Number.isNaN(n) ? 0 : n;
-  }
-  return 0;
-}
+import { parseStoryId, formatDate, buildDateRangeText as buildDateRangeTextLogic, buildMetaInfoText as buildMetaInfoTextLogic, getDisplayTags as getDisplayTagsLogic, getExtraTagCount as getExtraTagCountLogic } from './StoryDetailLogic';
 
 @Entry
 @Component
 export struct StoryDetailPage {
   @State storyId: number = 0;
   @State story: StoryModel | null = null;
-  @State draftTitle: string = '';
-  @State personsAll: PersonModel[] = [];
-  @State linkedPersonIds: number[] = [];
+  @State linkedPersons: PersonModel[] = [];
   @State photos: PhotoRefModel[] = [];
-  @State newPersonName: string = '';
-  @State debugLastAlbumInject: string = '';
+  @State showSwiper: boolean = false;
+  @State swiperIndex: number = 0;
 
   aboutToAppear(): void {
     const params = router.getParams() as Record<string, Object>;
@@ -46,49 +33,13 @@ export struct StoryDetailPage {
   private refresh(): void {
     const sSvc = getStoryService();
     this.story = sSvc.getStory(this.storyId);
-    this.draftTitle = this.story?.title ?? '';
-    this.personsAll = getPersonService().listPersons();
-    this.linkedPersonIds = sSvc.listLinkedPersons(this.storyId).map((p): number => p.id);
-    this.photos = sSvc.listStoryPhotos(this.storyId);
-  }
-
-  private saveTitle(): void {
-    dismissSoftKeyboard();
-    const ok = getStoryService().updateStory(this.storyId, this.draftTitle);
-    if (!ok) {
-      promptAction.showToast({ message: '保存失败：故事不存在或标题为空' });
-      return;
-    }
-    promptAction.showToast({ message: '已保存标题' });
-    this.refresh();
-  }
-
-  private createPersonQuick(): void {
-    dismissSoftKeyboard();
-    const pid = getPersonService().createPerson(this.newPersonName);
-    if (pid < 0) {
-      promptAction.showToast({ message: '人物显示名不能为空' });
-      return;
-    }
-    this.newPersonName = '';
-    promptAction.showToast({ message: `已创建人物 #${pid}，可选择「关联」` });
-    this.refresh();
-  }
-
-  private injectDebugAlbumEquivUri(uri: string): void {
-    if (this.storyId <= 0) {
-      this.debugLastAlbumInject = '【E2E】inject skip：无 storyId';
-      return;
-    }
-    const res = getStoryService().addPhotoToStory(this.storyId, uri);
-    if (res.duplicate) {
-      this.debugLastAlbumInject = '【E2E】上次加图：重复跳过（PH-01）';
-    } else if (res.success) {
-      this.debugLastAlbumInject = '【E2E】上次加图：成功 file://e2e/album-equiv-story-1';
+    if (this.story !== null) {
+      this.linkedPersons = sSvc.listLinkedPersons(this.storyId);
+      this.photos = sSvc.listStoryPhotos(this.storyId);
     } else {
-      this.debugLastAlbumInject = '【E2E】上次加图：失败（故事不存在或 URI 为空）';
+      this.linkedPersons = [];
+      this.photos = [];
     }
-    this.refresh();
   }
 
   private async pickPhotosFromAlbum(): Promise<void> {
@@ -105,316 +56,364 @@ export struct StoryDetailPage {
       }
       const svc = getStoryService();
       for (const uri of uris) {
-        const res = svc.addPhotoToStory(this.storyId, uri);
-        if (res.duplicate) {
-          promptAction.showToast({ message: '检测到重复 URI，已跳过（PH-01）' });
-        }
+        const metadata: PhotoMetadata = {};
+        svc.addPhotoToStory(this.storyId, uri, metadata);
       }
-      promptAction.showToast({ message: '已处理相册选择（故事 PhotoOwnerLink）' });
       this.refresh();
     } catch (_e) {
-      promptAction.showToast({ message: '选图取消或不可用，可稍后重试' });
     }
   }
 
-  private togglePersonLink(p: PersonModel): void {
-    dismissSoftKeyboard();
-    const svc = getStoryService();
-    if (this.linkedPersonIds.indexOf(p.id) >= 0) {
-      svc.unlinkStoryFromPerson(this.storyId, p.id);
-    } else {
-      svc.linkStoryToPerson(this.storyId, p.id);
+  private removePhoto(photo: PhotoRefModel): void {
+    const ok = getStoryService().removePhotoFromStory(this.storyId, photo.id);
+    if (ok) {
+      this.refresh();
     }
-    this.refresh();
+  }
+
+  private buildDateRangeText(): string {
+    return buildDateRangeTextLogic(this.story?.timeStart ?? null, this.story?.timeEnd ?? null);
+  }
+
+  private buildMetaInfoText(): string {
+    return buildMetaInfoTextLogic(this.buildDateRangeText(), this.story?.location);
+  }
+
+  private getDisplayTags(): string[] {
+    return getDisplayTagsLogic(this.story?.tags);
+  }
+
+  private getExtraTagCount(): number {
+    return getExtraTagCountLogic(this.story?.tags);
   }
 
   build() {
-    Column({ space: 0 }) {
-      Row({ space: 10 }) {
-        Button('返回列表')
-          .height(36)
-          .fontSize($r('app.float.ts_font_support'))
-          .backgroundColor($r('app.color.ts_surface_container_high'))
-          .fontColor($r('app.color.ts_text_secondary'))
-          .onClick((): void => {
-            dismissSoftKeyboard();
-            router.back();
-          })
-        Text('故事详情')
-          .fontSize($r('app.float.ts_font_title'))
-          .fontColor($r('app.color.ts_text_primary'))
-          .fontWeight(FontWeight.Bold)
+    Stack({ alignContent: Alignment.TopStart }) {
+      Column({ space: 0 }) {
+        Row({ space: 10 }) {
+          Button('←')
+            .height(36)
+            .fontSize(24)
+            .backgroundColor(Color.Transparent)
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
+            .onClick((): void => {
+              dismissSoftKeyboard();
+              router.back();
+            })
+          Text(this.story?.title ?? '故事')
+            .fontSize(20)
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
+            .fontWeight(FontWeight.Bold)
+            .layoutWeight(1)
+          Button('编辑')
+            .height(36)
+            .fontSize(16)
+            .backgroundColor($r('app.color.ts_brand_primary'))
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
+            .onClick((): void => {
+              router.pushUrl({
+                url: 'pages/story/StoryDetailEditPage',
+                params: { storyId: this.storyId }
+              });
+            })
+        }
+        .width('100%')
+        .height(56)
+        .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+        .backgroundColor($r('app.color.ts_surface_container_high'))
+        .alignItems(VerticalAlign.Center)
+
+        if (this.story !== null && this.storyId > 0) {
+          Scroll() {
+            Column({ space: 0 }) {
+              this.buildCoverBanner()
+
+              if (this.buildMetaInfoText()) {
+                this.buildMetaInfoRow()
+              }
+
+              if (this.getDisplayTags().length > 0) {
+                this.buildTagsRow()
+              }
+
+              if (this.linkedPersons.length > 0) {
+                this.buildPersonAvatarRow()
+              }
+
+              this.buildPhotoSection()
+            }
+            .width('100%')
+            .padding({ left: 16, right: 16, top: 0, bottom: 28 })
+          }
           .layoutWeight(1)
+          .width('100%')
+          .align(Alignment.Top)
+          .scrollBar(BarState.Auto)
+          .edgeEffect(EdgeEffect.Spring)
+        } else {
+          this.buildErrorState()
+        }
       }
       .width('100%')
-      .padding({ left: 16, right: 16, top: 12, bottom: 8 })
-      .alignItems(VerticalAlign.Center)
+      .height('100%')
+      .backgroundColor($r('app.color.ts_surface'))
 
-      if (this.story !== null && this.storyId > 0) {
-        Scroll() {
-          Column({ space: 14 }) {
-            Column({ space: 6 }) {
-              Text(this.story.title)
-                .fontSize($r('app.float.ts_font_headline'))
-                .fontColor($r('app.color.ts_text_primary'))
-                .fontWeight(FontWeight.Medium)
-                .width('100%')
-              Text(`故事 · id=${this.story.id}`)
-                .fontSize($r('app.float.ts_font_caption'))
-                .fontColor($r('app.color.ts_text_tertiary'))
-                .width('100%')
-            }
-            .width('100%')
-            .padding(16)
-            .backgroundColor($r('app.color.ts_surface_container'))
-            .borderRadius(12)
-            .border({ width: 1, color: $r('app.color.ts_outline') })
-
-            Column({ space: 12 }) {
-              Text('编辑')
-                .fontSize($r('app.float.ts_font_label'))
-                .fontColor($r('app.color.ts_text_primary'))
-                .fontWeight(FontWeight.Medium)
-                .width('100%')
-              TextInput({ placeholder: '标题', text: this.draftTitle })
-                .onChange((v: string): void => {
-                  this.draftTitle = v;
-                })
-                .enterKeyType(EnterKeyType.Done)
-                .onSubmit((): void => {
-                  this.saveTitle();
-                })
-                .width('100%')
-                .height(48)
-                .backgroundColor($r('app.color.ts_surface_container_high'))
-                .borderRadius(10)
-                .padding({ left: 12, right: 12 })
-              Button('保存标题')
-                .width('100%')
-                .height(44)
-                .fontSize($r('app.float.ts_font_support'))
-                .fontWeight(FontWeight.Medium)
-                .backgroundColor($r('app.color.ts_brand_primary'))
-                .fontColor($r('app.color.ts_import_bar_on_bg'))
-                .onClick((): void => {
-                  this.saveTitle();
-                })
-            }
-            .width('100%')
-            .padding(16)
-            .backgroundColor($r('app.color.ts_surface_container'))
-            .borderRadius(12)
-            .border({ width: 1, color: $r('app.color.ts_outline') })
-
-            Column({ space: 12 }) {
-              Text('关联人物')
-                .fontSize($r('app.float.ts_font_label'))
-                .fontColor($r('app.color.ts_text_primary'))
-                .fontWeight(FontWeight.Medium)
-                .width('100%')
-              Text('通过 PersonStory 与人物主链共用同一内存关联表。')
-                .fontSize($r('app.float.ts_font_caption'))
-                .fontColor($r('app.color.ts_text_tertiary'))
-                .width('100%')
-              Row({ space: 8 }) {
-                TextInput({ placeholder: '新人物显示名', text: this.newPersonName })
-                  .layoutWeight(1)
-                  .height(48)
-                  .backgroundColor($r('app.color.ts_surface_container_high'))
-                  .borderRadius(10)
-                  .padding({ left: 12, right: 12 })
-                  .onChange((v: string): void => {
-                    this.newPersonName = v;
-                  })
-                  .enterKeyType(EnterKeyType.Done)
-                  .onSubmit((): void => {
-                    this.createPersonQuick();
-                  })
-                Button('创建人物')
-                  .height(48)
-                  .fontSize($r('app.float.ts_font_support'))
-                  .backgroundColor($r('app.color.ts_color_info_container'))
-                  .fontColor($r('app.color.ts_color_info'))
-                  .onClick((): void => {
-                    this.createPersonQuick();
-                  })
-              }
-              .width('100%')
-
-              if (this.personsAll.length === 0) {
-                Text('暂无人物，可先创建后与故事关联。')
-                  .fontSize($r('app.float.ts_font_caption'))
-                  .fontColor($r('app.color.ts_text_tertiary'))
-                  .width('100%')
-              }
-              Column({ space: 8 }) {
-                ForEach(this.personsAll, (p: PersonModel) => {
-                  Row({ space: 8 }) {
-                    Text(p.displayName)
-                      .layoutWeight(1)
-                      .fontSize($r('app.float.ts_font_support'))
-                      .fontColor($r('app.color.ts_text_primary'))
-                    Button(this.linkedPersonIds.indexOf(p.id) >= 0 ? '解除关联' : '关联')
-                      .height(36)
-                      .fontSize($r('app.float.ts_font_overline'))
-                      .backgroundColor($r('app.color.ts_surface_container_high'))
-                      .fontColor($r('app.color.ts_brand_primary'))
-                      .onClick((): void => {
-                        this.togglePersonLink(p);
-                      })
-                  }
-                  .padding(12)
-                  .width('100%')
-                  .backgroundColor($r('app.color.ts_surface_container_high'))
-                  .borderRadius(10)
-                  .border({ width: 1, color: $r('app.color.ts_outline') })
-                }, (p: PersonModel): string => `person-row-${p.id}`)
-              }
-              .width('100%')
-            }
-            .width('100%')
-            .padding(16)
-            .backgroundColor($r('app.color.ts_surface_container'))
-            .borderRadius(12)
-            .border({ width: 1, color: $r('app.color.ts_outline') })
-
-            Column({ space: 12 }) {
-              Text('照片（故事 · PhotoOwnerLink）')
-                .fontSize($r('app.float.ts_font_label'))
-                .fontColor($r('app.color.ts_text_primary'))
-                .fontWeight(FontWeight.Medium)
-                .width('100%')
-              Text('与人物页一致：会话内可追溯；单次选择最多 9 张（picker 上限），ST-07 以计划为准。')
-                .fontSize($r('app.float.ts_font_caption'))
-                .fontColor($r('app.color.ts_text_tertiary'))
-                .width('100%')
-              Button('从相册选择照片（可多选）')
-                .width('100%')
-                .height(44)
-                .fontSize($r('app.float.ts_font_support'))
-                .fontWeight(FontWeight.Medium)
-                .backgroundColor($r('app.color.ts_color_info_container'))
-                .fontColor($r('app.color.ts_color_info'))
-                .onClick((): void => {
-                  this.pickPhotosFromAlbum();
-                })
-
-              if (BuildProfile.DEBUG) {
-                Text(this.debugLastAlbumInject.length > 0 ? this.debugLastAlbumInject : '【E2E】尚未注入 mock URI')
-                  .fontSize($r('app.float.ts_font_overline'))
-                  .fontColor($r('app.color.ts_debug_banner'))
-                  .width('100%')
-                Row({ space: 8 }) {
-                  Button('【DEBUG】注入相册等价 URI')
-                    .fontSize($r('app.float.ts_font_overline'))
-                    .layoutWeight(1)
-                    .height(36)
-                    .backgroundColor($r('app.color.ts_surface_container_high'))
-                    .fontColor($r('app.color.ts_text_secondary'))
-                    .onClick((): void => {
-                      this.injectDebugAlbumEquivUri('file://e2e/album-equiv-story-1');
-                    })
-                  Button('【DEBUG】再注相同 URI')
-                    .fontSize($r('app.float.ts_font_overline'))
-                    .layoutWeight(1)
-                    .height(36)
-                    .backgroundColor($r('app.color.ts_surface_container_high'))
-                    .fontColor($r('app.color.ts_text_secondary'))
-                    .onClick((): void => {
-                      this.injectDebugAlbumEquivUri('file://e2e/album-equiv-story-1');
-                    })
-                }
-                .width('100%')
-              }
-
-              if (this.photos.length === 0) {
-                Text('暂无挂载照片')
-                  .fontColor($r('app.color.ts_text_tertiary'))
-                  .fontSize($r('app.float.ts_font_caption'))
-                  .width('100%')
-              } else {
-                Grid() {
-                  ForEach(this.photos, (ph: PhotoRefModel) => {
-                    GridItem() {
-                      Column() {
-                        Image(ph.uri).width('100%').height(96).objectFit(ImageFit.Cover).borderRadius(8)
-                        Text(`ref#${ph.id}`)
-                          .fontSize($r('app.float.ts_font_overline'))
-                          .fontColor($r('app.color.ts_text_caption'))
-                          .margin({ top: 4 })
-                      }
-                    }
-                  }, (ph: PhotoRefModel): string => `sph-${ph.id}`)
-                }
-                .columnsTemplate('1fr 1fr 1fr')
-                .columnsGap(8)
-                .rowsGap(8)
-                .width('100%')
-                .scrollBar(BarState.Off)
-              }
-            }
-            .width('100%')
-            .padding(16)
-            .backgroundColor($r('app.color.ts_surface_container'))
-            .borderRadius(12)
-            .border({ width: 1, color: $r('app.color.ts_outline') })
-
-            Column({ space: 10 }) {
-              Text('批量导入')
-                .fontSize($r('app.float.ts_font_label'))
-                .fontColor($r('app.color.ts_text_primary'))
-                .fontWeight(FontWeight.Medium)
-                .width('100%')
-              Text('走相册向导：选图 → 准备 → 条件 → 扫描 → 确认写入（形态一）。')
-                .fontSize($r('app.float.ts_font_caption'))
-                .fontColor($r('app.color.ts_text_tertiary'))
-                .width('100%')
-              Button('进入导入向导壳页')
-                .width('100%')
-                .height(48)
-                .fontSize($r('app.float.ts_font_body'))
-                .fontWeight(FontWeight.Medium)
-                .backgroundColor($r('app.color.ts_brand_primary'))
-                .fontColor($r('app.color.ts_import_bar_on_bg'))
-                .onClick((): void => {
-                  dismissSoftKeyboard();
-                  router.pushUrl({
-                    url: 'pages/import/ImportPage',
-                    params: { ctx: 'story', ownerId: `${this.storyId}` }
-                  });
-                })
-            }
-            .width('100%')
-            .padding(16)
-            .backgroundColor($r('app.color.ts_brand_primary_container'))
-            .borderRadius(12)
-            .border({ width: 1, color: $r('app.color.ts_outline') })
+      if (this.showSwiper) {
+        PhotoSwiper({
+          photos: this.photos,
+          initialIndex: this.swiperIndex,
+          removeLabel: '从故事移除',
+          onRemove: (photo: PhotoRefModel): void => {
+            this.removePhoto(photo);
+          },
+          onClose: (): void => {
+            this.showSwiper = false;
           }
-          .width('100%')
-          .padding({ left: 16, right: 16, top: 8, bottom: 28 })
-        }
-        .layoutWeight(1)
-        .width('100%')
-        .align(Alignment.Top)
-        .scrollBar(BarState.Auto)
-        .edgeEffect(EdgeEffect.Spring)
-      } else {
-        Column({ space: 8 }) {
-          Text('未找到故事或路由参数缺失（需要 storyId）。')
-            .fontSize($r('app.float.ts_font_body'))
-            .fontColor($r('app.color.ts_color_warning'))
-            .width('100%')
-        }
-        .width('100%')
-        .padding(16)
-        .margin({ left: 16, right: 16 })
-        .backgroundColor($r('app.color.ts_surface_container'))
-        .borderRadius(12)
-        .border({ width: 1, color: $r('app.color.ts_outline') })
+        })
       }
     }
     .width('100%')
     .height('100%')
-    .backgroundColor($r('app.color.ts_surface'))
+  }
+
+  @Builder
+  buildCoverBanner() {
+    Column() {
+      if (this.story && this.story.coverUri && this.story.coverUri.length > 0) {
+        Image(this.story.coverUri)
+          .width('100%')
+          .aspectRatio(16 / 9)
+          .objectFit(ImageFit.Cover)
+          .borderRadius(12)
+      } else {
+        Column() {
+          Text('🖼️')
+            .fontSize(48)
+            .fontColor($r('app.color.ts_text_muted'))
+          Text('暂无封面')
+            .fontSize(14)
+            .fontColor($r('app.color.ts_text_muted'))
+            .margin({ top: 8 })
+        }
+        .width('100%')
+        .aspectRatio(16 / 9)
+        .backgroundColor($r('app.color.ts_surface_container'))
+        .borderRadius(12)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+      }
+    }
+    .width('100%')
+    .margin({ top: 16 })
+  }
+
+  @Builder
+  buildMetaInfoRow() {
+    Column() {
+      Text(this.buildMetaInfoText())
+        .fontSize(14)
+        .fontColor($r('app.color.ts_text_tertiary'))
+        .width('100%')
+    }
+    .width('100%')
+    .padding({ top: 12, bottom: 4 })
+  }
+
+  @Builder
+  buildTagsRow() {
+    Column() {
+      Flex({ wrap: FlexWrap.Wrap }) {
+        ForEach(this.getDisplayTags(), (tag: string) => {
+          Text(`#${tag}`)
+            .fontSize(12)
+            .fontColor($r('app.color.ts_brand_primary'))
+            .padding({ left: 10, right: 10, top: 4, bottom: 4 })
+            .backgroundColor('#1A' + 'B85C38')
+            .borderRadius(14)
+            .margin({ right: 8, bottom: 8 })
+        }, (tag: string): string => `tag-${tag}`)
+        if (this.getExtraTagCount() > 0) {
+          Text(`+${this.getExtraTagCount()}`)
+            .fontSize(12)
+            .fontColor($r('app.color.ts_brand_primary'))
+            .padding({ left: 10, right: 10, top: 4, bottom: 4 })
+            .backgroundColor('#1A' + 'B85C38')
+            .borderRadius(14)
+            .margin({ bottom: 8 })
+        }
+      }
+      .width('100%')
+    }
+    .width('100%')
+    .padding({ top: 8, bottom: 4 })
+  }
+
+  @Builder
+  buildPersonAvatarRow() {
+    Column() {
+      Scroll() {
+        Row({ space: 16 }) {
+          ForEach(this.linkedPersons, (p: PersonModel) => {
+            Column({ space: 4 }) {
+              if (p.avatarBlob && p.avatarBlob.byteLength > 0) {
+                Image('data:image/png;base64,' + this.blobToBase64(p.avatarBlob))
+                  .width(40)
+                  .height(40)
+                  .borderRadius(20)
+                  .objectFit(ImageFit.Cover)
+              } else {
+                Circle({ width: 40, height: 40 })
+                  .fill($r('app.color.ts_surface_container_high'))
+              }
+              Text(p.displayName)
+                .fontSize(10)
+                .fontColor($r('app.color.ts_text_tertiary'))
+                .maxLines(1)
+            }
+            .onClick((): void => {
+              router.pushUrl({
+                url: 'pages/person/PersonDetailPage',
+                params: { personId: p.id }
+              });
+            })
+          }, (p: PersonModel): string => `person-avatar-${p.id}`)
+        }
+        .padding({ right: 8 })
+      }
+      .scrollable(ScrollDirection.Horizontal)
+      .scrollBar(BarState.Off)
+      .width('100%')
+    }
+    .width('100%')
+    .padding({ top: 12, bottom: 4 })
+  }
+
+  @Builder
+  buildPhotoSection() {
+    Column({ space: 12 }) {
+      Row({ space: 8 }) {
+        Text(`${this.photos.length} 张照片`)
+          .fontSize(16)
+          .fontColor($r('app.color.ts_text_primary'))
+          .fontWeight(FontWeight.Medium)
+        Row({ space: 8 }) {
+          Button('+ 添加')
+            .height(32)
+            .fontSize(12)
+            .backgroundColor($r('app.color.ts_color_info'))
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
+            .onClick((): void => {
+              this.pickPhotosFromAlbum();
+            })
+          Button('导入')
+            .height(32)
+            .fontSize(12)
+            .backgroundColor($r('app.color.ts_surface_container_high'))
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
+            .onClick((): void => {
+              router.pushUrl({
+                url: 'pages/import/ImportPage',
+                params: { ctx: 'story', ownerId: `${this.storyId}` }
+              });
+            })
+        }
+        .layoutWeight(1)
+        .justifyContent(FlexAlign.End)
+      }
+      .width('100%')
+
+      if (this.photos.length > 0) {
+        Grid() {
+          ForEach(this.photos, (ph: PhotoRefModel, idx: number) => {
+            GridItem() {
+              Image(ph.uri)
+                .width('100%')
+                .aspectRatio(1)
+                .objectFit(ImageFit.Cover)
+                .borderRadius(8)
+                .onClick((): void => {
+                  this.swiperIndex = idx;
+                  this.showSwiper = true;
+                })
+            }
+          }, (ph: PhotoRefModel): string => `ph-${ph.id}`)
+        }
+        .columnsTemplate('1fr 1fr 1fr')
+        .columnsGap(6)
+        .rowsGap(6)
+        .width('100%')
+        .scrollBar(BarState.Off)
+      } else {
+        Column({ space: 10 }) {
+          Text('🖼️')
+            .fontSize(32)
+            .fontColor($r('app.color.ts_text_muted'))
+          Text('这个事件还没有照片')
+            .fontSize(14)
+            .fontColor($r('app.color.ts_text_muted'))
+          Text('添加照片或导入相册来记录吧')
+            .fontSize(12)
+            .fontColor($r('app.color.ts_text_tertiary'))
+            .margin({ top: 4 })
+          Button('+ 添加照片')
+            .height(40)
+            .fontSize(14)
+            .backgroundColor($r('app.color.ts_color_info'))
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
+            .margin({ top: 12 })
+            .onClick((): void => {
+              this.pickPhotosFromAlbum();
+            })
+        }
+        .width('100%')
+        .padding(24)
+        .backgroundColor('#1A' + 'B85C38')
+        .borderRadius(12)
+        .alignItems(HorizontalAlign.Center)
+      }
+    }
+    .width('100%')
+    .padding({ top: 16 })
+  }
+
+  @Builder
+  buildErrorState() {
+    Column({ space: 16 }) {
+      Text('⛔')
+        .fontSize(48)
+        .fontColor($r('app.color.ts_color_error'))
+      Text('故事不存在或已被删除')
+        .fontSize(16)
+        .fontColor($r('app.color.ts_import_bar_on_bg'))
+      Button('返回故事列表')
+        .height(44)
+        .fontSize(14)
+        .backgroundColor($r('app.color.ts_surface_container_high'))
+        .fontColor($r('app.color.ts_import_bar_on_bg'))
+        .width('100%')
+        .onClick((): void => {
+          router.back();
+        })
+    }
+    .width('100%')
+    .padding(32)
+    .alignItems(HorizontalAlign.Center)
+    .justifyContent(FlexAlign.Center)
+  }
+
+  private blobToBase64(blob: Uint8Array): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    let result = '';
+    const bytes = blob;
+    for (let i = 0; i < bytes.byteLength; i += 3) {
+      const b0 = bytes[i];
+      const b1 = i + 1 < bytes.byteLength ? bytes[i + 1] : 0;
+      const b2 = i + 2 < bytes.byteLength ? bytes[i + 2] : 0;
+      result += chars.charAt(b0 >> 2);
+      result += chars.charAt(((b0 & 3) << 4) | (b1 >> 4));
+      result += i + 1 < bytes.byteLength ? chars.charAt(((b1 & 15) << 2) | (b2 >> 6)) : '=';
+      result += i + 2 < bytes.byteLength ? chars.charAt(b2 & 63) : '=';
+    }
+    return result;
   }
 }

@@ -8,7 +8,6 @@ import {
   assertTextExist,
   clickComponentSafely,
   clickConfirmCancelDialog,
-  clickDetailEnterImportWizard,
   clickImportCancelScan,
   clickImportDebugB2WrongCancel,
   clickImportDebugSkipToConditions,
@@ -35,7 +34,8 @@ export default function v2RegressionB2(): void {
       const personName = `V2Bad_${Date.now()}`;
       await createPersonOnPage(driver, personName);
       await openPersonListRowByDisplayName(driver, personName);
-      await clickDetailEnterImportWizard(driver);
+      await scrollDetailUntilVisible(driver, ON.text('导入相册…'));
+      await clickComponentSafely(driver, ON.text('导入相册…'), V2_TIMEOUT.NORMAL);
       await clickImportDebugSkipToConditions(driver);
       await driver.waitForIdle(300, 800);
 
@@ -66,7 +66,8 @@ export default function v2RegressionB2(): void {
       const personName = `V2Rs_${Date.now()}`;
       await createPersonOnPage(driver, personName);
       await openPersonListRowByDisplayName(driver, personName);
-      await clickDetailEnterImportWizard(driver);
+      await scrollDetailUntilVisible(driver, ON.text('导入相册…'));
+      await clickComponentSafely(driver, ON.text('导入相册…'), V2_TIMEOUT.NORMAL);
       await clickImportDebugSkipToConditions(driver);
       await driver.waitForIdle(300, 800);
 
@@ -102,7 +103,8 @@ export default function v2RegressionB2(): void {
       const personName = `V2Bn_${Date.now()}`;
       await createPersonOnPage(driver, personName);
       await openPersonListRowByDisplayName(driver, personName);
-      await clickDetailEnterImportWizard(driver);
+      await scrollDetailUntilVisible(driver, ON.text('导入相册…'));
+      await clickComponentSafely(driver, ON.text('导入相册…'), V2_TIMEOUT.NORMAL);
       await clickImportDebugSkipToConditions(driver);
       await driver.waitForIdle(300, 800);
 

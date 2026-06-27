@@ -3,12 +3,14 @@ import hilog from '@ohos.hilog';
 import UIAbility from '@ohos.app.ability.UIAbility';
 import Want from '@ohos.app.ability.Want';
 import window from '@ohos.window';
+import { common } from '@kit.AbilityKit';
 import { relationalStore } from '@kit.ArkData';
 import { installAppDataStore } from '../bootstrap/AppDataInstaller';
 import { ensureSchemaV1, RDB_SCHEMA_META_VERSION } from '../infrastructure/data/RdbSchema';
 import { MigrationRunner } from '../infrastructure/data/MigrationRunner';
 import type { MigrationContext } from '../infrastructure/data/MigrationTypes';
 import { RepositoryImpl } from '../infrastructure/repository/RepositoryImpl';
+import { CrashReporter } from '../infrastructure/api/CrashReporter';
 
 const DOMAIN = 0x0000;
 
@@ -28,6 +30,9 @@ export default class EntryAbility extends UIAbility {
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
+
+    // T-31 UriHealthChecker 需要全局可用的 UIAbilityContext
+    AppStorage.SetOrCreate<common.UIAbilityContext>('uiContext', this.context);
 
     relationalStore.getRdbStore(this.context, RDB_CONFIG).then((store: relationalStore.RdbStore) => {
       // Step 1: Bootstrap schema to V1
@@ -58,13 +63,14 @@ export default class EntryAbility extends UIAbility {
 
       const repo = RepositoryImpl.getInstance();
       repo.attachRdb(store);
+      installAppDataStore(repo);
       windowStage.loadContent('pages/shell/ShellPage', (err) => {
         if (err.code) {
           hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
           return;
         }
         hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
-        installAppDataStore(repo);
+        CrashReporter.getInstance().register();
       });
     }).catch((e: object) => {
       hilog.error(DOMAIN, 'testTag', 'RDB init failed: %{public}s', JSON.stringify(e));
@@ -72,7 +78,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   onWindowStageDestroy(): void {
-    // Main window is destroyed, release UI related resources
+    CrashReporter.getInstance().unregister();
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
   }
 

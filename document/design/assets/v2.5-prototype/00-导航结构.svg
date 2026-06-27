@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+  <defs>
+    <clipPath id="screen"><rect x="0" y="0" width="390" height="844" rx="0"/></clipPath>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+  <rect width="390" height="844" rx="40" fill="#222" stroke="#444" stroke-width="2"/>
+  <rect x="12" y="12" width="366" height="820" rx="30" fill="#FFFBF7"/>
+  <g clip-path="url(#screen)">
+    <rect x="12" y="12" width="366" height="44" fill="#00000010"/>
+    <text x="36" y="40" font-family="-apple-system, system-ui, sans-serif" font-size="14" fill="#1C1B1F" font-weight="600">9:41</text>
+    <text x="330" y="40" font-family="-apple-system, system-ui, sans-serif" font-size="14" fill="#1C1B1F">📶 🔋</text>
+    导航架构总览（原型 #00）
+    
+    <text x="36" y="130" font-family="monospace" font-size="12" fill="#1C1B1F">ShellPage (Tabs 容器)</text>
+    <rect x="36" y="140" width="320" height="180" rx="10" fill="#F5F5F5" stroke="#CAC4D0" stroke-width="1"/>
+    <text x="50" y="165" font-family="monospace" font-size="11" fill="#49454F">┌─ TabContent: 人物 ─────────────────┐</text>
+    <text x="50" y="185" font-family="monospace" font-size="11" fill="#49454F">│  PersonPage                        │</text>
+    <text x="50" y="205" font-family="monospace" font-size="11" fill="#49454F">│  (人物列表)     ──pushUrl──┐       │</text>
+    <text x="50" y="225" font-family="monospace" font-size="11" fill="#49454F">│                          ▼       │</text>
+    <text x="50" y="245" font-family="monospace" font-size="11" fill="#49454F">│           PersonDetailPage        │</text>
+    <text x="50" y="265" font-family="monospace" font-size="11" fill="#49454F">│           (详情·阅览/编辑)         │</text>
+    <text x="50" y="285" font-family="monospace" font-size="11" fill="#49454F">└────────────────────────────────────┘</text>
+    <text x="50" y="310" font-family="monospace" font-size="11" fill="#49454F">← 点故事封面 → StoryDetailPage</text>
+
+    <text x="36" y="350" font-family="monospace" font-size="12" fill="#1C1B1F">Tab 切换：Tabs + TabContent 原生组件</text>
+    <text x="36" y="375" font-family="monospace" font-size="11" fill="#49454F">· 点击 Tab 或手势滑动切换</text>
+    <text x="36" y="395" font-family="monospace" font-size="11" fill="#49454F">· 切换后保持滚动位置和状态</text>
+    <text x="36" y="415" font-family="monospace" font-size="11" fill="#49454F">· 列表页直接嵌入，非 router 跳转</text>
+    <text x="36" y="435" font-family="monospace" font-size="11" fill="#49454F">· 详情页保持 router.pushUrl</text>
+
+    <text x="36" y="475" font-family="monospace" font-size="12" fill="#1C1B1F">其他页面（现有骨架，不改结构）</text>
+    <text x="36" y="500" font-family="monospace" font-size="11" fill="#49454F">· ImportPage  → 导入向导（选图→条件→扫描→确认）</text>
+    <text x="36" y="520" font-family="monospace" font-size="11" fill="#49454F">· SuggestPage → 建议审阅（人脸聚类，接受/忽略）</text>
+    <text x="36" y="540" font-family="monospace" font-size="11" fill="#49454F">· PrivacyPage → 隐私说明（静态页，无改动）</text>
+    <text x="36" y="560" font-family="monospace" font-size="11" fill="#49454F">· SettingsPage → 人脸开关设置（无改动）</text>
+  
+    <rect x="12" y="768" width="366" height="64" fill="#FAFAFA"/>
+    <line x1="12" y1="768" x2="378" y2="768" stroke="#CAC4D0" stroke-width="0.5"/>
+    <text x="195" y="790" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#B85C38" font-weight="600" text-anchor="middle">人物</text>
+    <rect x="120" y="799" width="28" height="3" rx="1.5" fill="#B85C38"/>
+    <text x="195" y="816" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#666666" font-weight="400" text-anchor="middle">故事</text>
+    
+  </g>
+</svg>

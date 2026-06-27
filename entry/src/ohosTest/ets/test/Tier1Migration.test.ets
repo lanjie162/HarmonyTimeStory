@@ -5,20 +5,12 @@
  * 2. 失败路径：模拟失败步骤 → version 不前进，应用不宣称成功
  * 3. 幂等验证：重复 run 时 skipped，version 不变
  */
-import { abilityDelegatorRegistry } from '@kit.TestKit';
 import { relationalStore } from '@kit.ArkData';
 import { afterAll, beforeAll, describe, expect, it } from '@ohos/hypium';
-import { ensureSchemaV1 } from '../../../main/ets/infrastructure/data/RdbSchema';
+import { ensureSchemaV1, RDB_SCHEMA_META_VERSION } from '../../../main/ets/infrastructure/data/RdbSchema';
 import { MigrationRunner } from '../../../main/ets/infrastructure/data/MigrationRunner';
 import type { MigrationContext, MigrationStep } from '../../../main/ets/infrastructure/data/MigrationTypes';
-
-function createStore(ctx: Context, dbName: string): Promise<relationalStore.RdbStore> {
-  const cfg: relationalStore.StoreConfig = {
-    name: dbName,
-    securityLevel: relationalStore.SecurityLevel.S1
-  };
-  return relationalStore.getRdbStore(ctx, cfg);
-}
+import { resolveRdbCapableContext } from './OhosTestRdbContext';
 
 function readVersion(store: relationalStore.RdbStore): number {
   const rs = store.querySqlSync('SELECT version FROM schema_meta WHERE id = 1', []);
@@ -37,10 +29,13 @@ export default function tier1MigrationTest(): void {
 
     beforeAll(async () => {
       try {
-        const delegator = abilityDelegatorRegistry.getAbilityDelegator();
-        const ctx = delegator.getAppContext();
+        const ctx = await resolveRdbCapableContext();
+        const cfg: relationalStore.StoreConfig = {
+          name: dbName,
+          securityLevel: relationalStore.SecurityLevel.S1
+        };
         console.info('MigrationTest: creating RDB: ' + dbName);
-        store = await createStore(ctx, dbName);
+        store = await relationalStore.getRdbStore(ctx, cfg);
         console.info('MigrationTest: RDB created');
       } catch (e) {
         console.error('MigrationTest: beforeAll FAILED: ' + JSON.stringify(e));
@@ -63,16 +58,15 @@ export default function tier1MigrationTest(): void {
     it('migrate_normal_path_advances_version', 0, (): void => {
       const s = store as relationalStore.RdbStore;
 
-      // Bootstrap schema to V1
+      // Bootstrap schema
       ensureSchemaV1(s);
-      console.info('MigrationTest: schema v1 applied');
+      console.info('MigrationTest: schema applied');
 
       let v = readVersion(s);
-      expect v to be 1 after ensureSchemaV1
-      expect(v).assertEqual(1);
+      // ensureSchemaV1 对新库设置版本为 RDB_SCHEMA_META_VERSION
+      expect(v).assertEqual(RDB_SCHEMA_META_VERSION);
 
-      // Skip migration if RDB_SCHEMA_META_VERSION is still 1 — no v1→v2 will run
-      // Instead, demonstrate the framework with a custom migration step
+      const targetVersion = RDB_SCHEMA_META_VERSION + 1;
       const ctx: MigrationContext = {
         schemaVersion: 0,
         tables: new Map(),
@@ -82,14 +76,14 @@ export default function tier1MigrationTest(): void {
       };
 
       const customStep: MigrationStep = {
-        fromVersion: 1,
-        toVersion: 2,
-        stepId: 'test_v1_to_v2',
+        fromVersion: RDB_SCHEMA_META_VERSION,
+        toVersion: targetVersion,
+        stepId: 'test_v5_to_v6',
         precheck: (): void => {
           // pass: schema_meta exists
         },
         apply: (): void => {
-          s.executeSql(
+          s.executeSync(
             'CREATE TABLE IF NOT EXISTS migration_audit (' +
               'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
               'batch_id TEXT NOT NULL, ' +
@@ -99,28 +93,27 @@ export default function tier1MigrationTest(): void {
             ');',
             []
           );
-          s.executeSql("INSERT INTO migration_audit (batch_id, from_version, to_version, created_at) VALUES ('test-batch', 1, 2, ?);", [Date.now()]);
+          s.executeSync("INSERT INTO migration_audit (batch_id, from_version, to_version, created_at) VALUES ('test-batch', ?, ?, ?);", [RDB_SCHEMA_META_VERSION, targetVersion, Date.now()]);
         }
       };
 
       const runner = new MigrationRunner();
-      const results = runner.run(ctx, 2, [customStep]);
+      const results = runner.run(ctx, targetVersion, [customStep]);
       console.info('MigrationTest: normal path results: ' + JSON.stringify(results));
 
       expect(results.length).assertEqual(1);
       expect(results[0].status).assertEqual('applied');
-      expect(results[0].stepId).assertEqual('test_v1_to_v2');
+      expect(results[0].stepId).assertEqual('test_v5_to_v6');
 
-      // Version should advance to 2
+      // Version should advance to targetVersion
       v = readVersion(s);
       console.info('MigrationTest: version after migration = ' + v);
-      expect(v).assertEqual(2);
+      expect(v).assertEqual(targetVersion);
     });
 
     it('migrate_failure_does_not_advance_version', 0, (): void => {
       const s = store as relationalStore.RdbStore;
 
-      // Ensure we start at a known version: reset to V1
       const ctx: MigrationContext = {
         schemaVersion: 0,
         tables: new Map(),
@@ -129,7 +122,7 @@ export default function tier1MigrationTest(): void {
         rdbStore: s
       };
 
-      // Read current version (should be 2 from previous test)
+      // Read current version
       const runner = new MigrationRunner();
       const currentVersion = runner.readSchemaVersion(s);
       console.info('MigrationTest: current version before fail test = ' + currentVersion);
@@ -164,10 +157,13 @@ export default function tier1MigrationTest(): void {
     it('migrate_idempotent_skips_on_repeat_run', 0, (): void => {
       const s = store as relationalStore.RdbStore;
 
-      // run a no-op step that matches current version
+      const runner = new MigrationRunner();
+      const currentVersion = runner.readSchemaVersion(s);
+      const targetVersion = currentVersion + 1;
+
       const step: MigrationStep = {
-        fromVersion: 1,
-        toVersion: 2,
+        fromVersion: currentVersion,
+        toVersion: targetVersion,
         stepId: 'test_idempotent_step',
         precheck: (): void => {
           // pass
@@ -185,10 +181,8 @@ export default function tier1MigrationTest(): void {
         rdbStore: s
       };
 
-      const runner = new MigrationRunner();
-      const firstResults = runner.run(ctx, 2, [step]);
+      const firstResults = runner.run(ctx, targetVersion, [step]);
       console.info('MigrationTest: first run result: ' + JSON.stringify(firstResults));
-      // Step may be applied or skipped depending on current version
 
       const secondCtx: MigrationContext = {
         schemaVersion: 0,
@@ -197,7 +191,7 @@ export default function tier1MigrationTest(): void {
         appliedSteps: new Set(),
         rdbStore: s
       };
-      const secondResults = runner.run(secondCtx, 2, [step]);
+      const secondResults = runner.run(secondCtx, targetVersion, [step]);
       console.info('MigrationTest: second run result: ' + JSON.stringify(secondResults));
 
       // If already at target version, result should be empty (no steps run)

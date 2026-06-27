@@ -1,10 +1,13 @@
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
 import photoAccessHelper from '@ohos.file.photoAccessHelper';
+import { common } from '@kit.AbilityKit';
 import BuildProfile from 'BuildProfile';
 import { getImportService } from '../../features/import/ImportFeature';
 import { getPersonService } from '../../features/person/PersonFeature';
 import { getStoryService } from '../../features/story/StoryFeature';
+import { DomainRules } from '../../domain/rules/Rules';
+import { PermissionManager } from '../../infrastructure/api/PermissionManager';
 
 type ImportCtx = 'person' | 'story';
 type WizardStep = 'pick' | 'prepare' | 'conditions' | 'scan' | 'confirm' | 'done';
@@ -61,18 +64,34 @@ export struct ImportPage {
   @State uiLocked: boolean = false;
   /** DEBUG：Hypium 断言 B2 错误 requestId 分支（与 Toast 同文案场景）。 */
   @State debugB2WrongCancelBanner: string = '';
+  @State ownerName: string = '';
 
   aboutToAppear(): void {
     const params = router.getParams() as Record<string, Object>;
     this.ctx = parseCtx(params);
     this.ownerId = parseOwnerId(params);
+    this.lookupOwnerName();
+  }
+
+  private lookupOwnerName(): void {
+    if (this.ownerId <= 0) {
+      this.ownerName = '未知';
+      return;
+    }
+    if (this.ctx === 'person') {
+      const p = getPersonService().getPerson(this.ownerId);
+      this.ownerName = p !== null ? p.displayName : `人物 #${this.ownerId}`;
+    } else {
+      const s = getStoryService().getStory(this.ownerId);
+      this.ownerName = s !== null ? s.title : `故事 #${this.ownerId}`;
+    }
   }
 
   private contextLabel(): string {
     if (this.ownerId <= 0) {
       return '未携带上下文（需从人物/故事详情进入，带 ownerId）';
     }
-    return this.ctx === 'person' ? `形态二 · 人物 #${this.ownerId}` : `形态一 · 故事 #${this.ownerId}`;
+    return this.ctx === 'person' ? `形态二 · ${this.ownerName}` : `形态一 · ${this.ownerName}`;
   }
 
   private stepShortLabel(s: WizardStep): string {
@@ -110,7 +129,7 @@ export struct ImportPage {
         return;
       }
       this.pickedUris = [...uris];
-      promptAction.showToast({ message: `已选 ${this.pickedUris.length} 张（单次≤9，ST-07）` });
+      promptAction.showToast({ message: `已选 ${this.pickedUris.length} 张（单次≤${DomainRules.maxStoryPhotos}，ST-07）` });
       this.step = 'prepare';
     } catch (_e) {
       promptAction.showToast({ message: '选图取消（IM-09）' });
@@ -172,8 +191,24 @@ export struct ImportPage {
       promptAction.showToast({ message: '请至少勾选一项候选' });
       return;
     }
-    if (this.selectedCount() > 9) {
-      promptAction.showToast({ message: '勾选超过 9 张：超过单次导入上限（ST-07），请减少勾选' });
+    if (this.selectedCount() > DomainRules.maxStoryPhotos) {
+      AlertDialog.show({
+        title: '超上限阻断',
+        message: `当前勾选 ${this.selectedCount()} 张，超出单故事上限 ${DomainRules.maxStoryPhotos} 张（ST-07）。请减少勾选后重试。`,
+        primaryButton: {
+          value: '取消',
+          action: (): void => {
+            // do nothing
+          }
+        },
+        secondaryButton: {
+          value: '减少勾选',
+          fontColor: $r('app.color.ts_brand_primary'),
+          action: (): void => {
+            // do nothing, user can uncheck and retry
+          }
+        }
+      });
       return;
     }
     let ok = 0;
@@ -276,6 +311,88 @@ export struct ImportPage {
     this.scanOutcome = '';
     this.step = 'conditions';
     promptAction.showToast({ message: '可重试：返回条件步（IM-09）' });
+  }
+
+  /** CR-01: 权限测试临时入口。T-31 后台扫描上线后移除。 */
+  private async runPermissionTest(): Promise<void> {
+    const ctx: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    if (PermissionManager.getInstance().hasMediaPermission(ctx)) {
+      promptAction.showToast({ message: '权限已授予，无需操作' });
+      return;
+    }
+    const result = await PermissionManager.getInstance().requestMediaPermission(ctx);
+    if (!result.granted) {
+      if (result.isPermanentlyDenied) {
+        this.showPermissionDeniedDialog(ctx);
+      } else {
+        // T-32 ER-02：用户取消态弹窗，区分于权限拒绝态
+        this.showUserCancelledDialog();
+      }
+    } else {
+      promptAction.showToast({ message: '权限已授予' });
+    }
+  }
+
+  /**
+   * T-32 ER-02：权限拒绝引导弹窗（永久拒绝态）。
+   * 显示引导文案 + 系统设置跳转链接。
+   */
+  private showPermissionDeniedDialog(ctx: common.UIAbilityContext): void {
+    AlertDialog.show({
+      title: '需要相册权限',
+      message: '时光故事需要访问您的照片，以便将照片导入到人物档案或故事时间线中。所有照片数据仅保存在本地，不会上传至任何服务器。\n\n您已选择"不再询问"，请在系统设置中手动开启"媒体和照片"权限。',
+      primaryButton: {
+        value: '取消',
+        action: (): void => {}
+      },
+      secondaryButton: {
+        value: '前往设置',
+        fontColor: $r('app.color.ts_brand_primary'),
+        action: (): void => {
+          PermissionManager.getInstance().openAppPermissionSettings(ctx);
+        }
+      }
+    });
+  }
+
+  /**
+   * T-32 ER-02：用户取消权限弹窗（非永久拒绝态）。
+   * 简短说明需要权限的原因。
+   */
+  private showUserCancelledDialog(): void {
+    AlertDialog.show({
+      title: '需要相册权限',
+      message: '时光故事需要访问您的照片，才能将照片导入到人物档案或故事时间线中。所有照片数据仅保存在本地，不会上传至任何服务器。',
+      primaryButton: {
+        value: '知道了',
+        action: (): void => {}
+      },
+      secondaryButton: {
+        value: '再次授权',
+        fontColor: $r('app.color.ts_brand_primary'),
+        action: (): void => {
+          // 用户选择重新授权，重复请求流程
+          this.reRequestPermission();
+        }
+      }
+    });
+  }
+
+  /**
+   * T-32：用户点击"再次授权"后重新请求媒体权限。
+   */
+  private async reRequestPermission(): Promise<void> {
+    const ctx: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    const result = await PermissionManager.getInstance().requestMediaPermission(ctx);
+    if (!result.granted) {
+      if (result.isPermanentlyDenied) {
+        this.showPermissionDeniedDialog(ctx);
+      } else {
+        promptAction.showToast({ message: '权限未授予，请稍后重试' });
+      }
+    } else {
+      promptAction.showToast({ message: '权限已授予' });
+    }
   }
 
   @Builder
@@ -624,6 +741,24 @@ export struct ImportPage {
               }
               .margin({ top: 8 })
               .width('100%')
+
+              // CR-01: 权限测试临时 DEBUG 入口——见 runPermissionTest() 注释
+              if (BuildProfile.DEBUG) {
+                Divider().margin({ top: 8, bottom: 4 }).color($r('app.color.ts_outline'))
+                Text('【ER-02 权限测试】')
+                  .fontSize($r('app.float.ts_font_overline'))
+                  .fontColor($r('app.color.ts_color_warning'))
+                  .width('100%')
+                Button('权限链条测试（ER-02）')
+                  .fontSize($r('app.float.ts_font_overline'))
+                  .width('100%')
+                  .height(36)
+                  .backgroundColor($r('app.color.ts_surface_container_high'))
+                  .fontColor($r('app.color.ts_text_secondary'))
+                  .onClick((): void => {
+                    this.runPermissionTest();
+                  })
+              }
             }
             .width('100%')
             .padding(16)

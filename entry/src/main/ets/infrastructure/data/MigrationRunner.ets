@@ -99,6 +99,6 @@ export class MigrationRunner {
   }
 
   writeSchemaVersion(store: relationalStore.RdbStore, version: number): void {
-    store.executeSql('UPDATE schema_meta SET version = ? WHERE id = 1;', [version]);
+    store.executeSync('UPDATE schema_meta SET version = ? WHERE id = 1;', [version]);
   }
 }
