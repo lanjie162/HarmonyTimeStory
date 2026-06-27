@@ -78,8 +78,7 @@ export async function resolveRdbCapableContext(): Promise<Context> {
       }
     }
   } else {
-    await delegator.startAbility(want);
-    await sleepMs(300);
+    // 缓存命中，无需重启 Ability
   }
 
   cachedRdbContext = ctx;

@@ -166,7 +166,7 @@ export default function l3PersonService(): void {
     it('L3_personService_updatePerson_nonexistent_id', 0, (): void => {
       const svc = ctx.getService();
       const result = svc.updatePerson(999999999, 'Ghost');
-      expect(result).assertTrue();
+      expect(result).assertFalse();
     });
 
     it('L3_personService_deletePerson_success', 0, (): void => {

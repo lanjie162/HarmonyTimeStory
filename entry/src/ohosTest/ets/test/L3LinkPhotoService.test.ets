@@ -3,27 +3,61 @@ import type { IPersonService } from '../../../main/ets/features/api/Services';
 import type { IStoryService } from '../../../main/ets/features/api/Services';
 import { PersonService } from '../../../main/ets/features/person/PersonFeature';
 import { StoryService } from '../../../main/ets/features/story/StoryFeature';
-import { ServiceTestContext } from './utils/ServiceTestContext';
+import { RepositoryImpl } from '../../../main/ets/infrastructure/repository/RepositoryImpl';
+import { TestDbHelper } from './utils/TestDbHelper';
 import { TestDataFactory } from './utils/TestDataFactory';
 import { relationalStore } from '@kit.ArkData';
 
+/**
+ * 共享同一 RDB 的 Person+Story 测试上下文。
+ * 之前的实现为 personCtx/storyCtx 各创建独立 RDB，
+ * 导致跨实体操作（link、共享 photo 等）全部失败。
+ */
 class LinkPhotoTestContext {
-  personCtx: ServiceTestContext<IPersonService>;
-  storyCtx: ServiceTestContext<IStoryService>;
-
-  constructor() {
-    this.personCtx = new ServiceTestContext<IPersonService>((repo) => new PersonService(repo));
-    this.storyCtx = new ServiceTestContext<IStoryService>((repo) => new StoryService(repo));
-  }
+  private dbHelper: TestDbHelper | undefined;
+  private store: relationalStore.RdbStore | undefined;
+  private repo: RepositoryImpl | undefined;
+  private personSvc: IPersonService | undefined;
+  private storySvc: IStoryService | undefined;
 
   async setup(): Promise<void> {
-    await this.personCtx.setup();
-    await this.storyCtx.setup();
+    this.dbHelper = new TestDbHelper();
+    this.store = await this.dbHelper.setup();
+    this.repo = new RepositoryImpl();
+    this.repo.attachRdb(this.store);
+    this.personSvc = new PersonService(this.repo);
+    this.storySvc = new StoryService(this.repo);
   }
 
   async teardown(): Promise<void> {
-    await this.storyCtx.teardown();
-    await this.personCtx.teardown();
+    this.personSvc = undefined;
+    this.storySvc = undefined;
+    this.repo = undefined;
+    if (this.dbHelper !== undefined) {
+      await this.dbHelper.teardown();
+    }
+    this.store = undefined;
+  }
+
+  getPersonService(): IPersonService {
+    if (this.personSvc === undefined) {
+      throw new Error('LinkPhotoTestContext: not initialized');
+    }
+    return this.personSvc;
+  }
+
+  getStoryService(): IStoryService {
+    if (this.storySvc === undefined) {
+      throw new Error('LinkPhotoTestContext: not initialized');
+    }
+    return this.storySvc;
+  }
+
+  getStore(): relationalStore.RdbStore {
+    if (this.store === undefined) {
+      throw new Error('LinkPhotoTestContext: not initialized');
+    }
+    return this.store;
   }
 }
 
@@ -40,8 +74,8 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_link_unlink_lifecycle', 0, (): void => {
-      const ps = ctx.personCtx.getService();
-      const ss = ctx.storyCtx.getService();
+      const ps = ctx.getPersonService();
+      const ss = ctx.getStoryService();
       const pid = ps.createPerson(TestDataFactory.uniqueName('LifeP'));
       const sid = ss.createStory(TestDataFactory.createStoryTitle());
       expect(ps.isLinked(pid, sid)).assertFalse();
@@ -52,8 +86,8 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_link_idempotent', 0, (): void => {
-      const ps = ctx.personCtx.getService();
-      const ss = ctx.storyCtx.getService();
+      const ps = ctx.getPersonService();
+      const ss = ctx.getStoryService();
       const pid = ps.createPerson(TestDataFactory.uniqueName('IdemP'));
       const sid = ss.createStory(TestDataFactory.createStoryTitle());
       ps.linkPersonToStory(pid, sid);
@@ -62,8 +96,8 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_link_nonexistent_person_silent', 0, (): void => {
-      const ps = ctx.personCtx.getService();
-      const ss = ctx.storyCtx.getService();
+      const ps = ctx.getPersonService();
+      const ss = ctx.getStoryService();
       const sid = ss.createStory(TestDataFactory.createStoryTitle());
       ps.linkPersonToStory(999999999, sid);
       expect(ps.isLinked(999999999, sid)).assertFalse();
@@ -73,12 +107,12 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_unlink_nonexistent_silent', 0, (): void => {
-      const ps = ctx.personCtx.getService();
+      const ps = ctx.getPersonService();
       ps.unlinkPersonFromStory(999999999, 999999999);
     });
 
     it('L3_linkPhoto_shared_photoRef_two_persons', 0, (): void => {
-      const ps = ctx.personCtx.getService();
+      const ps = ctx.getPersonService();
       const p1 = ps.createPerson(TestDataFactory.uniqueName('Share1'));
       const p2 = ps.createPerson(TestDataFactory.uniqueName('Share2'));
       const uri = TestDataFactory.createPhotoUri();
@@ -92,8 +126,8 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_shared_photoRef_person_and_story', 0, (): void => {
-      const ps = ctx.personCtx.getService();
-      const ss = ctx.storyCtx.getService();
+      const ps = ctx.getPersonService();
+      const ss = ctx.getStoryService();
       const pid = ps.createPerson(TestDataFactory.uniqueName('CrossP'));
       const sid = ss.createStory(TestDataFactory.createStoryTitle());
       const uri = TestDataFactory.createPhotoUri();
@@ -104,8 +138,8 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_addPhoto_with_metadata_takenAt', 0, (): void => {
-      const ps = ctx.personCtx.getService();
-      const ss = ctx.storyCtx.getService();
+      const ps = ctx.getPersonService();
+      const ss = ctx.getStoryService();
       const pid = ps.createPerson(TestDataFactory.uniqueName('MetaP'));
       const sid = ss.createStory(TestDataFactory.createStoryTitle());
       const uri = TestDataFactory.createPhotoUri();
@@ -122,8 +156,8 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_addPhoto_blank_uri_fails', 0, (): void => {
-      const ps = ctx.personCtx.getService();
-      const ss = ctx.storyCtx.getService();
+      const ps = ctx.getPersonService();
+      const ss = ctx.getStoryService();
       const pid = ps.createPerson(TestDataFactory.uniqueName('BlankUri'));
       const sid = ss.createStory(TestDataFactory.createStoryTitle());
       expect(ps.addPhotoToPerson(pid, '  \t').success).assertFalse();
@@ -131,15 +165,15 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_addPhoto_nonexistent_owner_fails', 0, (): void => {
-      const ps = ctx.personCtx.getService();
-      const ss = ctx.storyCtx.getService();
+      const ps = ctx.getPersonService();
+      const ss = ctx.getStoryService();
       expect(ps.addPhotoToPerson(999999999, TestDataFactory.createPhotoUri()).success).assertFalse();
       expect(ss.addPhotoToStory(999999999, TestDataFactory.createPhotoUri()).success).assertFalse();
     });
 
     it('L3_linkPhoto_removePhoto_success', 0, (): void => {
-      const ps = ctx.personCtx.getService();
-      const ss = ctx.storyCtx.getService();
+      const ps = ctx.getPersonService();
+      const ss = ctx.getStoryService();
       const pid = ps.createPerson(TestDataFactory.uniqueName('RmP'));
       const sid = ss.createStory(TestDataFactory.createStoryTitle());
       const uri1 = TestDataFactory.createPhotoUri();
@@ -155,8 +189,8 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_removePhoto_nonexistent_returns_false', 0, (): void => {
-      const ps = ctx.personCtx.getService();
-      const ss = ctx.storyCtx.getService();
+      const ps = ctx.getPersonService();
+      const ss = ctx.getStoryService();
       const pid = ps.createPerson(TestDataFactory.uniqueName('NoRmP'));
       const sid = ss.createStory(TestDataFactory.createStoryTitle());
       expect(ps.removePhotoFromPerson(pid, 999999999)).assertFalse();
@@ -164,8 +198,8 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_removePhoto_shared_other_owner_unaffected', 0, (): void => {
-      const ps = ctx.personCtx.getService();
-      const ss = ctx.storyCtx.getService();
+      const ps = ctx.getPersonService();
+      const ss = ctx.getStoryService();
       const pid = ps.createPerson(TestDataFactory.uniqueName('CrossRmP'));
       const sid = ss.createStory(TestDataFactory.createStoryTitle());
       const uri = TestDataFactory.createPhotoUri();
@@ -178,7 +212,7 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_deletePerson_shared_photo_survives', 0, (): void => {
-      const ps = ctx.personCtx.getService();
+      const ps = ctx.getPersonService();
       const p1 = ps.createPerson(TestDataFactory.uniqueName('DelP1'));
       const p2 = ps.createPerson(TestDataFactory.uniqueName('DelP2'));
       const uri = TestDataFactory.createPhotoUri();
@@ -189,8 +223,8 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_deleteStory_shared_photo_survives', 0, (): void => {
-      const ps = ctx.personCtx.getService();
-      const ss = ctx.storyCtx.getService();
+      const ps = ctx.getPersonService();
+      const ss = ctx.getStoryService();
       const pid = ps.createPerson(TestDataFactory.uniqueName('StoryDelP'));
       const sid = ss.createStory(TestDataFactory.createStoryTitle());
       const uri = TestDataFactory.createPhotoUri();
@@ -201,7 +235,7 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_gcOrphan_cleans_unreferenced', 0, (): void => {
-      const ps = ctx.personCtx.getService();
+      const ps = ctx.getPersonService();
       const pid = ps.createPerson(TestDataFactory.uniqueName('OrphanP'));
       const uri = TestDataFactory.createPhotoUri();
       ps.addPhotoToPerson(pid, uri);
@@ -212,21 +246,21 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_gcOrphan_skips_referenced', 0, (): void => {
-      const ps = ctx.personCtx.getService();
+      const ps = ctx.getPersonService();
       const pid = ps.createPerson(TestDataFactory.uniqueName('RefP'));
       ps.addPhotoToPerson(pid, TestDataFactory.createPhotoUri());
       expect(ps.gcOrphanPhotoRefs()).assertEqual(0);
     });
 
     it('L3_linkPhoto_gcOrphan_no_orphans_return_0', 0, (): void => {
-      const ps = ctx.personCtx.getService();
+      const ps = ctx.getPersonService();
       expect(ps.gcOrphanPhotoRefs()).assertEqual(0);
     });
 
     it('L3_linkPhoto_story_cap_1000', 0, (): void => {
-      const ss = ctx.storyCtx.getService();
+      const ss = ctx.getStoryService();
       const sid = ss.createStory(TestDataFactory.createStoryTitle());
-      const store = ctx.storyCtx.getStore();
+      const store = ctx.getStore();
       for (let i = 0; i < 1000; i++) {
         const uri = `file://test/cap2-batch-${i}`;
         const prVb: relationalStore.ValuesBucket = {
@@ -254,7 +288,7 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_person_no_cap', 0, (): void => {
-      const ps = ctx.personCtx.getService();
+      const ps = ctx.getPersonService();
       const pid = ps.createPerson(TestDataFactory.uniqueName('NoCapP'));
       for (let i = 0; i < 5; i++) {
         const res = ps.addPhotoToPerson(pid, TestDataFactory.createPhotoUri(i));
@@ -264,7 +298,7 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_photo_count_sync_on_add', 0, (): void => {
-      const ss = ctx.storyCtx.getService();
+      const ss = ctx.getStoryService();
       const sid = ss.createStory(TestDataFactory.createStoryTitle());
       expect(ss.getStory(sid)!.photoCount).assertEqual(0);
       ss.addPhotoToStory(sid, TestDataFactory.createPhotoUri());
@@ -274,7 +308,7 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_photo_count_sync_on_remove', 0, (): void => {
-      const ss = ctx.storyCtx.getService();
+      const ss = ctx.getStoryService();
       const sid = ss.createStory(TestDataFactory.createStoryTitle());
       ss.addPhotoToStory(sid, TestDataFactory.createPhotoUri());
       ss.addPhotoToStory(sid, TestDataFactory.createPhotoUri());
@@ -285,13 +319,13 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_reference_count_shared_increment', 0, (): void => {
-      const ps = ctx.personCtx.getService();
+      const ps = ctx.getPersonService();
       const p1 = ps.createPerson(TestDataFactory.uniqueName('RefCnt1'));
       const p2 = ps.createPerson(TestDataFactory.uniqueName('RefCnt2'));
       const uri = TestDataFactory.createPhotoUri();
       ps.addPhotoToPerson(p1, uri);
       ps.addPhotoToPerson(p2, uri);
-      const store = ctx.personCtx.getStore();
+      const store = ctx.getStore();
       const rs = store.querySqlSync('SELECT reference_count FROM photo_ref WHERE uri = ?;', [uri]);
       let refCount = 0;
       if (rs.goToFirstRow()) {
@@ -302,14 +336,14 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_reference_count_delete_decrement', 0, (): void => {
-      const ps = ctx.personCtx.getService();
+      const ps = ctx.getPersonService();
       const p1 = ps.createPerson(TestDataFactory.uniqueName('RefDec1'));
       const p2 = ps.createPerson(TestDataFactory.uniqueName('RefDec2'));
       const uri = TestDataFactory.createPhotoUri();
       ps.addPhotoToPerson(p1, uri);
       ps.addPhotoToPerson(p2, uri);
       ps.deletePerson(p1);
-      const store = ctx.personCtx.getStore();
+      const store = ctx.getStore();
       const rs = store.querySqlSync('SELECT reference_count FROM photo_ref WHERE uri = ?;', [uri]);
       let refCount = 0;
       if (rs.goToFirstRow()) {
@@ -320,13 +354,13 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_removePhoto_keeps_photoRef', 0, (): void => {
-      const ps = ctx.personCtx.getService();
+      const ps = ctx.getPersonService();
       const pid = ps.createPerson(TestDataFactory.uniqueName('KeepRefP'));
       const uri = TestDataFactory.createPhotoUri();
       ps.addPhotoToPerson(pid, uri);
       const photos = ps.listPersonPhotos(pid);
       ps.removePhotoFromPerson(pid, photos[0].id);
-      const store = ctx.personCtx.getStore();
+      const store = ctx.getStore();
       const rs = store.querySqlSync('SELECT id FROM photo_ref WHERE uri = ?;', [uri]);
       const exists = rs.goToFirstRow();
       rs.close();
@@ -334,8 +368,8 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_cross_link_multiple_persons_stories', 0, (): void => {
-      const ps = ctx.personCtx.getService();
-      const ss = ctx.storyCtx.getService();
+      const ps = ctx.getPersonService();
+      const ss = ctx.getStoryService();
       const p1 = ps.createPerson(TestDataFactory.uniqueName('CrossP1'));
       const p2 = ps.createPerson(TestDataFactory.uniqueName('CrossP2'));
       const s1 = ss.createStory(TestDataFactory.createStoryTitle());
@@ -350,8 +384,8 @@ export default function l3LinkPhotoService(): void {
     });
 
     it('L3_linkPhoto_cross_photo_multiple_owners', 0, (): void => {
-      const ps = ctx.personCtx.getService();
-      const ss = ctx.storyCtx.getService();
+      const ps = ctx.getPersonService();
+      const ss = ctx.getStoryService();
       const pid = ps.createPerson(TestDataFactory.uniqueName('MultiOwnerP'));
       const sid = ss.createStory(TestDataFactory.createStoryTitle());
       const uri = TestDataFactory.createPhotoUri();

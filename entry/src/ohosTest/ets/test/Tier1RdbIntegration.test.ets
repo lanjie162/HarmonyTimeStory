@@ -3,13 +3,13 @@
  * 依赖 Hypium 宿主提供的 Application Context（abilityDelegator.getAppContext），无 UI Driver。
  * 已从 src/test/ 迁入 ohosTest，因需要 abilityDelegatorRegistry。
  */
-import { abilityDelegatorRegistry } from '@kit.TestKit';
 import { relationalStore } from '@kit.ArkData';
 import { afterAll, beforeAll, describe, expect, it } from '@ohos/hypium';
 import { ensureSchemaV1 } from '../../../main/ets/infrastructure/data/RdbSchema';
 import { RepositoryImpl } from '../../../main/ets/infrastructure/repository/RepositoryImpl';
 import { GenderEnum, PersonTypeEnum } from '../../../main/ets/domain/model/Models';
 import type { PersonModel, StoryModel } from '../../../main/ets/domain/model/Models';
+import { resolveRdbCapableContext } from './OhosTestRdbContext';
 
 function sleepMs(ms: number): Promise<void> {
   return new Promise<void>((resolve: () => void): void => {
@@ -27,9 +27,8 @@ export default function tier1RepositoryRdb(): void {
 
     beforeAll(async () => {
       try {
-        const delegator = abilityDelegatorRegistry.getAbilityDelegator();
-        const ctx = delegator.getAppContext();
-        console.info('Tier1Rdb: got app context, creating RDB: ' + dbName);
+        const ctx = await resolveRdbCapableContext();
+        console.info('Tier1Rdb: got UIAbility context, creating RDB: ' + dbName);
         const cfg: relationalStore.StoreConfig = {
           name: dbName,
           securityLevel: relationalStore.SecurityLevel.S1

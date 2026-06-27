@@ -5,10 +5,10 @@
 import { afterEach, describe, it } from '@ohos/hypium';
 import { ON } from '@kit.TestKit';
 import {
+  assertOnPersonDetail,
   assertTextExist,
-  clickButtonByText,
+  clickComponentSafely,
   clickConfirmImportButton,
-  clickDetailEnterImportWizard,
   clickImportCancelScan,
   clickImportDebugPh01Duplicate,
   clickImportDebugSkipToConditions,
@@ -20,6 +20,7 @@ import {
   openPersonListRowByDisplayName,
   scrollDetailUntilVisible,
   sleepMs,
+  waitForText,
   V2_TIMEOUT
 } from './V2RegressionTestKit';
 
@@ -33,11 +34,11 @@ export default function v2RegressionSuggestImport(): void {
       const driver = await coldStartMainApp();
       await navigateToPersonFromShell(driver);
       // 人脸建议入口
-      await clickButtonByText(driver, '人脸建议');
+      await clickComponentSafely(driver, ON.text('人脸建议'), V2_TIMEOUT.NORMAL);
       await assertTextExist(driver, '建议审阅');
       await assertTextExist(driver, '4.6 形态三 · 顶栏说明（对齐 v1.2 可测骨架）');
       // 返回人物页
-      await clickButtonByText(driver, '返回');
+      await clickComponentSafely(driver, ON.text('返回'), V2_TIMEOUT.NORMAL);
       await driver.waitForIdle(300, 800);
       await assertTextExist(driver, '人物');
     });
@@ -45,16 +46,16 @@ export default function v2RegressionSuggestImport(): void {
     it('V2_D3_suggest_accept_ignore', 0, async () => {
       const driver = await coldStartMainApp();
       await navigateToPersonFromShell(driver);
-      await clickButtonByText(driver, '人脸建议');
+      await clickComponentSafely(driver, ON.text('人脸建议'), V2_TIMEOUT.NORMAL);
       await assertTextExist(driver, '建议审阅');
 
       // 接受候选 — 验证状态
-      await clickButtonByText(driver, '接受');
+      await clickComponentSafely(driver, ON.text('接受'), V2_TIMEOUT.NORMAL);
       await driver.waitForIdle(300, 800);
       await assertTextExist(driver, '状态：已接受');
 
       // 忽略（已接受项不可忽略，验证 Toast 阻断）
-      await clickButtonByText(driver, '忽略');
+      await clickComponentSafely(driver, ON.text('忽略'), V2_TIMEOUT.NORMAL);
       await driver.waitForIdle(300, 800);
       // 仍显示「已接受」
       await assertTextExist(driver, '状态：已接受');
@@ -67,10 +68,11 @@ export default function v2RegressionSuggestImport(): void {
       const personName = `V2Imp_${Date.now()}`;
       await createPersonOnPage(driver, personName);
       await openPersonListRowByDisplayName(driver, personName);
-      await assertTextExist(driver, '人物详情');
+      await assertOnPersonDetail(driver);
 
-      // 进入导入向导
-      await clickDetailEnterImportWizard(driver);
+      // 进入导入向导：点击「导入相册…」入口
+      await scrollDetailUntilVisible(driver, ON.text('导入相册…'));
+      await clickComponentSafely(driver, ON.text('导入相册…'), V2_TIMEOUT.NORMAL);
       await assertTextExist(driver, '导入向导');
       // 验证处于 pick 步
       await assertTextExist(driver, '选图开始（相册）');
@@ -83,7 +85,7 @@ export default function v2RegressionSuggestImport(): void {
       const personName = `V2Cn_${Date.now()}`;
       await createPersonOnPage(driver, personName);
       await openPersonListRowByDisplayName(driver, personName);
-      await clickDetailEnterImportWizard(driver);
+      await clickComponentSafely(driver, ON.text('导入相册…'), V2_TIMEOUT.NORMAL);
       await assertTextExist(driver, '导入向导');
 
       // DEBUG 跳过选图 → 条件步
@@ -114,7 +116,7 @@ export default function v2RegressionSuggestImport(): void {
       const personName = `V2Wr_${Date.now()}`;
       await createPersonOnPage(driver, personName);
       await openPersonListRowByDisplayName(driver, personName);
-      await clickDetailEnterImportWizard(driver);
+      await clickComponentSafely(driver, ON.text('导入相册…'), V2_TIMEOUT.NORMAL);
 
       // DEBUG 跳过选图 → 扫描 → 等待候选确认步
       await clickImportDebugSkipToConditions(driver);
@@ -135,7 +137,7 @@ export default function v2RegressionSuggestImport(): void {
       const personName = `V2Dup_${Date.now()}`;
       await createPersonOnPage(driver, personName);
       await openPersonListRowByDisplayName(driver, personName);
-      await clickDetailEnterImportWizard(driver);
+      await clickComponentSafely(driver, ON.text('导入相册…'), V2_TIMEOUT.NORMAL);
 
       // DEBUG PH-01 双占位 → 扫描 → 候选 → 确认
       await clickImportDebugPh01Duplicate(driver);
@@ -147,9 +149,12 @@ export default function v2RegressionSuggestImport(): void {
       await clickConfirmImportButton(driver);
       await driver.waitForIdle(300, 800);
 
-      // 回到人物详情，验证照片数=1（PH-01 去重）
-      await assertTextExist(driver, '人物详情');
-      await assertTextExist(driver, '【E2E】照片数=1');
+      // 回到人物详情，进入编辑页验证照片数=1（PH-01 去重）
+      await assertOnPersonDetail(driver);
+      const editBtn = await waitForText(driver, '编辑', V2_TIMEOUT.NORMAL);
+      await editBtn.click();
+      await driver.waitForIdle(500, 1200);
+      await assertTextExist(driver, '【E2E】照片数=1', V2_TIMEOUT.SCAN);
     });
   });
 }

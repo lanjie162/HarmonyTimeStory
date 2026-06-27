@@ -6,6 +6,17 @@
       "phone"
     ],
     "deliveryWithInstall": true,
-    "installationFree": false
+    "installationFree": false,
+    "srcEntry": "./ets/testrunner/OpenHarmonyTestRunner.ets",
+    "pages": "$profile:test_pages",
+    "abilities": [
+      {
+        "name": "TestAbility",
+        "srcEntry": "./ets/testability/TestAbility.ets",
+        "startWindowIcon": "$media:startIcon",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": true
+      }
+    ]
   }
 }
