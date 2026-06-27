@@ -26,75 +26,21 @@ function formatDate(ts: number | null): string {
   return `${y}-${m}-${day}`;
 }
 
-@CustomDialog
-export struct CreateStoryBottomSheet {
-  controller: CustomDialogController;
-  @State title: string = '';
-  onCreated?: () => void;
-
-  build() {
-    Column({ space: 16 }) {
-      Text('新建故事')
-        .fontSize($r('app.float.ts_font_title'))
-        .fontColor($r('app.color.ts_text_primary'))
-        .fontWeight(FontWeight.Bold)
-        .width('100%')
-
-      TextInputWithKeyboard({
-        placeholder: '标题（必填）',
-        value: this.title,
-        onChange: (v: string): void => {
-          this.title = v;
-        },
-        onSubmit: (): void => {
-          this.doCreate();
-        }
-      })
-
-      Button('创建')
-        .width('100%')
-        .height(48)
-        .fontSize($r('app.float.ts_font_body'))
-        .fontWeight(FontWeight.Medium)
-        .backgroundColor($r('app.color.ts_brand_primary'))
-        .fontColor($r('app.color.ts_import_bar_on_bg'))
-        .onClick((): void => {
-          this.doCreate();
-        })
-    }
-    .width('100%')
-    .padding(24)
-    .backgroundColor($r('app.color.ts_surface'))
-    .borderRadius({ topLeft: 16, topRight: 16 })
-  }
-
-  private doCreate(): void {
-    const svc = getStoryService();
-    const id = svc.createStory(this.title);
-    if (id < 0) {
-      promptAction.showToast({ message: '请输入非空标题' });
-      return;
-    }
-    this.title = '';
-    promptAction.showToast({ message: `已创建故事 #${id}` });
-    this.controller.close();
-    this.onCreated?.();
-  }
-}
-
 @Component
 export struct StoryPage {
   @State private stories: StoryModel[] = [];
+  @State private showCreateSheet: boolean = false;
+  @State private newStoryTitle: string = '';
   @State private swipedStoryId: number = -1;
-  createDialogController: CustomDialogController | null = new CustomDialogController({
-    builder: CreateStoryBottomSheet({ onCreated: (): void => this.reload() }),
-    alignment: DialogAlignment.Bottom,
-    customStyle: true,
-    autoCancel: true,
-    cornerRadius: { topLeft: 16, topRight: 16 }
-  });
+  /** 监听 ShellPage 的刷新信号，onPageShow 时递增 */
+  @Consume('shellRefreshTick') @Watch('onShellRefresh') shellRefreshTick: number;
 
   aboutToAppear(): void {
+    this.reload();
+  }
+
+  /** ShellPage onPageShow → shellRefreshTick 递增 → 触发刷新 */
+  onShellRefresh(): void {
     this.reload();
   }
 
@@ -104,7 +50,21 @@ export struct StoryPage {
 
   private openCreateSheet(): void {
     dismissSoftKeyboard();
-    this.createDialogController?.open();
+    this.newStoryTitle = '';
+    this.showCreateSheet = true;
+  }
+
+  private doCreateStory(): void {
+    const svc = getStoryService();
+    const id = svc.createStory(this.newStoryTitle);
+    if (id < 0) {
+      promptAction.showToast({ message: '请输入非空标题' });
+      return;
+    }
+    this.newStoryTitle = '';
+    this.showCreateSheet = false;
+    promptAction.showToast({ message: `已创建故事 #${id}` });
+    this.reload();
   }
 
   private confirmDeleteStory(s: StoryModel): void {
@@ -182,6 +142,43 @@ export struct StoryPage {
       parts.push(tagStr);
     }
     return parts.join(' · ');
+  }
+
+  @Builder
+  createSheetBuilder() {
+    Column({ space: 16 }) {
+      Text('新建故事')
+        .fontSize($r('app.float.ts_font_title'))
+        .fontColor($r('app.color.ts_text_primary'))
+        .fontWeight(FontWeight.Bold)
+        .width('100%')
+
+      TextInputWithKeyboard({
+        placeholder: '标题（必填）',
+        value: this.newStoryTitle,
+        onChange: (v: string): void => {
+          this.newStoryTitle = v;
+        },
+        onSubmit: (): void => {
+          this.doCreateStory();
+        }
+      })
+
+      Button('创建')
+        .width('100%')
+        .height(48)
+        .fontSize($r('app.float.ts_font_body'))
+        .fontWeight(FontWeight.Medium)
+        .backgroundColor($r('app.color.ts_brand_primary'))
+        .fontColor($r('app.color.ts_import_bar_on_bg'))
+        .onClick((): void => {
+          this.doCreateStory();
+        })
+    }
+    .width('100%')
+    .padding(24)
+    .backgroundColor($r('app.color.ts_surface'))
+    .borderRadius({ topLeft: 16, topRight: 16 })
   }
 
   build() {
@@ -315,5 +312,11 @@ export struct StoryPage {
     .width('100%')
     .height('100%')
     .backgroundColor($r('app.color.ts_surface'))
+    .bindSheet($$this.showCreateSheet, this.createSheetBuilder, {
+      height: SheetSize.FIT_CONTENT,
+      showClose: false,
+      dragBar: false,
+      backgroundColor: $r('app.color.ts_surface')
+    })
   }
 }

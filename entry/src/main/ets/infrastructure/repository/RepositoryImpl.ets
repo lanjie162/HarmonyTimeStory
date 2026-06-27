@@ -105,18 +105,21 @@ export class RepositoryImpl implements IAppDataStore {
   private rowToPerson(rs: relationalStore.ResultSet): PersonModel {
     const id = Number(rs.getLong(rs.getColumnIndex('id')));
     const displayName = rs.getString(rs.getColumnIndex('display_name'));
-    const avatarBlob = rs.getBlob(rs.getColumnIndex('avatar_blob'));
-    const birthdayRaw = rs.getLong(rs.getColumnIndex('birthday'));
-    const genderRaw = rs.getLong(rs.getColumnIndex('gender'));
+    const avatarBlobIdx = rs.getColumnIndex('avatar_blob');
+    const avatarBlob: Uint8Array | null = rs.isColumnNull(avatarBlobIdx) ? null : rs.getBlob(avatarBlobIdx);
+    const birthdayIdx = rs.getColumnIndex('birthday');
+    const birthday: number | null = rs.isColumnNull(birthdayIdx) ? null : rs.getLong(birthdayIdx);
+    const genderIdx = rs.getColumnIndex('gender');
+    const gender: number | null = rs.isColumnNull(genderIdx) ? null : rs.getLong(genderIdx);
     const remark = rs.getString(rs.getColumnIndex('remark')) ?? '';
     const personTypeRaw = Number(rs.getLong(rs.getColumnIndex('person_type')));
     const updatedAt = Number(rs.getLong(rs.getColumnIndex('updated_at')));
     return {
       id,
       displayName,
-      avatarBlob: avatarBlob ?? null,
-      birthday: birthdayRaw !== null ? Number(birthdayRaw) : null,
-      gender: genderRaw !== null ? (Number(genderRaw) as GenderEnum) : null,
+      avatarBlob,
+      birthday,
+      gender: gender as GenderEnum | null,
       remark,
       personType: personTypeRaw as PersonTypeEnum,
       updatedAt
@@ -127,18 +130,20 @@ export class RepositoryImpl implements IAppDataStore {
     const id = Number(rs.getLong(rs.getColumnIndex('id')));
     const title = rs.getString(rs.getColumnIndex('title')) ?? '';
     const description = rs.getString(rs.getColumnIndex('description')) ?? '';
-    const timeStartRaw = rs.getLong(rs.getColumnIndex('time_start'));
-    const timeEndRaw = rs.getLong(rs.getColumnIndex('time_end'));
+    const timeStartIdx = rs.getColumnIndex('time_start');
+    const timeStart: number | null = rs.isColumnNull(timeStartIdx) ? null : rs.getLong(timeStartIdx);
+    const timeEndIdx = rs.getColumnIndex('time_end');
+    const timeEnd: number | null = rs.isColumnNull(timeEndIdx) ? null : rs.getLong(timeEndIdx);
     const coverUri = rs.getString(rs.getColumnIndex('cover_uri')) ?? '';
     const location = rs.getString(rs.getColumnIndex('location')) ?? '';
     const tagsRaw = rs.getString(rs.getColumnIndex('tags'));
-    const photoCount = Number(rs.getLong(rs.getColumnIndex('photo_count')) ?? 0);
+    const photoCount = Number(rs.getLong(rs.getColumnIndex('photo_count')));
     return {
       id,
       title,
       description,
-      timeStart: timeStartRaw !== null ? Number(timeStartRaw) : null,
-      timeEnd: timeEndRaw !== null ? Number(timeEndRaw) : null,
+      timeStart,
+      timeEnd,
       coverUri,
       location,
       tags: parseTags(tagsRaw),
@@ -222,7 +227,7 @@ export class RepositoryImpl implements IAppDataStore {
     }
     if (params.avatarBlob !== undefined) {
       setClauses.push('avatar_blob = ?');
-      bindArgs.push(params.avatarBlob as Uint8Array);
+      bindArgs.push(params.avatarBlob as relationalStore.ValueType);
     }
     if (params.birthday !== undefined) {
       setClauses.push('birthday = ?');
@@ -241,12 +246,14 @@ export class RepositoryImpl implements IAppDataStore {
       bindArgs.push(params.personType);
     }
     bindArgs.push(id);
-    store.executeSql(
+    const result = store.executeSync(
       `UPDATE person SET ${setClauses.join(', ')} WHERE id = ?;`,
       bindArgs
     );
-    // 只要 displayName 检查通过，SQL 执行无异常，就认为成功
-    // 不依赖 changesCount，因为可能没修改任何字段（但 updated_at 总变）
+    // executeSync 对 DML 返回受影响行数；若返回值不可用则退化为 true
+    if (typeof result === 'number') {
+      return result > 0;
+    }
     return true;
   }
 
@@ -321,8 +328,11 @@ export class RepositoryImpl implements IAppDataStore {
       return false;
     }
     const store = this.db();
-    store.executeSql('UPDATE story SET title = ?, updated_at = ? WHERE id = ?;', [t, nowMs(), id]);
-    return changesCount(store) > 0;
+    const result = store.executeSync('UPDATE story SET title = ?, updated_at = ? WHERE id = ?;', [t, nowMs(), id]);
+    if (typeof result === 'number') {
+      return result > 0;
+    }
+    return true;
   }
 
   updateStoryAll(id: number, params: UpdateStoryParams): boolean {
@@ -363,11 +373,13 @@ export class RepositoryImpl implements IAppDataStore {
       bindArgs.push(JSON.stringify(params.tags));
     }
     bindArgs.push(id);
-    store.executeSql(
+    const result = store.executeSync(
       `UPDATE story SET ${setClauses.join(', ')} WHERE id = ?;`,
       bindArgs
     );
-    // 只要 title 检查通过，SQL 执行无异常，就认为成功
+    if (typeof result === 'number') {
+      return result > 0;
+    }
     return true;
   }
 
@@ -412,7 +424,7 @@ export class RepositoryImpl implements IAppDataStore {
 
   unlinkPersonStory(personId: number, storyId: number): void {
     const store = this.db();
-    store.executeSql('DELETE FROM person_story WHERE person_id = ? AND story_id = ?;', [personId, storyId]);
+    store.executeSync('DELETE FROM person_story WHERE person_id = ? AND story_id = ?;', [personId, storyId]);
   }
 
   linkedStoriesForPerson(personId: number): StoryModel[] {
@@ -468,8 +480,8 @@ export class RepositoryImpl implements IAppDataStore {
     );
     const out: PhotoRefModel[] = [];
     while (rs.goToNextRow()) {
-      const takenAtRaw = rs.getLong(rs.getColumnIndex('taken_at_cache'));
-      const metadata: PhotoMetadata | undefined = takenAtRaw !== null ? { takenAt: Number(takenAtRaw) } : undefined;
+      const takenAtIdx = rs.getColumnIndex('taken_at_cache');
+      const metadata: PhotoMetadata | undefined = rs.isColumnNull(takenAtIdx) ? undefined : { takenAt: rs.getLong(takenAtIdx) };
       out.push({
         id: Number(rs.getLong(rs.getColumnIndex('id'))),
         uri: rs.getString(rs.getColumnIndex('uri')),
@@ -585,14 +597,14 @@ export class RepositoryImpl implements IAppDataStore {
         return { success: false, duplicate: false };
       }
 
-      store.executeSql(
+      store.executeSync(
         'UPDATE photo_ref SET reference_count = reference_count + 1, is_referenced = 1 WHERE id = ?;',
         [photoRefId]
       );
 
       // 更新故事照片数量
       if (ownerKind === OWN_STORY) {
-        store.executeSql(
+        store.executeSync(
           'UPDATE story SET photo_count = photo_count + 1 WHERE id = ?;',
           [ownerId]
         );
@@ -625,18 +637,19 @@ export class RepositoryImpl implements IAppDataStore {
       }
       refRs.close();
       // Delete person-side photo owner links
-      store.executeSql('DELETE FROM photo_owner_link WHERE owner_kind = ? AND owner_id = ?;', [OWN_PERSON, id]);
+      store.executeSync('DELETE FROM photo_owner_link WHERE owner_kind = ? AND owner_id = ?;', [OWN_PERSON, id]);
       // Decrement reference_count for each affected photo_ref
       for (const rid of refIds) {
-        store.executeSql('UPDATE photo_ref SET reference_count = MAX(0, reference_count - 1) WHERE id = ?;', [rid]);
-        store.executeSql('UPDATE photo_ref SET is_referenced = 0 WHERE id = ? AND reference_count = 0;', [rid]);
+        store.executeSync('UPDATE photo_ref SET reference_count = MAX(0, reference_count - 1) WHERE id = ?;', [rid]);
+        store.executeSync('UPDATE photo_ref SET is_referenced = 0 WHERE id = ? AND reference_count = 0;', [rid]);
       }
       // Delete person-story associations
-      store.executeSql('DELETE FROM person_story WHERE person_id = ?;', [id]);
+      store.executeSync('DELETE FROM person_story WHERE person_id = ?;', [id]);
       // Delete person
-      store.executeSql('DELETE FROM person WHERE id = ?;', [id]);
+      store.executeSync('DELETE FROM person WHERE id = ?;', [id]);
       store.commit();
-      return changesCount(store) > 0;
+      // 验证删除成功
+      return this.getPerson(id) === null;
     } catch (_e) {
       store.rollBack();
       return false;
@@ -662,18 +675,19 @@ export class RepositoryImpl implements IAppDataStore {
       }
       refRs.close();
       // Delete story-side photo owner links
-      store.executeSql('DELETE FROM photo_owner_link WHERE owner_kind = ? AND owner_id = ?;', [OWN_STORY, id]);
+      store.executeSync('DELETE FROM photo_owner_link WHERE owner_kind = ? AND owner_id = ?;', [OWN_STORY, id]);
       // Decrement reference_count for each affected photo_ref
       for (const rid of refIds) {
-        store.executeSql('UPDATE photo_ref SET reference_count = MAX(0, reference_count - 1) WHERE id = ?;', [rid]);
-        store.executeSql('UPDATE photo_ref SET is_referenced = 0 WHERE id = ? AND reference_count = 0;', [rid]);
+        store.executeSync('UPDATE photo_ref SET reference_count = MAX(0, reference_count - 1) WHERE id = ?;', [rid]);
+        store.executeSync('UPDATE photo_ref SET is_referenced = 0 WHERE id = ? AND reference_count = 0;', [rid]);
       }
       // Delete person-story associations
-      store.executeSql('DELETE FROM person_story WHERE story_id = ?;', [id]);
+      store.executeSync('DELETE FROM person_story WHERE story_id = ?;', [id]);
       // Delete story
-      store.executeSql('DELETE FROM story WHERE id = ?;', [id]);
+      store.executeSync('DELETE FROM story WHERE id = ?;', [id]);
       store.commit();
-      return changesCount(store) > 0;
+      // 验证删除成功
+      return this.getStory(id) === null;
     } catch (_e) {
       store.rollBack();
       return false;
@@ -705,22 +719,22 @@ export class RepositoryImpl implements IAppDataStore {
         store.rollBack();
         return false;
       }
-      store.executeSql(
+      store.executeSync(
         'DELETE FROM photo_owner_link WHERE owner_kind = ? AND owner_id = ? AND photo_ref_id = ?;',
         [ownerKind, ownerId, photoRefId]
       );
-      store.executeSql(
+      store.executeSync(
         'UPDATE photo_ref SET reference_count = MAX(0, reference_count - 1) WHERE id = ?;',
         [photoRefId]
       );
-      store.executeSql(
+      store.executeSync(
         'UPDATE photo_ref SET is_referenced = 0 WHERE id = ? AND reference_count = 0;',
         [photoRefId]
       );
 
       // 更新故事照片数量
       if (ownerKind === OWN_STORY) {
-        store.executeSql(
+        store.executeSync(
           'UPDATE story SET photo_count = MAX(0, photo_count - 1) WHERE id = ?;',
           [ownerId]
         );
@@ -736,7 +750,7 @@ export class RepositoryImpl implements IAppDataStore {
 
   updatePhotoRefStatus(photoRefId: number, status: number): void {
     const store = this.db();
-    store.executeSql('UPDATE photo_ref SET ref_status = ? WHERE id = ?;', [status, photoRefId]);
+    store.executeSync('UPDATE photo_ref SET ref_status = ? WHERE id = ?;', [status, photoRefId]);
   }
 
   gcOrphanPhotoRefs(): number {
@@ -760,7 +774,7 @@ export class RepositoryImpl implements IAppDataStore {
     try {
       store.beginTransaction();
       for (const orphanId of ids) {
-        store.executeSql('DELETE FROM photo_ref WHERE id = ?;', [orphanId]);
+        store.executeSync('DELETE FROM photo_ref WHERE id = ?;', [orphanId]);
       }
       store.commit();
     } catch (_e) {

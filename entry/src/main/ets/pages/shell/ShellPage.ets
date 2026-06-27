@@ -7,6 +7,12 @@ import { StoryPage } from '../story/StoryPage';
 export struct ShellPage {
   @State currentIndex: number = 0;
   @State isMoreMenuVisible: boolean = false;
+  /** 每次 onPageShow 递增，子组件 @Watch 触发刷新 */
+  @Provide('shellRefreshTick') shellRefreshTick: number = 0;
+
+  onPageShow(): void {
+    this.shellRefreshTick++;
+  }
 
   private goPrivacy(): void {
     this.isMoreMenuVisible = false;

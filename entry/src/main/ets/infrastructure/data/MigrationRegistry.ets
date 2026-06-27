@@ -44,7 +44,7 @@ function checkMissingTablesSqlite(store: relationalStore.RdbStore, required: str
 
 function applyV1ToV2(ctx: MigrationContext): void {
   if (ctx.rdbStore) {
-    ctx.rdbStore.executeSql(
+    ctx.rdbStore.executeSync(
       'CREATE TABLE IF NOT EXISTS migration_audit (' +
         'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
         'batch_id TEXT NOT NULL, ' +
@@ -93,7 +93,7 @@ function applyV2ToV3(ctx: MigrationContext): void {
       'person_type INTEGER DEFAULT 3'
     ];
     for (const colDef of newColumns) {
-      ctx.rdbStore.executeSql(`ALTER TABLE person ADD COLUMN ${colDef};`, []);
+      ctx.rdbStore.executeSync(`ALTER TABLE person ADD COLUMN ${colDef};`, []);
     }
   }
 
@@ -129,12 +129,31 @@ function applyV3ToV4(ctx: MigrationContext): void {
       'tags TEXT DEFAULT \'[]\''
     ];
     for (const colDef of newColumns) {
-      ctx.rdbStore.executeSql(`ALTER TABLE story ADD COLUMN ${colDef};`, []);
+      ctx.rdbStore.executeSync(`ALTER TABLE story ADD COLUMN ${colDef};`, []);
     }
   }
 
   ctx.appliedSteps.add('v3_to_v4_story_fields');
   ctx.schemaVersion = 4;
+}
+
+function ensureV4ToV5Precheck(ctx: MigrationContext): void {
+  if (ctx.schemaVersion !== 4) {
+    throw new Error(`unexpected version ${ctx.schemaVersion}, expected 4`);
+  }
+}
+
+function applyV4ToV5(ctx: MigrationContext): void {
+  if (ctx.rdbStore) {
+    // Bug #L3-1: story 表缺少 photo_count 列，导致 createStory 插入失败
+    ctx.rdbStore.executeSync(
+      'ALTER TABLE story ADD COLUMN photo_count INTEGER NOT NULL DEFAULT 0;',
+      []
+    );
+  }
+
+  ctx.appliedSteps.add('v4_to_v5_story_photo_count');
+  ctx.schemaVersion = 5;
 }
 
 export const migrationSteps: MigrationStep[] = [
@@ -158,5 +177,12 @@ export const migrationSteps: MigrationStep[] = [
     stepId: 'v3_to_v4_story_fields',
     precheck: ensureV3ToV4Precheck,
     apply: applyV3ToV4
+  },
+  {
+    fromVersion: 4,
+    toVersion: 5,
+    stepId: 'v4_to_v5_story_photo_count',
+    precheck: ensureV4ToV5Precheck,
+    apply: applyV4ToV5
   }
 ];

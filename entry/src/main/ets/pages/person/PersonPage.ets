@@ -68,74 +68,15 @@ function formatRelativeTime(ts: number): string {
   return `${years} 年前`;
 }
 
-@CustomDialog
-export struct CreatePersonBottomSheet {
-  controller: CustomDialogController;
-  @State displayName: string = '';
-  onCreated?: () => void;
-
-  build() {
-    Column({ space: 16 }) {
-      Text('新建人物')
-        .fontSize($r('app.float.ts_font_title'))
-        .fontColor($r('app.color.ts_text_primary'))
-        .fontWeight(FontWeight.Bold)
-        .width('100%')
-
-      TextInputWithKeyboard({
-        placeholder: '显示名（必填）',
-        value: this.displayName,
-        onChange: (v: string): void => {
-          this.displayName = v;
-        },
-        onSubmit: (): void => {
-          this.doCreate();
-        }
-      })
-
-      Button('创建')
-        .width('100%')
-        .height(48)
-        .fontSize($r('app.float.ts_font_body'))
-        .fontWeight(FontWeight.Medium)
-        .backgroundColor($r('app.color.ts_brand_primary'))
-        .fontColor($r('app.color.ts_import_bar_on_bg'))
-        .onClick((): void => {
-          this.doCreate();
-        })
-    }
-    .width('100%')
-    .padding(24)
-    .backgroundColor($r('app.color.ts_surface'))
-    .borderRadius({ topLeft: 16, topRight: 16 })
-  }
-
-  private doCreate(): void {
-    const svc = getPersonService();
-    const id = svc.createPerson(this.displayName);
-    if (id < 0) {
-      promptAction.showToast({ message: '请输入非空显示名' });
-      return;
-    }
-    this.displayName = '';
-    promptAction.showToast({ message: `已创建人物 #${id}` });
-    this.controller.close();
-    this.onCreated?.();
-  }
-}
-
 @Component
 export struct PersonPage {
   @State private persons: PersonModel[] = [];
+  @State private showCreateSheet: boolean = false;
+  @State private newDisplayName: string = '';
   /** 当前正在左滑删除的 person id，用于 SwipeAction builder 回调。 */
   @State private swipedPersonId: number = -1;
-  createDialogController: CustomDialogController | null = new CustomDialogController({
-    builder: CreatePersonBottomSheet({ onCreated: (): void => this.reload() }),
-    alignment: DialogAlignment.Bottom,
-    customStyle: true,
-    autoCancel: true,
-    cornerRadius: { topLeft: 16, topRight: 16 }
-  });
+  /** 监听 ShellPage 的刷新信号，onPageShow 时递增 */
+  @Consume('shellRefreshTick') @Watch('onShellRefresh') shellRefreshTick: number;
 
   aboutToAppear(): void {
     this.reload();
@@ -145,13 +86,32 @@ export struct PersonPage {
     this.reload();
   }
 
+  /** ShellPage onPageShow → shellRefreshTick 递增 → 触发刷新 */
+  onShellRefresh(): void {
+    this.reload();
+  }
+
   private reload(): void {
     this.persons = getPersonService().listPersons();
   }
 
   private openCreateSheet(): void {
     dismissSoftKeyboard();
-    this.createDialogController?.open();
+    this.newDisplayName = '';
+    this.showCreateSheet = true;
+  }
+
+  private doCreatePerson(): void {
+    const svc = getPersonService();
+    const id = svc.createPerson(this.newDisplayName);
+    if (id < 0) {
+      promptAction.showToast({ message: '请输入非空显示名' });
+      return;
+    }
+    this.newDisplayName = '';
+    this.showCreateSheet = false;
+    promptAction.showToast({ message: `已创建人物 #${id}` });
+    this.reload();
   }
 
   private confirmDeletePerson(p: PersonModel): void {
@@ -206,6 +166,43 @@ export struct PersonPage {
       }
     }
     return null;
+  }
+
+  @Builder
+  createSheetBuilder() {
+    Column({ space: 16 }) {
+      Text('新建人物')
+        .fontSize($r('app.float.ts_font_title'))
+        .fontColor($r('app.color.ts_text_primary'))
+        .fontWeight(FontWeight.Bold)
+        .width('100%')
+
+      TextInputWithKeyboard({
+        placeholder: '显示名（必填）',
+        value: this.newDisplayName,
+        onChange: (v: string): void => {
+          this.newDisplayName = v;
+        },
+        onSubmit: (): void => {
+          this.doCreatePerson();
+        }
+      })
+
+      Button('创建')
+        .width('100%')
+        .height(48)
+        .fontSize($r('app.float.ts_font_body'))
+        .fontWeight(FontWeight.Medium)
+        .backgroundColor($r('app.color.ts_brand_primary'))
+        .fontColor($r('app.color.ts_import_bar_on_bg'))
+        .onClick((): void => {
+          this.doCreatePerson();
+        })
+    }
+    .width('100%')
+    .padding(24)
+    .backgroundColor($r('app.color.ts_surface'))
+    .borderRadius({ topLeft: 16, topRight: 16 })
   }
 
   build() {
@@ -340,6 +337,12 @@ export struct PersonPage {
     .width('100%')
     .height('100%')
     .backgroundColor($r('app.color.ts_surface'))
+    .bindSheet($$this.showCreateSheet, this.createSheetBuilder, {
+      height: SheetSize.FIT_CONTENT,
+      showClose: false,
+      dragBar: false,
+      backgroundColor: $r('app.color.ts_surface')
+    })
   }
 
   private typeGenderSummary(p: PersonModel): string {

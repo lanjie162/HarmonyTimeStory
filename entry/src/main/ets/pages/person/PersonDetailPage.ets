@@ -4,8 +4,6 @@ import photoAccessHelper from '@ohos.file.photoAccessHelper';
 import { fileIo } from '@kit.CoreFileKit';
 import BuildProfile from 'BuildProfile';
 import type { GenderEnum, PersonModel, PersonTypeEnum, PhotoMetadata, PhotoRefModel, StoryModel } from '../../domain/model/Models';
-import { PersonTypeEnum as PT } from '../../domain/model/Models';
-import { GenderEnum as GE } from '../../domain/model/Models';
 import { getPersonService } from '../../features/person/PersonFeature';
 import { getStoryService } from '../../features/story/StoryFeature';
 import { getPhotoLibraryService } from '../../features/photolibrary/PhotoLibraryFeature';
@@ -13,77 +11,7 @@ import { PhotoGridItem } from '../../common/ui/PhotoGridItem';
 import { UriHealthChecker } from '../../infrastructure/media/UriHealthChecker';
 import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
 import { PhotoSwiper } from '../../common/ui/PhotoSwiper';
-
-function parsePersonId(params: Record<string, Object>): number {
-  const raw = params['personId'];
-  if (typeof raw === 'number') {
-    return raw as number;
-  }
-  if (typeof raw === 'string') {
-    const n = Number.parseInt(raw as string, 10);
-    return Number.isNaN(n) ? 0 : n;
-  }
-  return 0;
-}
-
-function typeLabel(val: PersonTypeEnum): string {
-  if (val === PT.BABY) {
-    return '宝宝';
-  }
-  if (val === PT.ADULT) {
-    return '成人';
-  }
-  if (val === PT.ELDER) {
-    return '长辈';
-  }
-  return '其他';
-}
-
-function genderLabel(val: GenderEnum | null): string {
-  if (val === null || val === GE.UNSPECIFIED) {
-    return '未填';
-  }
-  if (val === GE.MALE) {
-    return '男';
-  }
-  return '女';
-}
-
-function formatBirthday(ts: number | null): string {
-  if (ts === null || ts <= 0) {
-    return '未设置';
-  }
-  const date = new Date(ts);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function formatMonthLabel(year: number, month: number): string {
-  return `${year}年${month + 1}月`;
-}
-
-type TimelineItemKind = 'photo' | 'story';
-
-interface TimelineItem {
-  kind: TimelineItemKind;
-  photo?: PhotoRefModel;
-  story?: StoryModel;
-  coverPhoto?: PhotoRefModel;
-}
-
-interface StoryStat {
-  title: string;
-  count: number;
-}
-
-interface MonthGroup {
-  year: number;
-  month: number;
-  items: TimelineItem[];
-  storyStats: Map<number, StoryStat>;
-}
+import { typeLabel, genderLabel, formatBirthday, formatMonthLabel, parsePersonId, buildMonthGroups as buildMonthGroupsLogic, blobToBase64, MonthGroup, TimelineItem, StoryStat } from './PersonDetailLogic';
 
 @Entry
 @Component
@@ -123,80 +51,9 @@ export struct PersonDetailPage {
   }
 
   private buildMonthGroups(): void {
-    const groups: MonthGroup[] = [];
-    const map = new Map<string, MonthGroup>();
-
-    // 添加人物照片
-    for (const ph of this.photos) {
-      const ts = ph.metadata?.takenAt ?? 0;
-      const d = new Date(ts);
-      const y = d.getFullYear();
-      const m = d.getMonth();
-      const key = `${y}-${m}`;
-      let g = map.get(key);
-      if (!g) {
-        g = { year: y, month: m, items: [], storyStats: new Map() };
-        map.set(key, g);
-        groups.push(g);
-      }
-      g.items.push({ kind: 'photo', photo: ph });
-    }
-
-    // 添加关联故事封面
-    for (const s of this.linkedStories) {
-      const ts = s.timeStart ?? 0;
-      if (ts <= 0) {
-        continue;
-      }
-      const d = new Date(ts);
-      const y = d.getFullYear();
-      const m = d.getMonth();
-      const key = `${y}-${m}`;
-      let g = map.get(key);
-      if (!g) {
-        g = { year: y, month: m, items: [], storyStats: new Map() };
-        map.set(key, g);
-        groups.push(g);
-      }
-
-      // 获取故事封面
-      let coverPhoto: PhotoRefModel | undefined;
-      
-      // 优先用 coverUri，在人物照片中查找
-      if (s.coverUri && s.coverUri.length > 0) {
-        coverPhoto = this.photos.find(ph => ph.uri === s.coverUri);
-      }
-      
-      // 如果 coverUri 没找到，或者没有 coverUri，去故事照片中取第一张
-      if (!coverPhoto && s.photoCount > 0) {
-        const storyPhotos = getStoryService().listStoryPhotos(s.id);
-        if (storyPhotos.length > 0) {
-          coverPhoto = storyPhotos[0];
-        }
-      }
-
-      g.items.push({ kind: 'story', story: s, coverPhoto: coverPhoto });
-
-      // 直接用 story.photoCount
-      g.storyStats.set(s.id, { title: s.title, count: s.photoCount });
-    }
-
-    for (const g of groups) {
-      g.items.sort((a, b) => {
-        const tsA = a.kind === 'photo' ? (a.photo?.metadata?.takenAt ?? 0) : (a.story?.timeStart ?? 0);
-        const tsB = b.kind === 'photo' ? (b.photo?.metadata?.takenAt ?? 0) : (b.story?.timeStart ?? 0);
-        return tsB - tsA;
-      });
-    }
-
-    groups.sort((a, b) => {
-      if (a.year !== b.year) {
-        return b.year - a.year;
-      }
-      return b.month - a.month;
+    this.monthGroups = buildMonthGroupsLogic(this.photos, this.linkedStories, (sid: number): PhotoRefModel[] => {
+      return getStoryService().listStoryPhotos(sid);
     });
-
-    this.monthGroups = groups;
   }
 
   private findPhotoIndexInAll(photoId: number): number {

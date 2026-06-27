@@ -5,20 +5,21 @@ import { relationalStore } from '@kit.ArkData';
  *  v2: V2.1 持久化闸门 (migration_audit)
  *  v3: V2.2 Person 字段扩展 (avatar_blob, birthday, gender, remark, person_type)
  *  v4: V2.2 Story 字段扩展 (description, time_start, time_end, cover_uri, location, tags)
+ *  v5: V2.6 Story photo_count 列补充（Bug #L3-1）
  */
-export const RDB_SCHEMA_META_VERSION = 4;
+export const RDB_SCHEMA_META_VERSION = 5;
 
 /** V2.1 首版：与当前 MVP 主链字段对齐；后续迁移由 T-18 扩展。 */
 export function ensureSchemaV1(store: relationalStore.RdbStore): void {
-  store.executeSql(
+  store.executeSync(
     'CREATE TABLE IF NOT EXISTS schema_meta (id INTEGER PRIMARY KEY CHECK (id = 1), version INTEGER NOT NULL);',
     []
   );
-  store.executeSql(
+  store.executeSync(
     'INSERT OR IGNORE INTO schema_meta (id, version) VALUES (1, 0);',
     []
   );
-  store.executeSql(
+  store.executeSync(
     'CREATE TABLE IF NOT EXISTS person (' +
       'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
       'display_name TEXT NOT NULL, ' +
@@ -32,7 +33,7 @@ export function ensureSchemaV1(store: relationalStore.RdbStore): void {
       ');',
     []
   );
-  store.executeSql(
+  store.executeSync(
     'CREATE TABLE IF NOT EXISTS story (' +
       'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
       'title TEXT NOT NULL, ' +
@@ -42,12 +43,13 @@ export function ensureSchemaV1(store: relationalStore.RdbStore): void {
       'cover_uri TEXT DEFAULT \'\', ' +
       'location TEXT DEFAULT \'\', ' +
       'tags TEXT DEFAULT \'[]\', ' +
+      'photo_count INTEGER NOT NULL DEFAULT 0, ' +
       'created_at INTEGER NOT NULL, ' +
       'updated_at INTEGER NOT NULL' +
       ');',
     []
   );
-  store.executeSql(
+  store.executeSync(
     'CREATE TABLE IF NOT EXISTS person_story (' +
       'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
       'person_id INTEGER NOT NULL, ' +
@@ -56,7 +58,7 @@ export function ensureSchemaV1(store: relationalStore.RdbStore): void {
       ');',
     []
   );
-  store.executeSql(
+  store.executeSync(
     'CREATE TABLE IF NOT EXISTS photo_ref (' +
       'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
       'uri TEXT NOT NULL UNIQUE, ' +
@@ -68,7 +70,7 @@ export function ensureSchemaV1(store: relationalStore.RdbStore): void {
       ');',
     []
   );
-  store.executeSql(
+  store.executeSync(
     'CREATE TABLE IF NOT EXISTS photo_owner_link (' +
       'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
       'owner_kind INTEGER NOT NULL, ' +
@@ -88,7 +90,7 @@ export function ensureSchemaV1(store: relationalStore.RdbStore): void {
   rs.close();
   if (current === 0) {
     // Fresh database: set version to RDB_SCHEMA_META_VERSION directly
-    store.executeSql('UPDATE schema_meta SET version = ? WHERE id = 1;', [RDB_SCHEMA_META_VERSION]);
+    store.executeSync('UPDATE schema_meta SET version = ? WHERE id = 1;', [RDB_SCHEMA_META_VERSION]);
   }
   // Otherwise, existing DB stays at its current version; MigrationRunner handles upgrades.
 }

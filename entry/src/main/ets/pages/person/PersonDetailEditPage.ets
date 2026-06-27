@@ -99,6 +99,7 @@ export struct PersonDetailEditPage {
   @State photos: PhotoRefModel[] = [];
   @State newStoryTitle: string = '';
   @State debugLastAlbumInject: string = '';
+  private scroller: Scroller = new Scroller();
 
   aboutToAppear(): void {
     const params = router.getParams() as Record<string, Object>;
@@ -330,40 +331,103 @@ export struct PersonDetailEditPage {
   }
 
   build() {
-    Column({ space: 0 }) {
-      Row({ space: 10 }) {
-        Button('←')
-          .height(36)
-          .fontSize(24)
-          .backgroundColor(Color.Transparent)
-          .fontColor($r('app.color.ts_import_bar_on_bg'))
-          .onClick((): void => {
-            dismissSoftKeyboard();
-            router.back();
-          })
-        Text('编辑人物')
-          .fontSize(20)
-          .fontColor($r('app.color.ts_import_bar_on_bg'))
-          .fontWeight(FontWeight.Bold)
-          .layoutWeight(1)
-        Button('保存')
-          .height(36)
-          .fontSize(16)
-          .backgroundColor($r('app.color.ts_brand_primary'))
-          .fontColor($r('app.color.ts_import_bar_on_bg'))
-          .onClick((): void => {
-            this.savePerson();
-          })
-      }
-      .width('100%')
-      .height(56)
-      .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor($r('app.color.ts_surface_container_high'))
-      .alignItems(VerticalAlign.Center)
+    Stack({ alignContent: Alignment.TopStart }) {
+      Column({ space: 0 }) {
+        Row({ space: 10 }) {
+          Button('←')
+            .height(36)
+            .fontSize(24)
+            .backgroundColor(Color.Transparent)
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
+            .onClick((): void => {
+              dismissSoftKeyboard();
+              router.back();
+            })
+          Text('编辑人物')
+            .fontSize(20)
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
+            .fontWeight(FontWeight.Bold)
+            .layoutWeight(1)
+          Button('保存')
+            .id('save_btn')
+            .height(36)
+            .fontSize(16)
+            .backgroundColor($r('app.color.ts_brand_primary'))
+            .fontColor($r('app.color.ts_import_bar_on_bg'))
+            .onClick((): void => {
+              this.savePerson();
+            })
+        }
+        .width('100%')
+        .height(56)
+        .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+        .backgroundColor($r('app.color.ts_surface_container_high'))
+        .alignItems(VerticalAlign.Center)
 
-      if (this.person !== null && this.personId > 0) {
-        Scroll() {
-          Column({ space: 14 }) {
+        if (this.person !== null && this.personId > 0) {
+          Scroll(this.scroller) {
+            Column({ space: 14 }) {
+              // DEBUG 区域放在顶部，E2E 测试无需滚动即可操作
+              if (BuildProfile.DEBUG) {
+                Column({ space: 8 }) {
+                  Text(this.debugLastAlbumInject.length > 0 ? this.debugLastAlbumInject : '【E2E】尚未注入mock URI')
+                    .fontSize(12)
+                    .fontColor($r('app.color.ts_debug_banner'))
+                    .width('100%')
+                  Row({ space: 8 }) {
+                    Button('【DEBUG】注入相册等价URI')
+                      .fontSize(12)
+                      .layoutWeight(1)
+                      .height(36)
+                      .backgroundColor($r('app.color.ts_surface_container_high'))
+                      .fontColor($r('app.color.ts_text_tertiary'))
+                      .onClick((): void => {
+                        this.injectDebugAlbumEquivUri('file://e2e/album-equiv-1');
+                      })
+                    Button('【DEBUG】再注相同URI')
+                      .fontSize(12)
+                      .layoutWeight(1)
+                      .height(36)
+                      .backgroundColor($r('app.color.ts_surface_container_high'))
+                      .fontColor($r('app.color.ts_text_tertiary'))
+                      .onClick((): void => {
+                        this.injectDebugAlbumEquivUri('file://e2e/album-equiv-1');
+                      })
+                  }
+                  .width('100%')
+                  Text(`【E2E】照片数=${this.photos.length}`)
+                    .fontSize(12)
+                    .fontColor($r('app.color.ts_debug_banner'))
+                    .width('100%')
+                  Button('【DEBUG】GC孤儿PhotoRef')
+                    .fontSize(12)
+                    .backgroundColor($r('app.color.ts_surface_container_high'))
+                    .fontColor($r('app.color.ts_text_tertiary'))
+                    .width('100%')
+                    .height(36)
+                    .onClick((): void => {
+                      const n = getPersonService().gcOrphanPhotoRefs();
+                      promptAction.showToast({ message: `GC完成：清理 ${n} 个孤儿PhotoRef` });
+                      this.refresh();
+                    })
+                  Button('【DEBUG】保存')
+                    .fontSize(12)
+                    .backgroundColor($r('app.color.ts_brand_primary'))
+                    .fontColor($r('app.color.ts_import_bar_on_bg'))
+                    .width('100%')
+                    .height(36)
+                    .onClick((): void => {
+                      dismissSoftKeyboard();
+                      this.savePerson();
+                    })
+                }
+                .width('100%')
+                .padding(16)
+                .backgroundColor($r('app.color.ts_surface_container'))
+                .borderRadius(12)
+                .border({ width: 1, color: $r('app.color.ts_debug_banner') })
+              }
+
             Column({ space: 12 }) {
               Text('编辑')
                 .fontSize(16)
@@ -597,51 +661,6 @@ export struct PersonDetailEditPage {
                   this.pickPhotosFromAlbum();
                 })
 
-              if (BuildProfile.DEBUG) {
-                Text(this.debugLastAlbumInject.length > 0 ? this.debugLastAlbumInject : '【E2E】尚未注入mock URI')
-                  .fontSize(12)
-                  .fontColor($r('app.color.ts_debug_banner'))
-                  .width('100%')
-                Row({ space: 8 }) {
-                  Button('【DEBUG】注入相册等价URI')
-                    .fontSize(12)
-                    .layoutWeight(1)
-                    .height(36)
-                    .backgroundColor($r('app.color.ts_surface_container_high'))
-                    .fontColor($r('app.color.ts_text_tertiary'))
-                    .onClick((): void => {
-                      this.injectDebugAlbumEquivUri('file://e2e/album-equiv-1');
-                    })
-                  Button('【DEBUG】再注相同URI')
-                    .fontSize(12)
-                    .layoutWeight(1)
-                    .height(36)
-                    .backgroundColor($r('app.color.ts_surface_container_high'))
-                    .fontColor($r('app.color.ts_text_tertiary'))
-                    .onClick((): void => {
-                      this.injectDebugAlbumEquivUri('file://e2e/album-equiv-1');
-                    })
-                }
-                .width('100%')
-              }
-
-              if (BuildProfile.DEBUG) {
-                Text(`【E2E】照片数=${this.photos.length}`)
-                  .fontSize(12)
-                  .fontColor($r('app.color.ts_debug_banner'))
-                  .width('100%')
-                Button('【DEBUG】GC孤儿PhotoRef')
-                  .fontSize(12)
-                  .backgroundColor($r('app.color.ts_surface_container_high'))
-                  .fontColor($r('app.color.ts_text_tertiary'))
-                  .width('100%')
-                  .height(36)
-                  .onClick((): void => {
-                    const n = getPersonService().gcOrphanPhotoRefs();
-                    promptAction.showToast({ message: `GC完成：清理 ${n} 个孤儿PhotoRef` });
-                    this.refresh();
-                  })
-              }
               if (this.photos.length === 0) {
                 Text('暂无挂载照片')
                   .fontColor($r('app.color.ts_text_tertiary'))
@@ -703,5 +722,35 @@ export struct PersonDetailEditPage {
     .width('100%')
     .height('100%')
     .backgroundColor($r('app.color.ts_surface'))
+
+    // 悬浮 DEBUG 工具栏（始终可见，不随 Scroll 滚动）
+    if (BuildProfile.DEBUG && this.person !== null && this.personId > 0) {
+      Column({ space: 6 }) {
+        Button('↑顶')
+          .width(48).height(44).fontSize(14)
+          .backgroundColor($r('app.color.ts_surface_container_high'))
+          .fontColor($r('app.color.ts_debug_banner'))
+          .onClick((): void => { this.scroller.scrollEdge(Edge.Top); })
+        Button('↓下')
+          .width(48).height(44).fontSize(14)
+          .backgroundColor($r('app.color.ts_surface_container_high'))
+          .fontColor($r('app.color.ts_debug_banner'))
+          .onClick((): void => { this.scroller.scrollPage({ next: true }); })
+        Button('↓底')
+          .width(48).height(44).fontSize(14)
+          .backgroundColor($r('app.color.ts_surface_container_high'))
+          .fontColor($r('app.color.ts_debug_banner'))
+          .onClick((): void => { this.scroller.scrollEdge(Edge.Bottom); })
+      }
+      .position({ x: '100%', y: '50%' })
+      .translate({ x: '-62', y: '-50%' })
+      .zIndex(100)
+      .shadow({ radius: 8, color: '#40000000' })
+    }
   }
+  .width('100%')
+  .height('100%')
+  .backgroundColor($r('app.color.ts_surface'))
 }
+}
+

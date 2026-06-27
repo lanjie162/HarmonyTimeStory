@@ -6,29 +6,7 @@ import { getPersonService } from '../../features/person/PersonFeature';
 import { getStoryService } from '../../features/story/StoryFeature';
 import { PhotoSwiper } from '../../common/ui/PhotoSwiper';
 import { dismissSoftKeyboard } from '../../common/ime/SoftKeyboard';
-
-function parseStoryId(params: Record<string, Object>): number {
-  const raw = params['storyId'];
-  if (typeof raw === 'number') {
-    return raw as number;
-  }
-  if (typeof raw === 'string') {
-    const n = Number.parseInt(raw as string, 10);
-    return Number.isNaN(n) ? 0 : n;
-  }
-  return 0;
-}
-
-function formatDate(ts: number | null): string {
-  if (ts === null || ts <= 0) {
-    return '未设置';
-  }
-  const d = new Date(ts);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
+import { parseStoryId, formatDate, buildDateRangeText as buildDateRangeTextLogic, buildMetaInfoText as buildMetaInfoTextLogic, getDisplayTags as getDisplayTagsLogic, getExtraTagCount as getExtraTagCountLogic } from './StoryDetailLogic';
 
 @Entry
 @Component
@@ -94,41 +72,19 @@ export struct StoryDetailPage {
   }
 
   private buildDateRangeText(): string {
-    if (!this.story) {
-      return '';
-    }
-    const start = formatDate(this.story.timeStart);
-    const end = formatDate(this.story.timeEnd);
-    if (start === '未设置' && end === '未设置') {
-      return '';
-    }
-    if (start === end) {
-      return start;
-    }
-    return `${start} ~ ${end}`;
+    return buildDateRangeTextLogic(this.story?.timeStart ?? null, this.story?.timeEnd ?? null);
   }
 
   private buildMetaInfoText(): string {
-    const dateRange = this.buildDateRangeText();
-    const location = this.story?.location ?? '';
-    if (dateRange && location) {
-      return `${dateRange}  ·  ${location}`;
-    }
-    return dateRange || location;
+    return buildMetaInfoTextLogic(this.buildDateRangeText(), this.story?.location);
   }
 
   private getDisplayTags(): string[] {
-    if (!this.story || !this.story.tags || this.story.tags.length === 0) {
-      return [];
-    }
-    return this.story.tags.slice(0, 3);
+    return getDisplayTagsLogic(this.story?.tags);
   }
 
   private getExtraTagCount(): number {
-    if (!this.story || !this.story.tags) {
-      return 0;
-    }
-    return Math.max(0, this.story.tags.length - 3);
+    return getExtraTagCountLogic(this.story?.tags);
   }
 
   build() {

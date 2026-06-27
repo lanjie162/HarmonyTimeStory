@@ -23,6 +23,7 @@ export interface TextInputParams {
   onSubmit?: () => void;
   height?: Length;
   layoutWeight?: number;
+  id?: string;
 }
 
 export interface TextAreaParams {
@@ -32,6 +33,7 @@ export interface TextAreaParams {
   onSubmit?: () => void;
   height?: Length;
   layoutWeight?: number;
+  id?: string;
 }
 
 @Builder
@@ -53,6 +55,7 @@ export function TextInputWithKeyboard(params: TextInputParams) {
     .backgroundColor($r('app.color.ts_surface_container_high'))
     .borderRadius(10)
     .padding({ left: 12, right: 12 })
+    .id(params.id ?? '')
 }
 
 @Builder
