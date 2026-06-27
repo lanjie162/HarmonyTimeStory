@@ -11,3 +11,13 @@
 **/.test
 /.appanalyzer
 /mcps
+
+# 临时调试与测试输出文件
+full_dump_*.json
+simple_dump_*.txt
+test_output*.log
+test_output*.txt
+layout.xml
+screen.jpeg
+/uitest/
+/.trae/tmp/
